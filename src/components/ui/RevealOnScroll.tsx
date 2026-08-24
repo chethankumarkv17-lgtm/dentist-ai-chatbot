@@ -17,9 +17,9 @@ export function RevealOnScroll({
   children,
   variant = 'fade-up',
   delayMs = 0,
-  durationMs = 500,
+  durationMs = 850,
   className = '',
-  threshold = 0.15,
+  threshold = 0.1,
 }: RevealOnScrollProps) {
   const [isVisible, setIsVisible] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -58,7 +58,7 @@ export function RevealOnScroll({
         },
         {
           threshold,
-          rootMargin: '0px 0px -40px 0px',
+          rootMargin: '0px 0px -30px 0px',
         }
       );
 
@@ -74,11 +74,11 @@ export function RevealOnScroll({
 
   const variantStyles: Record<string, { initial: string; visible: string }> = {
     'fade-up': {
-      initial: 'opacity-0 translate-y-6',
+      initial: 'opacity-0 translate-y-8',
       visible: 'opacity-100 translate-y-0',
     },
     'fade-down': {
-      initial: 'opacity-0 -translate-y-6',
+      initial: 'opacity-0 -translate-y-8',
       visible: 'opacity-100 translate-y-0',
     },
     'fade-in': {
@@ -86,15 +86,15 @@ export function RevealOnScroll({
       visible: 'opacity-100',
     },
     'slide-left': {
-      initial: 'opacity-0 -translate-x-8',
+      initial: 'opacity-0 -translate-x-10',
       visible: 'opacity-100 translate-x-0',
     },
     'slide-right': {
-      initial: 'opacity-0 translate-x-8',
+      initial: 'opacity-0 translate-x-10',
       visible: 'opacity-100 translate-x-0',
     },
     'scale-up': {
-      initial: 'opacity-0 scale-95',
+      initial: 'opacity-0 scale-[0.96]',
       visible: 'opacity-100 scale-100',
     },
   };
@@ -107,7 +107,7 @@ export function RevealOnScroll({
       style={{
         transitionDuration: `${durationMs}ms`,
         transitionDelay: `${delayMs}ms`,
-        transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)',
+        transitionTimingFunction: 'cubic-bezier(0.22, 1, 0.36, 1)',
       }}
       className={`transition-all will-change-[opacity,transform] ${
         isVisible ? selected.visible : selected.initial

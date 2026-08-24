@@ -17,21 +17,21 @@ export function HeroBackgroundMotion() {
         }}
       />
 
-      {/* Top Ambient Glow Mesh (GPU-accelerated subtle breathing) */}
+      {/* Top Ambient Glow Mesh (GPU-accelerated smooth slow 8s breathing) */}
       <div
         style={{
           background:
-            'radial-gradient(ellipse 60% 50% at 50% 0%, rgba(37, 99, 235, 0.12) 0%, rgba(99, 102, 241, 0.06) 50%, transparent 100%)',
+            'radial-gradient(ellipse 65% 55% at 50% 0%, rgba(37, 99, 235, 0.14) 0%, rgba(99, 102, 241, 0.07) 50%, transparent 100%)',
         }}
-        className="absolute top-0 left-1/2 -translate-x-1/2 w-[1200px] h-[650px] rounded-full blur-3xl animate-pulse-glow"
+        className="absolute top-0 left-1/2 -translate-x-1/2 w-[1250px] h-[700px] rounded-full blur-3xl animate-pulse-glow-slow"
       />
 
-      {/* Subtle Soft Cyan Accent Sphere */}
+      {/* Subtle Soft Cyan Accent Sphere with Slow Floating Motion */}
       <div
         style={{
-          background: 'radial-gradient(circle, rgba(14, 165, 233, 0.08) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(14, 165, 233, 0.09) 0%, transparent 70%)',
         }}
-        className="absolute -top-24 right-1/4 w-[480px] h-[480px] rounded-full blur-2xl"
+        className="absolute -top-20 right-1/4 w-[500px] h-[500px] rounded-full blur-2xl animate-float-slow"
       />
     </div>
   );
