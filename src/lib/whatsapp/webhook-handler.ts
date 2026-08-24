@@ -2,7 +2,7 @@ import { createClient } from '@/lib/supabase/server-auth';
 import { processReceptionistMessage } from '@/lib/ai/receptionist';
 import { WhatsAppClient, verifyWebhookSignature, detectLanguage } from './client';
 import { requestHumanHandoff } from './handoff';
-import { claimWebhookEvent, finalizeWebhookSuccess, finalizeWebhookFailure } from '@/lib/webhooks/reliability';
+import { claimWebhookEvent, finalizeWebhookSuccess } from '@/lib/webhooks/reliability';
 import { getPlan } from '@/lib/billing/plans';
 
 export interface WhatsAppWebhookPayload {
@@ -319,6 +319,7 @@ export async function processWhatsAppWebhook(
             clinic_id: clinicId,
             prompt_tokens: inputTokens,
             completion_tokens: outputTokens,
+            estimated_cost_usd: estimatedCost,
             channel: 'whatsapp',
           });
 

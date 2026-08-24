@@ -6,10 +6,11 @@
 [![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-green?style=flat&logo=supabase)](https://supabase.com/)
 [![Razorpay](https://img.shields.io/badge/Razorpay-UPI%20%26%20Cards-blue?style=flat)](https://razorpay.com/)
 [![WhatsApp](https://img.shields.io/badge/WhatsApp-Cloud%20API-green?style=flat&logo=whatsapp)](https://business.whatsapp.com/)
+[![Voice](https://img.shields.io/badge/Voice%20AI-24%2F7%20Telephony-purple?style=flat)](VOICE.md)
 [![Anthropic](https://img.shields.io/badge/Anthropic-Claude%203.5-orange?style=flat)](https://anthropic.com/)
-[![Tests](https://img.shields.io/badge/Tests-364%20Passed-brightgreen?style=flat)](TESTING.md)
+[![Tests](https://img.shields.io/badge/Tests-382%20Passed-brightgreen?style=flat)](TESTING.md)
 
-**Radiant Nobel** is a production-grade, multi-tenant B2B Dental SaaS platform featuring an **autonomous 24/7 AI Receptionist across Website Widget and WhatsApp Channels**, real-time calendar synchronization, zero-double-booking appointment engine, instant website builder with custom domains, Razorpay Indian Payments (UPI, GPay, PhonePe, Paytm, QR, Netbanking), and clinic management suite.
+**Radiant Nobel** is a production-grade, multi-tenant B2B Dental SaaS platform featuring an **autonomous 24/7 AI Receptionist across Website Widget, WhatsApp, and Voice Phone Channels**, real-time calendar synchronization, zero-double-booking appointment engine, instant website builder with custom domains, Razorpay Indian Payments (UPI, GPay, PhonePe, Paytm, QR, Netbanking), and clinic management suite.
 
 ---
 
@@ -18,8 +19,9 @@
 | Guide | Description |
 | :--- | :--- |
 | **[ARCHITECTURE.md](ARCHITECTURE.md)** | Technical design, multi-tenant isolation, AI pipeline, and state machines. |
+| **[VOICE.md](VOICE.md)** | 24/7 AI Voice Phone Receptionist, telephony webhooks, and feature gating. |
 | **[WHATSAPP.md](WHATSAPP.md)** | WhatsApp Business Cloud API setup, multi-tenant isolation, human handoff, and reminders. |
-| **[BILLING.md](BILLING.md)** | Pluggable payment provider abstraction, UPI flows, e-mandates, and Razorpay/Stripe billing. |
+| **[BILLING.md](BILLING.md)** | Pluggable payment provider abstraction, UPI flows, e-mandates, and feature entitlements. |
 | **[DATABASE.md](DATABASE.md)** | PostgreSQL relational schemas, RLS policies, indexing, and migrations. |
 | **[API.md](API.md)** | REST endpoints, Server Actions, schemas, error codes, and rate limits. |
 | **[SECURITY.md](SECURITY.md)** | Threat model, prompt injection defenses, HIPAA compliance, and upload policies. |
@@ -34,9 +36,11 @@
 
 ## 🚀 Key Features
 
-- **Autonomous 24/7 AI Receptionist (Website & WhatsApp)**: Handles patient FAQs, clinic opening hours, verified service pricing, and dentist availability over web chat and official WhatsApp Business accounts.
-- **Unified Single AI & Booking Backend**: Both widget and WhatsApp channels utilize the exact same booking tools, availability logic, and patient deduplication.
-- **Human Staff Handoff**: Patients can request human assistance (`"Talk to staff"`), notifying clinic administrators and pausing AI automation.
+- **Omnichannel AI Receptionist (Website, WhatsApp, Voice)**: Handles patient FAQs, clinic opening hours, verified service pricing, and dentist availability across web chat, official WhatsApp Business accounts, and inbound phone lines.
+- **Unified Single AI & Booking Backend**: All 3 channels utilize the exact same booking tools, availability logic, and patient deduplication.
+- **24/7 AI Voice Phone Receptionist (Pro Enterprise)**: Answers clinic phone calls with natural conversational speech, books appointments in real-time, and transfers emergencies directly to front desk staff.
+- **Server-Side Feature Entitlements**: Strict server-side plan gating ensures premium capabilities cannot be unlocked by client manipulation.
+- **Human Staff Handoff**: Patients can request human assistance, triggering automated call transfer or WhatsApp handoff.
 - **Automated WhatsApp Reminders**: 24-hour and 2-hour pre-appointment template reminders with duplicate avoidance.
 - **Indian Payment & UPI Support (Razorpay)**: UPI Intent, QR Code, Google Pay, PhonePe, Paytm, Netbanking, and Cards with recurring e-mandates.
 - **Multi-Tenant Row Level Security (RLS)**: Strict database partitioning ensures Clinic A never accesses Clinic B records.

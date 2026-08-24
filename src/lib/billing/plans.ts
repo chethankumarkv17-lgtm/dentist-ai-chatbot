@@ -8,6 +8,7 @@ export interface PlanLimits {
   locationsLimit: number;
   appointmentsLimit: number;
   whatsappMessagesLimit: number;
+  voiceMinutesLimit: number;
 }
 
 export interface PlanFeatureFlags {
@@ -17,6 +18,7 @@ export interface PlanFeatureFlags {
   customWidgetBranding: boolean;
   analyticsReports: boolean;
   whatsappChannel: boolean;
+  voiceAgent: boolean;
 }
 
 export interface PlanDefinition {
@@ -57,6 +59,7 @@ export const BILLING_PLANS: Record<PlanKey, PlanDefinition> = {
       locationsLimit: 1,
       appointmentsLimit: 150,
       whatsappMessagesLimit: 100,
+      voiceMinutesLimit: 0,
     },
     featureFlags: {
       customDomains: false,
@@ -65,6 +68,7 @@ export const BILLING_PLANS: Record<PlanKey, PlanDefinition> = {
       customWidgetBranding: false,
       analyticsReports: false,
       whatsappChannel: false,
+      voiceAgent: false,
     },
     highlights: [
       '24/7 AI Dental Receptionist',
@@ -96,6 +100,7 @@ export const BILLING_PLANS: Record<PlanKey, PlanDefinition> = {
       locationsLimit: 2,
       appointmentsLimit: 600,
       whatsappMessagesLimit: 1000,
+      voiceMinutesLimit: 0,
     },
     featureFlags: {
       customDomains: true,
@@ -104,6 +109,7 @@ export const BILLING_PLANS: Record<PlanKey, PlanDefinition> = {
       customWidgetBranding: true,
       analyticsReports: true,
       whatsappChannel: true,
+      voiceAgent: false,
     },
     highlights: [
       'Everything in Starter, plus:',
@@ -121,7 +127,7 @@ export const BILLING_PLANS: Record<PlanKey, PlanDefinition> = {
     key: 'pro',
     name: 'Pro Enterprise',
     tagline: 'Maximum power for multi-location dental groups',
-    description: 'Unlimited capacity, multi-location support, and dedicated healthcare onboarding.',
+    description: 'Unlimited capacity, multi-location support, AI Voice Receptionist, and dedicated healthcare onboarding.',
     monthlyPrice: 11999,
     yearlyPrice: 119990,
     currency: 'INR',
@@ -136,6 +142,7 @@ export const BILLING_PLANS: Record<PlanKey, PlanDefinition> = {
       locationsLimit: 20,
       appointmentsLimit: 100000,
       whatsappMessagesLimit: 100000,
+      voiceMinutesLimit: 500,
     },
     featureFlags: {
       customDomains: true,
@@ -144,9 +151,11 @@ export const BILLING_PLANS: Record<PlanKey, PlanDefinition> = {
       customWidgetBranding: true,
       analyticsReports: true,
       whatsappChannel: true,
+      voiceAgent: true,
     },
     highlights: [
       'Everything in Growth, plus:',
+      '24/7 AI Voice Phone Receptionist (500 mins/mo)',
       'Unlimited Dentists & Staff',
       'Unlimited AI Conversations & WhatsApp',
       'Multi-Location Dental Clinics',
@@ -158,26 +167,23 @@ export const BILLING_PLANS: Record<PlanKey, PlanDefinition> = {
 };
 
 export function getPlan(key: PlanKey | string): PlanDefinition {
-  const normalized = (key || '').toLowerCase() as PlanKey;
-  return BILLING_PLANS[normalized] || BILLING_PLANS.starter;
+  const normalizedKey = (key || 'starter').toLowerCase();
+  if (normalizedKey in BILLING_PLANS) {
+    return BILLING_PLANS[normalizedKey as PlanKey];
+  }
+  return BILLING_PLANS.starter;
 }
 
-export function getPlanByRazorpayPlanId(planId: string): { plan: PlanDefinition; interval: BillingInterval } | null {
+export function getPlanByPriceId(priceId: string): { plan: PlanDefinition; interval: BillingInterval } | null {
   for (const plan of Object.values(BILLING_PLANS)) {
-    if (plan.razorpayMonthlyPlanId === planId || plan.monthlyPriceId === planId) {
+    if (plan.razorpayMonthlyPlanId === priceId || plan.monthlyPriceId === priceId) {
       return { plan, interval: 'monthly' };
     }
-    if (plan.razorpayYearlyPlanId === planId || plan.yearlyPriceId === planId) {
+    if (plan.razorpayYearlyPlanId === priceId || plan.yearlyPriceId === priceId) {
       return { plan, interval: 'yearly' };
     }
   }
   return null;
 }
 
-export function getPlanByPriceId(priceId: string): { plan: PlanDefinition; interval: BillingInterval } | null {
-  return getPlanByRazorpayPlanId(priceId);
-}
-
-export function getAllPlans(): PlanDefinition[] {
-  return Object.values(BILLING_PLANS);
-}
+export const getPlanByRazorpayPlanId = getPlanByPriceId;

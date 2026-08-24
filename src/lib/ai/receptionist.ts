@@ -18,7 +18,7 @@ export interface ReceptionistRequest {
   patientPhoneOrEmail?: string;
   history?: ChatMessage[];
   timeoutMs?: number;
-  channel?: 'widget' | 'whatsapp';
+  channel?: 'widget' | 'website' | 'whatsapp' | 'voice';
 }
 
 export interface ReceptionistResponse {
@@ -270,21 +270,30 @@ export function determineToolCall(
 }
 
 /**
- * Formats a reply for a specific channel (WhatsApp vs Widget)
+ * Formats a reply for a specific channel (Widget, Website, WhatsApp, Voice)
  */
-export function formatForChannel(text: string, channel: 'widget' | 'whatsapp' = 'widget'): string {
-  if (channel === 'widget') {
-    return text;
+export function formatForChannel(text: string, channel: 'widget' | 'website' | 'whatsapp' | 'voice' = 'widget'): string {
+  if (channel === 'voice') {
+    // Voice TTS formatting: strip markdown asterisks, emojis, and bullet symbols for clear speech synthesis
+    return text
+      .replace(/[*_#`~]/g, '')
+      .replace(/[📍📞✉️🌍•👤✅❌]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
   }
-  
-  // WhatsApp formatting: replace common bullet points with emojis, ensure good spacing
-  return text
-    .replace(/- Name:/g, '👤 Name:')
-    .replace(/- Address:/g, '📍 Address:')
-    .replace(/- Phone:/g, '📞 Phone:')
-    .replace(/- Email:/g, '✉️ Email:')
-    .replace(/- Timezone:/g, '🌍 Timezone:')
-    .replace(/- /g, '• ');
+
+  if (channel === 'whatsapp') {
+    // WhatsApp formatting: replace common bullet points with emojis, ensure good spacing
+    return text
+      .replace(/- Name:/g, '👤 Name:')
+      .replace(/- Address:/g, '📍 Address:')
+      .replace(/- Phone:/g, '📞 Phone:')
+      .replace(/- Email:/g, '✉️ Email:')
+      .replace(/- Timezone:/g, '🌍 Timezone:')
+      .replace(/- /g, '• ');
+  }
+
+  return text;
 }
 
 /**

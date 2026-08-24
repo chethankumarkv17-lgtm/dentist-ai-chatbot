@@ -1,8 +1,8 @@
-# Radiant Nobel — Billing & Payment Architecture (India / UPI & Global)
+# Radiant Nobel — Billing, Payments & Feature Entitlement Architecture
 
-> **Version**: 2.0  
+> **Version**: 2.1  
 > **Supported Gateways**: Razorpay (India: UPI, Google Pay, PhonePe, Paytm, QR, Netbanking, Cards) & Stripe (Global Coexistence)  
-> **Compliance**: RBI e-Mandate Directives, Zero Card/UPI Credential Storage, Server-Side Authoritative Verification
+> **Compliance**: RBI e-Mandate Directives, Zero Card/UPI Credential Storage, Server-Side Authoritative Entitlements
 
 ---
 
@@ -34,7 +34,30 @@ Radiant Nobel employs a **Pluggable Payment Provider Abstraction Layer** ([`Paym
 
 ---
 
-## 2. Indian Payment Methods & UPI Support Matrix
+## 2. Feature Entitlements & Pricing Tier Matrix
+
+| Feature / Limit | Starter (₹2,999/mo) | Growth (₹5,999/mo) | Pro Enterprise (₹11,999/mo) |
+| :--- | :--- | :--- | :--- |
+| **24/7 Web Chatbot Widget** | ✅ Included (500 msgs) | ✅ Included (2,500 msgs) | ✅ Unlimited (100,000 msgs) |
+| **WhatsApp Business Channel** | ❌ No | ✅ Included (1,000 msgs) | ✅ Unlimited (100,000 msgs) |
+| **24/7 AI Voice Phone Receptionist** | ❌ Locked | ❌ Locked | ✅ Included (**500 mins/mo**) |
+| **Dentists & Staff Accounts** | 2 | 6 | Unlimited |
+| **Custom Domain SSL** | ❌ No | ✅ Yes | ✅ Yes |
+| **Calendar Sync (Google/Outlook)**| Google Only | Google & Outlook | Google & Outlook |
+| **Human Handoff & Transfer** | Email Alert | WhatsApp & Email | Live Phone Transfer & WhatsApp |
+
+---
+
+## 3. Server-Side Entitlement Enforcement
+
+Feature access is never determined on the client:
+- The [`hasFeature(orgId, featureName)`](file:///c:/Users/HP/Documents/antigravity/radiant-nobel/src/lib/billing/entitlements.ts) helper performs authoritative server-side checks.
+- Voice calls verify entitlement in real-time on every turn (`verifyVoiceEntitlementServerSide`).
+- If an organization's subscription is cancelled, expires, or is downgraded, premium features (Voice, WhatsApp) are instantly gated according to the authoritative database state.
+
+---
+
+## 4. Indian Payment Methods & UPI Support Matrix
 
 | Payment Channel | Implementation Mechanism | Recurring / Subscription Support | User Flow |
 | :--- | :--- | :--- | :--- |
@@ -43,64 +66,3 @@ Radiant Nobel employs a **Pluggable Payment Provider Abstraction Layer** ([`Paym
 | **UPI Dynamic QR** | On-screen dynamic QR generated for order | Immediate invoice payment / Top-up | User scans QR with any UPI-compatible application |
 | **Credit / Debit Cards** | Tokenized card checkout via gateway | Supported via RBI-compliant e-Mandate | 3D-Secure OTP verification with recurring tokenization |
 | **Net Banking** | 50+ Indian retail and corporate banks | Instant invoice / One-time charge | Redirects to bank authorization portal |
-
----
-
-## 3. Subscription Lifecycle & State Machine
-
-```
-                        [ Dentist Selects Plan ]
-                                   │
-                                   ▼
-                       [ Backend Creates Order ]
-                                   │
-                                   ▼
-                       [ User Pays via UPI/Card ]
-                                   │
-                    ┌──────────────┴──────────────┐
-                    ▼                             ▼
-          [ Payment Succeeded ]          [ Payment Failed ]
-                    │                             │
-                    ▼                             ▼
-       [ Provider Signs Webhook ]      [ Provider Signs Webhook ]
-                    │                             │
-                    ▼                             ▼
-         [ HMAC SHA-256 Verified ]      [ HMAC SHA-256 Verified ]
-                    │                             │
-                    ▼                             ▼
-         [ Status: 'active' ]         [ Status: 'payment_failed' ]
-```
-
-### Supported Subscription Statuses:
-- **`trialing`**: Free initial evaluation period with access to baseline features.
-- **`active`**: Fully paid subscription with current valid period end.
-- **`past_due`**: Payment attempt failed or pending retry (3-day grace period applied).
-- **`payment_failed`**: Transaction explicitly rejected (e.g. incorrect UPI PIN, expired mandate).
-- **`cancelled`**: Dentist requested cancellation (retains access until period end if `cancel_at_period_end` is true).
-- **`expired`**: Subscription term completed without renewal; access downgraded to free tier.
-
----
-
-## 4. Security & Compliance Invariants
-
-1. **Zero Financial Credential Storage**:
-   - **NEVER** store Card Numbers, CVVs, or Expiry Dates.
-   - **NEVER** store UPI VPAs, MPINs, or Bank Credentials.
-   - Only store provider-generated non-sensitive tokens (`razorpay_customer_id`, `razorpay_subscription_id`, `razorpay_order_id`).
-
-2. **Authoritative Webhook Verification**:
-   - Webhook requests MUST pass strict cryptographic HMAC SHA-256 signature verification against `RAZORPAY_WEBHOOK_SECRET` before processing.
-   - Idempotency claims ([`claimWebhookEvent`](file:///c:/Users/HP/Documents/antigravity/radiant-nobel/src/lib/webhooks/reliability.ts)) prevent duplicate credit or replay attacks.
-
-3. **No Client-Side Authorization**:
-   - The frontend checkout callback NEVER activates subscriptions directly. The backend validates signed webhook notifications or verifies signatures server-side.
-
----
-
-## 5. Pricing Tiers (INR & USD Equivalents)
-
-| Plan | Monthly Price (INR) | Yearly Price (INR) | Dentists | AI Messages | WhatsApp Channel | Custom Domain |
-| :--- | :--- | :--- | :---: | :---: | :---: | :---: |
-| **Starter** | ₹2,999 | ₹29,990 | 2 | 500 / mo | 100 / mo | ❌ |
-| **Growth** | ₹5,999 | ₹59,990 | 6 | 2,500 / mo | 1,000 / mo | ✅ |
-| **Pro Enterprise** | ₹11,999 | ₹1,19,990 | 1,000 | 100,000 / mo | 100,000 / mo | ✅ |
