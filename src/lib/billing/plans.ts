@@ -7,6 +7,7 @@ export interface PlanLimits {
   websitesLimit: number;
   locationsLimit: number;
   appointmentsLimit: number;
+  whatsappMessagesLimit: number;
 }
 
 export interface PlanFeatureFlags {
@@ -15,6 +16,7 @@ export interface PlanFeatureFlags {
   prioritySupport: boolean;
   customWidgetBranding: boolean;
   analyticsReports: boolean;
+  whatsappChannel: boolean;
 }
 
 export interface PlanDefinition {
@@ -22,10 +24,13 @@ export interface PlanDefinition {
   name: string;
   tagline: string;
   description: string;
-  monthlyPrice: number;
-  yearlyPrice: number; // 2 months free equivalent
-  monthlyPriceId: string;
-  yearlyPriceId: string;
+  monthlyPrice: number; // INR
+  yearlyPrice: number; // INR (2 months free equivalent)
+  currency: 'INR' | 'USD';
+  razorpayMonthlyPlanId: string;
+  razorpayYearlyPlanId: string;
+  monthlyPriceId: string; // Alias for backward compatibility
+  yearlyPriceId: string; // Alias for backward compatibility
   popular?: boolean;
   limits: PlanLimits;
   featureFlags: PlanFeatureFlags;
@@ -38,16 +43,20 @@ export const BILLING_PLANS: Record<PlanKey, PlanDefinition> = {
     name: 'Starter',
     tagline: 'Essential AI Receptionist for solo practices',
     description: 'Perfect for solo dentists and small clinics looking to automate appointment bookings 24/7.',
-    monthlyPrice: 99,
-    yearlyPrice: 950,
-    monthlyPriceId: process.env.STRIPE_STARTER_MONTHLY_PRICE_ID || 'price_starter_monthly',
-    yearlyPriceId: process.env.STRIPE_STARTER_YEARLY_PRICE_ID || 'price_starter_yearly',
+    monthlyPrice: 2999,
+    yearlyPrice: 29990,
+    currency: 'INR',
+    razorpayMonthlyPlanId: process.env.RAZORPAY_STARTER_MONTHLY_PLAN_ID || 'plan_starter_monthly',
+    razorpayYearlyPlanId: process.env.RAZORPAY_STARTER_YEARLY_PLAN_ID || 'plan_starter_yearly',
+    monthlyPriceId: process.env.RAZORPAY_STARTER_MONTHLY_PLAN_ID || 'plan_starter_monthly',
+    yearlyPriceId: process.env.RAZORPAY_STARTER_YEARLY_PLAN_ID || 'plan_starter_yearly',
     limits: {
       aiMessagesLimit: 500,
       dentistsLimit: 2,
       websitesLimit: 1,
       locationsLimit: 1,
       appointmentsLimit: 150,
+      whatsappMessagesLimit: 100,
     },
     featureFlags: {
       customDomains: false,
@@ -55,25 +64,30 @@ export const BILLING_PLANS: Record<PlanKey, PlanDefinition> = {
       prioritySupport: false,
       customWidgetBranding: false,
       analyticsReports: false,
+      whatsappChannel: false,
     },
     highlights: [
       '24/7 AI Dental Receptionist',
+      'UPI / Cards / Netbanking Payment',
       'Up to 2 Dentists & Staff',
       '500 AI Patient Conversations/mo',
       'Embeddable Chatbot & Website Widget',
       'Google Calendar Integration',
-      'Automated Email Confirmations',
+      'Automated Email & SMS Confirmations',
     ],
   },
   growth: {
     key: 'growth',
     name: 'Growth',
     tagline: 'High-performance AI for expanding clinics',
-    description: 'Designed for thriving multi-chair practices requiring advanced scheduling and custom domains.',
-    monthlyPrice: 199,
-    yearlyPrice: 1900,
-    monthlyPriceId: process.env.STRIPE_GROWTH_MONTHLY_PRICE_ID || 'price_growth_monthly',
-    yearlyPriceId: process.env.STRIPE_GROWTH_YEARLY_PRICE_ID || 'price_growth_yearly',
+    description: 'Designed for thriving multi-chair practices requiring advanced scheduling, WhatsApp, and custom domains.',
+    monthlyPrice: 5999,
+    yearlyPrice: 59990,
+    currency: 'INR',
+    razorpayMonthlyPlanId: process.env.RAZORPAY_GROWTH_MONTHLY_PLAN_ID || 'plan_growth_monthly',
+    razorpayYearlyPlanId: process.env.RAZORPAY_GROWTH_YEARLY_PLAN_ID || 'plan_growth_yearly',
+    monthlyPriceId: process.env.RAZORPAY_GROWTH_MONTHLY_PLAN_ID || 'plan_growth_monthly',
+    yearlyPriceId: process.env.RAZORPAY_GROWTH_YEARLY_PLAN_ID || 'plan_growth_yearly',
     popular: true,
     limits: {
       aiMessagesLimit: 2500,
@@ -81,6 +95,7 @@ export const BILLING_PLANS: Record<PlanKey, PlanDefinition> = {
       websitesLimit: 3,
       locationsLimit: 2,
       appointmentsLimit: 600,
+      whatsappMessagesLimit: 1000,
     },
     featureFlags: {
       customDomains: true,
@@ -88,15 +103,18 @@ export const BILLING_PLANS: Record<PlanKey, PlanDefinition> = {
       prioritySupport: true,
       customWidgetBranding: true,
       analyticsReports: true,
+      whatsappChannel: true,
     },
     highlights: [
       'Everything in Starter, plus:',
+      'WhatsApp Business Booking Channel',
+      'UPI Intent & AutoPay Support',
       'Up to 6 Dentists & Hygienists',
       '2,500 AI Patient Conversations/mo',
       'Custom Domain Connection (SSL)',
       'Custom Clinic Branding & Colors',
       'Comprehensive Analytics & Reports',
-      'Priority Email & Chat Support',
+      'Priority Email & WhatsApp Support',
     ],
   },
   pro: {
@@ -104,16 +122,20 @@ export const BILLING_PLANS: Record<PlanKey, PlanDefinition> = {
     name: 'Pro Enterprise',
     tagline: 'Maximum power for multi-location dental groups',
     description: 'Unlimited capacity, multi-location support, and dedicated healthcare onboarding.',
-    monthlyPrice: 399,
-    yearlyPrice: 3800,
-    monthlyPriceId: process.env.STRIPE_PRO_MONTHLY_PRICE_ID || 'price_pro_monthly',
-    yearlyPriceId: process.env.STRIPE_PRO_YEARLY_PRICE_ID || 'price_pro_yearly',
+    monthlyPrice: 11999,
+    yearlyPrice: 119990,
+    currency: 'INR',
+    razorpayMonthlyPlanId: process.env.RAZORPAY_PRO_MONTHLY_PLAN_ID || 'plan_pro_monthly',
+    razorpayYearlyPlanId: process.env.RAZORPAY_PRO_YEARLY_PLAN_ID || 'plan_pro_yearly',
+    monthlyPriceId: process.env.RAZORPAY_PRO_MONTHLY_PLAN_ID || 'plan_pro_monthly',
+    yearlyPriceId: process.env.RAZORPAY_PRO_YEARLY_PLAN_ID || 'plan_pro_yearly',
     limits: {
       aiMessagesLimit: 100000, // Unlimited
       dentistsLimit: 1000,
       websitesLimit: 50,
       locationsLimit: 20,
       appointmentsLimit: 100000,
+      whatsappMessagesLimit: 100000,
     },
     featureFlags: {
       customDomains: true,
@@ -121,11 +143,12 @@ export const BILLING_PLANS: Record<PlanKey, PlanDefinition> = {
       prioritySupport: true,
       customWidgetBranding: true,
       analyticsReports: true,
+      whatsappChannel: true,
     },
     highlights: [
       'Everything in Growth, plus:',
       'Unlimited Dentists & Staff',
-      'Unlimited AI Conversations',
+      'Unlimited AI Conversations & WhatsApp',
       'Multi-Location Dental Clinics',
       'Outlook & Google Calendar Sync',
       'Custom Knowledge Base Training',
@@ -139,16 +162,20 @@ export function getPlan(key: PlanKey | string): PlanDefinition {
   return BILLING_PLANS[normalized] || BILLING_PLANS.starter;
 }
 
-export function getPlanByPriceId(priceId: string): { plan: PlanDefinition; interval: BillingInterval } | null {
+export function getPlanByRazorpayPlanId(planId: string): { plan: PlanDefinition; interval: BillingInterval } | null {
   for (const plan of Object.values(BILLING_PLANS)) {
-    if (plan.monthlyPriceId === priceId) {
+    if (plan.razorpayMonthlyPlanId === planId || plan.monthlyPriceId === planId) {
       return { plan, interval: 'monthly' };
     }
-    if (plan.yearlyPriceId === priceId) {
+    if (plan.razorpayYearlyPlanId === planId || plan.yearlyPriceId === planId) {
       return { plan, interval: 'yearly' };
     }
   }
   return null;
+}
+
+export function getPlanByPriceId(priceId: string): { plan: PlanDefinition; interval: BillingInterval } | null {
+  return getPlanByRazorpayPlanId(priceId);
 }
 
 export function getAllPlans(): PlanDefinition[] {

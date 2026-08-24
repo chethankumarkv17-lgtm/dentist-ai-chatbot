@@ -18,6 +18,7 @@ export interface ReceptionistRequest {
   patientPhoneOrEmail?: string;
   history?: ChatMessage[];
   timeoutMs?: number;
+  channel?: 'widget' | 'whatsapp';
 }
 
 export interface ReceptionistResponse {
@@ -269,6 +270,24 @@ export function determineToolCall(
 }
 
 /**
+ * Formats a reply for a specific channel (WhatsApp vs Widget)
+ */
+export function formatForChannel(text: string, channel: 'widget' | 'whatsapp' = 'widget'): string {
+  if (channel === 'widget') {
+    return text;
+  }
+  
+  // WhatsApp formatting: replace common bullet points with emojis, ensure good spacing
+  return text
+    .replace(/- Name:/g, '👤 Name:')
+    .replace(/- Address:/g, '📍 Address:')
+    .replace(/- Phone:/g, '📞 Phone:')
+    .replace(/- Email:/g, '✉️ Email:')
+    .replace(/- Timezone:/g, '🌍 Timezone:')
+    .replace(/- /g, '• ');
+}
+
+/**
  * Generates an empathetic, accurate, non-hallucinatory AI receptionist reply
  * synthesizing tool outputs according to strict healthcare guidelines.
  */
@@ -396,13 +415,14 @@ export async function processReceptionistMessage(req: ReceptionistRequest): Prom
     conversationId: incomingConvId,
     history = [],
     timeoutMs = 8000,
+    channel = 'widget',
   } = req;
 
   // Empty message guard
   if (!message || !message.trim()) {
     return {
       success: true,
-      reply: "Hello! How can I assist you with your dental appointment or clinic inquiries today?",
+      reply: formatForChannel("Hello! How can I assist you with your dental appointment or clinic inquiries today?", channel),
       conversationId: incomingConvId || `conv-${Date.now()}`,
       toolCallsExecuted: [],
     };
@@ -415,7 +435,7 @@ export async function processReceptionistMessage(req: ReceptionistRequest): Prom
   if (matchCount >= 2) {
     return {
       success: true,
-      reply: "You have sent this exact message multiple times. Please let us know specifically how our clinic reception team can assist you, or feel free to call our front desk directly.",
+      reply: formatForChannel("You have sent this exact message multiple times. Please let us know specifically how our clinic reception team can assist you, or feel free to call our front desk directly.", channel),
       conversationId: incomingConvId || `conv-${Date.now()}`,
       toolCallsExecuted: [],
     };
@@ -449,6 +469,7 @@ export async function processReceptionistMessage(req: ReceptionistRequest): Prom
           .insert({
             clinic_id: clinicId,
             status: 'active',
+            channel,
           })
           .select('id')
           .single();
@@ -522,10 +543,10 @@ export async function processReceptionistMessage(req: ReceptionistRequest): Prom
       });
 
       // Format AI Response strictly based on tool result
-      finalReply = formatAIResponse(message, plannedTool.tool, toolResult);
+      finalReply = formatForChannel(formatAIResponse(message, plannedTool.tool, toolResult), channel);
     } else {
       // No tool needed, generate conversational guidance
-      finalReply = formatAIResponse(message, null, null);
+      finalReply = formatForChannel(formatAIResponse(message, null, null), channel);
     }
 
     // 4. Persist AI Response Message

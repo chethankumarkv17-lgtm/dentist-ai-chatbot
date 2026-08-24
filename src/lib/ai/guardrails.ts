@@ -81,6 +81,11 @@ const MALICIOUS_ABUSE_PATTERNS = [
   /(?:hack\s+this\s+site|ddos|sql\s+injection|drop\s+table)/i,
 ];
 
+// Patterns for WhatsApp Unsupported Media/Location
+const WHATSAPP_UNSUPPORTED_PATTERNS = [
+  /\[(?:image|video|audio|document|location|contact)\s+(?:received|shared|message)\]/i,
+];
+
 /**
  * Validates incoming user message against safety policies.
  * Returns safe response if any violation is detected.
@@ -103,7 +108,7 @@ export function validateInputSafety(message: string): SafetyCheckResult {
       return {
         isSafe: false,
         violationType: 'PROMPT_INJECTION',
-        safeResponse: "I am the dedicated AI receptionist for this dental clinic. I cannot ignore clinic protocols, modify my operational guidelines, or execute external overrides. How may I assist you with your appointment or clinic inquiries today?",
+        safeResponse: "I am the dedicated Anthropic AI receptionist for this dental clinic. I cannot ignore clinic protocols, modify my operational guidelines, or execute external overrides. How may I assist you with your appointment or clinic inquiries today?",
       };
     }
   }
@@ -114,7 +119,7 @@ export function validateInputSafety(message: string): SafetyCheckResult {
       return {
         isSafe: false,
         violationType: 'SYSTEM_PROMPT_EXTRACTION',
-        safeResponse: "For security and privacy compliance, internal system configurations and instructions cannot be displayed. However, I can help you with clinic business hours, dental services, doctor availability, and appointment scheduling.",
+        safeResponse: "For security and privacy compliance, internal system configurations and Anthropic model instructions cannot be displayed. However, I can help you with clinic business hours, dental services, doctor availability, and appointment scheduling.",
       };
     }
   }
@@ -170,6 +175,17 @@ export function validateInputSafety(message: string): SafetyCheckResult {
         isSafe: false,
         violationType: 'ABUSIVE_MALICIOUS',
         safeResponse: "We maintain a respectful and safe communication channel for patients and clinic staff. How may I professionally assist you with your dental appointment or clinic inquiries today?",
+      };
+    }
+  }
+
+  // 8. Check for Unsupported WhatsApp Media Types
+  for (const pattern of WHATSAPP_UNSUPPORTED_PATTERNS) {
+    if (pattern.test(trimmed)) {
+      return {
+        isSafe: false,
+        violationType: 'MESSAGE_TOO_LONG', // reusing an existing enum or we can just return safeResponse
+        safeResponse: "I am currently unable to process images, voice notes, locations, or documents. Please send your request as a regular text message, and I'll be happy to help you with clinic information or booking an appointment.",
       };
     }
   }

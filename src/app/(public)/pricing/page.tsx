@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { BILLING_PLANS, BillingInterval } from '@/lib/billing/plans';
-import { Check, Zap, Sparkles, Shield, ArrowRight } from 'lucide-react';
+import { Check, Zap, Sparkles, Shield, ArrowRight, CreditCard, Smartphone } from 'lucide-react';
 
 export default function PricingPage() {
   const [interval, setInterval] = useState<BillingInterval>('monthly');
@@ -27,7 +27,7 @@ export default function PricingPage() {
           </p>
 
           {/* Billing Interval Toggle */}
-          <div className="mt-8 flex justify-center">
+          <div className="mt-8 flex flex-col items-center justify-center gap-4">
             <div className="bg-slate-200 p-1 rounded-xl flex items-center shadow-inner">
               <button
                 type="button"
@@ -54,6 +54,18 @@ export default function PricingPage() {
                   2 Mo Free
                 </span>
               </button>
+            </div>
+            
+            <div className="flex items-center gap-4 text-xs font-medium text-slate-500 bg-white px-4 py-2 rounded-full border border-slate-200 shadow-sm">
+              <div className="flex items-center gap-1.5">
+                <Smartphone className="w-4 h-4 text-slate-400" /> UPI
+              </div>
+              <span className="text-slate-300">•</span>
+              <div className="flex items-center gap-1.5">
+                <CreditCard className="w-4 h-4 text-slate-400" /> Cards
+              </div>
+              <span className="text-slate-300">•</span>
+              <span>Netbanking</span>
             </div>
           </div>
         </div>
@@ -90,13 +102,13 @@ export default function PricingPage() {
                   <p className="text-sm text-slate-600 mb-6">{plan.description}</p>
 
                   <div className="flex items-baseline gap-1 mb-6">
-                    <span className="text-4xl sm:text-5xl font-extrabold text-slate-900">${price}</span>
+                    <span className="text-4xl sm:text-5xl font-extrabold text-slate-900">₹{price.toLocaleString()}</span>
                     <span className="text-slate-500 font-medium">/ month</span>
                   </div>
 
                   {interval === 'yearly' && (
                     <p className="text-xs text-emerald-600 font-medium -mt-4 mb-6">
-                      Billed annually (${plan.yearlyPrice}/yr)
+                      Billed annually (₹{plan.yearlyPrice.toLocaleString()}/yr)
                     </p>
                   )}
 
@@ -143,7 +155,7 @@ export default function PricingPage() {
             </div>
             <div>
               <h4 className="font-semibold text-slate-900 mb-1">Can I upgrade, downgrade, or cancel anytime?</h4>
-              <p className="text-sm text-slate-600">Absolutely. You can change your plan or cancel with a single click inside your clinic dashboard or through the Stripe Customer Portal.</p>
+              <p className="text-sm text-slate-600">Absolutely. You can change your plan or cancel with a single click inside your clinic dashboard.</p>
             </div>
             <div>
               <h4 className="font-semibold text-slate-900 mb-1">How does calendar synchronization work?</h4>

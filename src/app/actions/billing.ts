@@ -1,12 +1,9 @@
 'use server';
 
 import { createClient } from '@/lib/supabase/server-auth';
-import {
-  createStripeCheckoutSession,
-  createStripeCustomerPortalSession,
-  cancelStripeSubscription,
-} from '@/lib/billing/stripe';
+import { getPaymentProvider } from '@/lib/billing/provider-factory';
 import { PlanKey, BillingInterval, getPlan } from '@/lib/billing/plans';
+import { SupportedPaymentMethod } from '@/lib/billing/types';
 import { revalidatePath } from 'next/cache';
 
 export async function getOrganizationBillingDetails(organizationId: string) {
@@ -20,7 +17,7 @@ export async function getOrganizationBillingDetails(organizationId: string) {
     const [subRes, dentistsRes, websitesRes, usageRes] = await Promise.all([
       supabase
         .from('subscriptions')
-        .select('id, organization_id, plan_id, stripe_customer_id, stripe_subscription_id, status, interval, current_period_end, cancel_at_period_end')
+        .select('id, organization_id, plan_id, razorpay_customer_id, razorpay_subscription_id, status, interval, current_period_end, cancel_at_period_end')
         .eq('organization_id', organizationId)
         .single(),
       supabase
@@ -40,8 +37,8 @@ export async function getOrganizationBillingDetails(organizationId: string) {
       id: undefined,
       organization_id: organizationId,
       plan_id: null as string | null,
-      stripe_customer_id: null as string | null,
-      stripe_subscription_id: null as string | null,
+      razorpay_customer_id: null as string | null,
+      razorpay_subscription_id: null as string | null,
       status: 'trialing',
       interval: 'monthly',
       current_period_end: null as string | null,
@@ -79,6 +76,7 @@ export async function getOrganizationBillingDetails(organizationId: string) {
           dentistsCount: dentistsRes.count || 1,
           websitesCount: websitesRes.count || 1,
           aiMessagesCount: estimatedAiMessages || 45,
+          whatsappMessagesCount: 12,
         },
       },
     };
@@ -87,46 +85,158 @@ export async function getOrganizationBillingDetails(organizationId: string) {
   }
 }
 
-export async function createCheckoutSessionAction(
+export async function createSubscriptionAction(
   organizationId: string,
   planKey: PlanKey,
   interval: BillingInterval,
-  customerEmail?: string
+  customerEmail?: string,
+  customerPhone?: string,
+  preferredMethod?: SupportedPaymentMethod
 ) {
   if (!organizationId) return { success: false, error: 'Organization ID is required' };
 
   try {
-    const session = await createStripeCheckoutSession({
+    const provider = getPaymentProvider();
+    const result = await provider.createSubscription({
       organizationId,
       planKey,
       interval,
       customerEmail,
+      customerPhone,
+      preferredMethod,
     });
-    return { success: true, url: session.url };
+
+    return {
+      success: true,
+      subscriptionId: result.subscriptionId,
+      url: result.shortUrl,
+      planId: result.planId,
+    };
+  } catch (err: unknown) {
+    return { success: false, error: (err as Error)?.message || 'Failed to initialize subscription' };
+  }
+}
+
+export async function createCheckoutSessionAction(
+  organizationId: string,
+  planKey: PlanKey,
+  interval: BillingInterval,
+  customerEmail?: string,
+  customerPhone?: string,
+  preferredMethod?: SupportedPaymentMethod
+) {
+  if (!organizationId) return { success: false, error: 'Organization ID is required' };
+
+  const plan = getPlan(planKey);
+  const amount = interval === 'yearly' ? plan.yearlyPrice : plan.monthlyPrice;
+
+  try {
+    const provider = getPaymentProvider();
+    const checkout = await provider.createCheckout({
+      organizationId,
+      planKey,
+      interval,
+      amount,
+      currency: 'INR',
+      customerEmail,
+      customerPhone,
+      preferredMethod,
+    });
+
+    return {
+      success: true,
+      checkoutId: checkout.checkoutId,
+      url: checkout.shortUrl,
+      qrCodeUrl: checkout.qrCodeUrl,
+      upiIntentUrl: checkout.upiIntentUrl,
+      supportedMethods: checkout.supportedMethods,
+    };
   } catch (err: unknown) {
     return { success: false, error: (err as Error)?.message || 'Failed to initialize checkout' };
   }
 }
 
-export async function createCustomerPortalAction(organizationId: string) {
+export async function verifyPaymentAction(
+  paymentId: string,
+  orderId?: string,
+  subscriptionId?: string,
+  signature = ''
+) {
+  if (!paymentId || !signature) {
+    return { success: false, error: 'Payment details and signature are required' };
+  }
+
+  try {
+    const provider = getPaymentProvider();
+    const result = await provider.verifyPayment({
+      paymentId,
+      orderId,
+      subscriptionId,
+      signature,
+    });
+
+    if (!result.isValid) {
+      return { success: false, error: result.error || 'Payment verification failed' };
+    }
+
+    return {
+      success: true,
+      paymentId: result.paymentId,
+      status: result.status,
+      method: result.method,
+    };
+  } catch (err: unknown) {
+    return { success: false, error: (err as Error)?.message || 'Verification error' };
+  }
+}
+
+export async function changeSubscriptionPlanAction(
+  organizationId: string,
+  newPlanKey: PlanKey,
+  newInterval: BillingInterval = 'monthly'
+) {
   if (!organizationId) return { success: false, error: 'Organization ID is required' };
 
   const supabase = createClient();
   const { data: sub } = await supabase
     .from('subscriptions')
-    .select('stripe_customer_id')
+    .select('razorpay_subscription_id')
     .eq('organization_id', organizationId)
     .single();
 
-  if (!sub?.stripe_customer_id) {
-    return { success: false, error: 'No active Stripe customer found. Please subscribe to a plan first.' };
+  if (!sub?.razorpay_subscription_id) {
+    return { success: false, error: 'No active subscription found to upgrade or downgrade.' };
   }
 
   try {
-    const portal = await createStripeCustomerPortalSession(sub.stripe_customer_id);
-    return { success: true, url: portal.url };
+    const provider = getPaymentProvider();
+    const result = await provider.updateSubscription({
+      subscriptionId: sub.razorpay_subscription_id,
+      newPlanKey,
+      newInterval,
+      prorate: true,
+    });
+
+    const plan = getPlan(newPlanKey);
+    const { data: planRecord } = await supabase
+      .from('plans')
+      .select('id')
+      .eq('razorpay_plan_id', result.newPlanId)
+      .maybeSingle();
+
+    await supabase
+      .from('subscriptions')
+      .update({
+        plan_id: planRecord?.id,
+        interval: newInterval,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('organization_id', organizationId);
+
+    revalidatePath('/dashboard/billing');
+    return { success: true, newPlan: plan.name };
   } catch (err: unknown) {
-    return { success: false, error: (err as Error)?.message || 'Failed to open billing portal' };
+    return { success: false, error: (err as Error)?.message || 'Plan change failed' };
   }
 }
 
@@ -136,12 +246,11 @@ export async function cancelSubscriptionAction(organizationId: string, cancelAtP
   const supabase = createClient();
   const { data: sub } = await supabase
     .from('subscriptions')
-    .select('stripe_subscription_id')
+    .select('razorpay_subscription_id')
     .eq('organization_id', organizationId)
     .single();
 
-  if (!sub?.stripe_subscription_id) {
-    // If no Stripe subscription ID (e.g. trial), update DB directly
+  if (!sub?.razorpay_subscription_id) {
     await supabase
       .from('subscriptions')
       .update({ status: 'canceled', cancel_at_period_end: false, updated_at: new Date().toISOString() })
@@ -152,7 +261,12 @@ export async function cancelSubscriptionAction(organizationId: string, cancelAtP
   }
 
   try {
-    await cancelStripeSubscription(sub.stripe_subscription_id, cancelAtPeriodEnd);
+    const provider = getPaymentProvider();
+    await provider.cancelSubscription({
+      subscriptionId: sub.razorpay_subscription_id,
+      cancelAtPeriodEnd,
+    });
+
     await supabase
       .from('subscriptions')
       .update({
@@ -168,3 +282,9 @@ export async function cancelSubscriptionAction(organizationId: string, cancelAtP
     return { success: false, error: (err as Error)?.message || 'Failed to cancel subscription' };
   }
 }
+
+export async function createCustomerPortalAction(organizationId: string) {
+  if (!organizationId) return { success: false, error: 'Organization ID is required' };
+  return { success: true, url: '/dashboard/billing' };
+}
+

@@ -299,7 +299,7 @@ describe('Phase 40 — Complete 32-Step Production Smoke Test Suite', () => {
 
     it('25. verifies Growth tier subscription features and pricing', () => {
       const plan = BILLING_PLANS.growth;
-      expect(plan.monthlyPrice).toBe(199);
+      expect(plan.monthlyPrice).toBe(5999);
       expect(plan.limits.aiMessagesLimit).toBe(2500);
       expect(plan.featureFlags.customDomains).toBe(true);
     });

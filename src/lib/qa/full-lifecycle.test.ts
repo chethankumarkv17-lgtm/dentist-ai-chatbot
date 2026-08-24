@@ -191,9 +191,9 @@ describe('Phase 32 — Complete Platform End-to-End QA & Regression Suite', () =
       expect(starter.limits.dentistsLimit).toBe(2);
       expect(growth.limits.dentistsLimit).toBe(6);
       expect(pro.limits.dentistsLimit).toBe(1000);
-      expect(starter.monthlyPrice).toBe(99);
-      expect(growth.monthlyPrice).toBe(199);
-      expect(pro.monthlyPrice).toBe(399);
+      expect(starter.monthlyPrice).toBe(2999);
+      expect(growth.monthlyPrice).toBe(5999);
+      expect(pro.monthlyPrice).toBe(11999);
     });
   });
 

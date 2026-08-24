@@ -20,9 +20,9 @@ describe('Phase 38 — Production Configuration & Security Isolation Suite', () 
 
       // Ensure server secrets are NOT properties of clientEnv
       expect((clientEnv as Record<string, unknown>).SUPABASE_SERVICE_ROLE_KEY).toBeUndefined();
-      expect((clientEnv as Record<string, unknown>).OPENAI_API_KEY).toBeUndefined();
-      expect((clientEnv as Record<string, unknown>).STRIPE_SECRET_KEY).toBeUndefined();
-      expect((clientEnv as Record<string, unknown>).STRIPE_WEBHOOK_SECRET).toBeUndefined();
+      expect((clientEnv as Record<string, unknown>).ANTHROPIC_API_KEY).toBeUndefined();
+      expect((clientEnv as Record<string, unknown>).RAZORPAY_KEY_SECRET).toBeUndefined();
+      expect((clientEnv as Record<string, unknown>).RAZORPAY_WEBHOOK_SECRET).toBeUndefined();
       expect((clientEnv as Record<string, unknown>).RESEND_API_KEY).toBeUndefined();
     });
   });
@@ -33,8 +33,8 @@ describe('Phase 38 — Production Configuration & Security Isolation Suite', () 
 
       expect(serverEnv.NEXT_PUBLIC_APP_URL).toBeDefined();
       expect(serverEnv.SUPABASE_SERVICE_ROLE_KEY).toBeDefined();
-      expect(serverEnv.OPENAI_API_KEY).toBeDefined();
-      expect(serverEnv.STRIPE_SECRET_KEY).toBeDefined();
+      expect(serverEnv.ANTHROPIC_API_KEY).toBeDefined();
+      expect(serverEnv.RAZORPAY_KEY_SECRET).toBeDefined();
       expect(serverEnv.RESEND_API_KEY).toBeDefined();
     });
 
@@ -53,9 +53,9 @@ describe('Phase 38 — Production Configuration & Security Isolation Suite', () 
 
       expect(sanitized.appUrl).toBeDefined();
       expect(sanitized.supabaseServiceRoleConfigured).toContain('[REDACTED_SECRET]');
-      expect(sanitized.openAiConfigured).toContain('[REDACTED_SECRET]');
-      expect(sanitized.stripeConfigured).toContain('[REDACTED_SECRET]');
-      expect(sanitized.stripeWebhookConfigured).toContain('[REDACTED_SECRET]');
+      expect(sanitized.anthropicConfigured).toContain('[REDACTED_SECRET]');
+      expect(sanitized.razorpayConfigured).toContain('[REDACTED_SECRET]');
+      expect(sanitized.razorpayWebhookConfigured).toContain('[REDACTED_SECRET]');
       expect(sanitized.resendConfigured).toContain('[REDACTED_SECRET]');
 
       // Must never contain actual secret values

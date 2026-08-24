@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { BILLING_PLANS, getPlan, getPlanByPriceId } from '@/lib/billing/plans';
+import { BILLING_PLANS, getPlan, getPlanByRazorpayPlanId } from '@/lib/billing/plans';
 import { evaluateSubscriptionGracePeriod } from '@/lib/backup/graceful-degradation';
 import { validateToolTenantSecurity } from '@/lib/ai/guardrails';
 import { formatAIResponse } from '@/lib/ai/receptionist';
@@ -30,13 +30,13 @@ describe('Phase 42 — Commercial Readiness & Full Dentist Journey Suite', () =>
       const growth = getPlan('growth');
       const pro = getPlan('pro');
 
-      expect(starter?.monthlyPrice).toBe(99);
-      expect(growth?.monthlyPrice).toBe(199);
-      expect(pro?.monthlyPrice).toBe(399);
+      expect(starter?.monthlyPrice).toBe(2999);
+      expect(growth?.monthlyPrice).toBe(5999);
+      expect(pro?.monthlyPrice).toBe(11999);
 
-      expect(starter?.monthlyPriceId).toBeDefined();
-      expect(growth?.monthlyPriceId).toBeDefined();
-      expect(pro?.monthlyPriceId).toBeDefined();
+      expect(starter?.razorpayMonthlyPlanId).toBeDefined();
+      expect(growth?.razorpayMonthlyPlanId).toBeDefined();
+      expect(pro?.razorpayMonthlyPlanId).toBeDefined();
     });
 
     it('verifies feature limits are configurable per subscription tier', () => {
@@ -75,10 +75,10 @@ describe('Phase 42 — Commercial Readiness & Full Dentist Journey Suite', () =>
   describe('3. Clinic, Services, Dentists & Availability Configuration', () => {
     it('configures practice details, catalog services, and practitioner availability', () => {
       const clinicSetup = {
-        clinic: { name: 'Metro Dental Studio', phone: '555-0188', timezone: 'America/Chicago' },
+        clinic: { name: 'Metro Dental Studio', phone: '555-0188', timezone: 'Asia/Kolkata' },
         services: [
-          { id: 's1', name: 'Comprehensive Exam', price: 150, duration: 45 },
-          { id: 's2', name: 'Teeth Whitening', price: 300, duration: 60 },
+          { id: 's1', name: 'Comprehensive Exam', price: 1500, duration: 45 },
+          { id: 's2', name: 'Teeth Whitening', price: 3000, duration: 60 },
         ],
         dentists: [
           { id: 'd1', name: 'Dr. Alex Mercer', specialty: 'Cosmetic Dentistry' },
@@ -165,8 +165,8 @@ describe('Phase 42 — Commercial Readiness & Full Dentist Journey Suite', () =>
   });
 
   describe('6. Billing, Subscription Management & Cancellation Grace Periods', () => {
-    it('resolves active subscription plans from Stripe price IDs', () => {
-      const result = getPlanByPriceId(BILLING_PLANS.growth.monthlyPriceId);
+    it('resolves active subscription plans from Razorpay plan IDs', () => {
+      const result = getPlanByRazorpayPlanId(BILLING_PLANS.growth.razorpayMonthlyPlanId);
       expect(result?.plan.key).toBe('growth');
       expect(result?.interval).toBe('monthly');
     });
