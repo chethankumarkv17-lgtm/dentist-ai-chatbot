@@ -8,26 +8,26 @@ This document details the complete production architecture, security boundaries,
 
 ```
                       [ External Internet / Dental Patients ]
-                                      │
-                    ┌─────────────────┴─────────────────┐
-                    ▼                                   ▼
-        [ SaaS Web Application ]             [ Embedded Chat Widget ]
-         (app.radiantnobel.com)               (dentist-website.com)
-                    │                                   │
-                    │               ┌───────────────────┘
-                    ▼               ▼
-        ┌───────────────────────────────────────────────┐
-        │       Next.js 16 Edge / Serverless Layer      │
-        │   (Proxy Middleware, SSR, Server Actions)     │
-        └───────────────────────┬───────────────────────┘
-                                │
-        ┌───────────────────────┼───────────────────────┐
-        ▼                       ▼                       ▼
-┌───────────────┐       ┌───────────────┐       ┌───────────────┐
-│ AI Pipeline   │       │  PostgreSQL   │       │ External APIs │
-│ & Guardrails  │       │ (Supabase RLS)│       │ (Stripe/Resend│
-│   (OpenAI)    │       │               │       │  /Calendars)  │
-└───────────────┘       └───────────────┘       └───────────────┘
+                                       │
+                ┌──────────────────────┼──────────────────────┐
+                ▼                      ▼                      ▼
+    [ SaaS Web Application ]  [ Embedded Widget ]   [ WhatsApp Channel ]
+      (radiantnobel.com)     (dentist-site.com)    (Meta Cloud API)
+                │                      │                      │
+                └──────────────────────┼──────────────────────┘
+                                       ▼
+    ┌─────────────────────────────────────────────────────────────────┐
+    │               Next.js 16 Edge / Serverless Layer                │
+    │             (Proxy Middleware, SSR, Server Actions)             │
+    └──────────────────────────────────┬──────────────────────────────┘
+                                       │
+        ┌──────────────────────────────┼──────────────────────────────┐
+        ▼                              ▼                              ▼
+┌───────────────┐              ┌───────────────┐              ┌───────────────┐
+│ AI Pipeline   │              │  PostgreSQL   │              │ External APIs │
+│ & Guardrails  │              │ (Supabase RLS)│              │  (Razorpay /  │
+│  (Anthropic)  │              │               │              │ Resend/Meta)  │
+└───────────────┘              └───────────────┘              └───────────────┘
 ```
 
 ---
@@ -35,62 +35,46 @@ This document details the complete production architecture, security boundaries,
 ## 2. Core Architectural Pillars
 
 ### 2.1 Multi-Tenant Isolation & Row Level Security (RLS)
-- **Logical Tenant Partitioning**: Every tenant table includes a non-nullable `clinic_id` foreign key.
-- **PostgreSQL Row Level Security (RLS)**: Enforces that authenticated database queries made via Supabase clients only read and mutate rows where `clinic_id` matches the user's active organization (`auth.jwt() -> clinic_id`).
-- **Cryptographic Tool Boundaries**: All AI tools validate `toolArgs.clinicId === authorizedClinicId` server-side before initiating database lookups.
+- **Logical Tenant Partitioning**: Every tenant table includes a non-nullable `organization_id` / `clinic_id` foreign key.
+- **PostgreSQL Row Level Security (RLS)**: Enforces that authenticated database queries only read and mutate rows matching the authorized tenant.
+- **WhatsApp Phone-ID Binding**: The clinic tenant is resolved authoritatively from the verified `phone_number_id` inside the Meta webhook payload.
 
-### 2.2 AI Receptionist Orchestration Engine
+### 2.2 Shared AI Receptionist Orchestration Engine
 ```
-[ Incoming Patient Message ]
-            │
-            ▼
+[ Incoming Patient Message (Widget / WhatsApp) ]
+                    │
+                    ▼
 [ 1. Safety Guardrails Filter ] ──(Violation)──► [ Safe Neutral Refusal ]
-            │
-            ▼ (Safe)
-[ 2. Deterministic Intent Analyzer ]
-            │
-            ▼ (Tool Needed)
+                    │
+                    ▼ (Safe)
+[ 2. Deterministic Intent Analyzer & Language Detector ]
+                    │
+                    ▼ (Tool Needed)
 [ 3. Server-Side Controlled Tool Execution ]
-            │  ├─ getClinicInformation
-            │  ├─ getServices & Prices
-            │  ├─ getBusinessHours
-            │  ├─ getAvailableSlots
-            │  ├─ createAppointment (Backend DB Mutation)
-            │  ├─ cancelAppointment
-            │  ├─ rescheduleAppointment
-            │  └─ requestHumanHelp
-            ▼
-[ 4. Response Synthesizer ]
-            │
-            ▼
-[ 5. Authoritative Backend Confirmation Invariance Check ]
-            │
-            ▼
-[ Verified AI Response Sent to Patient ]
+                    │  ├─ getClinicInformation
+                    │  ├─ getServices & Prices
+                    │  ├─ getBusinessHours
+                    │  ├─ getAvailableSlots
+                    │  ├─ createAppointment (Backend DB Mutation)
+                    │  ├─ cancelAppointment
+                    │  ├─ rescheduleAppointment
+                    │  └─ requestHumanHandoff
+                    ▼
+[ 4. Natural Response Formatter & Channel Transport (Widget HTML or WhatsApp Text) ]
 ```
 
-> [!IMPORTANT]
-> **Backend Confirmation Invariance**: The AI Receptionist is architecturally prohibited from asserting or implying that an appointment is booked unless the database returns `{ success: true, confirmationId: '...' }`.
+---
 
-### 2.3 Concurrency & Double-Booking Prevention Engine
-1. **Slot Mutex Locking**: When an appointment booking is requested, PostgreSQL initiates an atomic transactional check.
-2. **Unique Slot Constraint**: `UNIQUE (dentist_id, start_time)` prevents concurrent bookings on the same dentist.
-3. **Buffer Management**: Cleans and pads appointments with service-defined cleanup buffer times (e.g. 15 minutes post-cleaning).
-4. **Collision Handling**: If two patients submit identical slots simultaneously, the first transaction commits and the second receives a deterministic conflict error with immediate alternative slot options.
+## 3. Pluggable Payment Architecture (India / UPI & Global)
 
-### 2.4 Lightweight Widget Architecture
-- **Non-Blocking Embed (`widget.js`)**: Injects a lazy-loaded `<iframe>` pointing to `/widget?id=[clinicId]`.
-- **Cross-Origin Security**: The widget iframe runs in an isolated origin (`radiantnobel.com`), preventing host website scripts from inspecting patient chat transcripts or cookies.
-- **Composited CSS Transitions**: Hardware-accelerated drawer animations (0 reflows) ensuring zero performance impact on the host dentist's website.
+- **Provider Abstraction**: Universal `PaymentProvider` interface standardizes payment creation, signature verification, recurring e-mandates, and webhook processing.
+- **Razorpay Provider (Default)**: Supports UPI (Intent, QR, Google Pay, PhonePe, Paytm), Netbanking, and Cards.
+- **Stripe Provider**: Coexists cleanly for international multi-currency card processing.
 
-### 2.5 Website Builder & Custom Domain Routing
-- **Dynamic Routing**: Multi-tenant clinic websites are rendered via `/site/[clinicSlug]` or custom domains mapped via Next.js Proxy middleware (`src/proxy.ts`).
-- **Domain Verification**: Custom domains are verified using DNS TXT records (`_radiantnobel-challenge`) and mapped using CNAMEs.
+---
 
-### 2.6 Resilient Webhook Processing
-- **Stripe Idempotency**: Stripe events (`checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`) are verified with HMAC signatures (`STRIPE_WEBHOOK_SECRET`) and recorded in `processed_webhook_events` to prevent duplicate processing.
+## 4. Multi-Channel Conversation Management
 
-### 2.7 High-Availability Graceful Degradation
-- **OpenAI API Outage**: Transitions seamlessly into **High-Availability Menu Mode** (`getDegradedAiResponse()`), serving interactive appointment cards and business hours without conversational stalls.
-- **Database Latency**: 8-second timeout circuit breaker prevents hanging client requests.
-- **Stripe Outage**: 3-day billing grace period preserves clinic operational access during payment gateway incidents.
+- Supported channels: `website`, `widget`, `whatsapp`.
+- Human Handoff States: `ai_active` ⇄ `human_requested` ⇄ `human_active` ⇄ `resolved`.
+- Automated 24-hour and 2-hour appointment reminders dispatched via Meta-approved templates.

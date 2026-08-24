@@ -122,7 +122,7 @@ describe('WhatsApp Integration Tests', () => {
     });
 
     it('should detect Hinglish', () => {
-      expect(detectLanguage('kya main kal appointment book kar sakta hoon')).toBe('hi');
+      expect(detectLanguage('kya main kal appointment book kar sakta hoon')).toBe('hinglish');
     });
   });
 

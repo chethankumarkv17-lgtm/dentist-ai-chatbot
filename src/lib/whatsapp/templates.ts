@@ -1,8 +1,8 @@
 import { WhatsAppComponent } from './client';
 import { createClient } from '@/lib/supabase/server-auth';
 
-interface TemplateParams {
-  patientName: string;
+export interface TemplateParams {
+  patientName?: string;
   clinicName: string;
   datetime: string;
   service?: string;
@@ -13,8 +13,8 @@ export function buildAppointmentConfirmationTemplate(params: TemplateParams): Wh
     {
       type: 'body',
       parameters: [
-        { type: 'text', text: params.patientName },
-        { type: 'text', text: params.service || 'Appointment' },
+        { type: 'text', text: params.patientName || 'Valued Patient' },
+        { type: 'text', text: params.service || 'Dental Appointment' },
         { type: 'text', text: params.clinicName },
         { type: 'text', text: params.datetime },
       ],
@@ -27,7 +27,7 @@ export function buildAppointmentReminderTemplate(params: TemplateParams): WhatsA
     {
       type: 'body',
       parameters: [
-        { type: 'text', text: params.patientName },
+        { type: 'text', text: params.patientName || 'Valued Patient' },
         { type: 'text', text: params.datetime },
         { type: 'text', text: params.clinicName },
       ],
@@ -40,7 +40,7 @@ export function buildAppointmentCancelledTemplate(params: TemplateParams): Whats
     {
       type: 'body',
       parameters: [
-        { type: 'text', text: params.patientName },
+        { type: 'text', text: params.patientName || 'Valued Patient' },
         { type: 'text', text: params.datetime },
         { type: 'text', text: params.clinicName },
       ],
@@ -56,14 +56,14 @@ export async function isTemplateApproved(clinicId: string, templateName: string)
     .eq('clinic_id', clinicId)
     .eq('template_name', templateName)
     .single();
-    
+
   return data?.status === 'approved';
 }
 
-export function checkSessionWindow(lastInboundTime?: Date | null): boolean {
+export function checkSessionWindow(lastInboundTime?: Date | string | null): boolean {
   if (!lastInboundTime) return false;
-  const now = new Date();
-  const diffInMs = now.getTime() - lastInboundTime.getTime();
-  // 24 hours
+  const timeMs = typeof lastInboundTime === 'string' ? new Date(lastInboundTime).getTime() : lastInboundTime.getTime();
+  const now = Date.now();
+  const diffInMs = now - timeMs;
   return diffInMs < 24 * 60 * 60 * 1000;
 }

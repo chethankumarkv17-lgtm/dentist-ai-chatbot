@@ -4,10 +4,12 @@
 [![React 19](https://img.shields.io/badge/React-19-blue?style=flat&logo=react)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=flat&logo=typescript)](https://www.typescriptlang.org/)
 [![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-green?style=flat&logo=supabase)](https://supabase.com/)
-[![Stripe](https://img.shields.io/badge/Stripe-Billing-purple?style=flat&logo=stripe)](https://stripe.com/)
-[![Tests](https://img.shields.io/badge/Tests-266%20Passed-brightgreen?style=flat)](TESTING.md)
+[![Razorpay](https://img.shields.io/badge/Razorpay-UPI%20%26%20Cards-blue?style=flat)](https://razorpay.com/)
+[![WhatsApp](https://img.shields.io/badge/WhatsApp-Cloud%20API-green?style=flat&logo=whatsapp)](https://business.whatsapp.com/)
+[![Anthropic](https://img.shields.io/badge/Anthropic-Claude%203.5-orange?style=flat)](https://anthropic.com/)
+[![Tests](https://img.shields.io/badge/Tests-364%20Passed-brightgreen?style=flat)](TESTING.md)
 
-**Radiant Nobel** is a production-grade, multi-tenant B2B Dental SaaS platform featuring an **autonomous 24/7 AI Receptionist**, real-time calendar synchronization, zero-double-booking appointment engine, instant website builder with custom domains, and clinic management suite.
+**Radiant Nobel** is a production-grade, multi-tenant B2B Dental SaaS platform featuring an **autonomous 24/7 AI Receptionist across Website Widget and WhatsApp Channels**, real-time calendar synchronization, zero-double-booking appointment engine, instant website builder with custom domains, Razorpay Indian Payments (UPI, GPay, PhonePe, Paytm, QR, Netbanking), and clinic management suite.
 
 ---
 
@@ -16,11 +18,13 @@
 | Guide | Description |
 | :--- | :--- |
 | **[ARCHITECTURE.md](ARCHITECTURE.md)** | Technical design, multi-tenant isolation, AI pipeline, and state machines. |
+| **[WHATSAPP.md](WHATSAPP.md)** | WhatsApp Business Cloud API setup, multi-tenant isolation, human handoff, and reminders. |
+| **[BILLING.md](BILLING.md)** | Pluggable payment provider abstraction, UPI flows, e-mandates, and Razorpay/Stripe billing. |
 | **[DATABASE.md](DATABASE.md)** | PostgreSQL relational schemas, RLS policies, indexing, and migrations. |
 | **[API.md](API.md)** | REST endpoints, Server Actions, schemas, error codes, and rate limits. |
 | **[SECURITY.md](SECURITY.md)** | Threat model, prompt injection defenses, HIPAA compliance, and upload policies. |
 | **[PRIVACY.md](PRIVACY.md)** | Data protection, retention policies, GDPR/HIPAA erasures, and PII masking. |
-| **[DEPLOYMENT.md](DEPLOYMENT.md)** | Vercel, Supabase, Stripe, OpenAI, Resend, and DNS configuration. |
+| **[DEPLOYMENT.md](DEPLOYMENT.md)** | Vercel, Supabase, Razorpay, Anthropic, WhatsApp Cloud API, Resend configuration. |
 | **[TESTING.md](TESTING.md)** | QA strategy, unit/integration tests, Playwright E2E, and AI evaluation. |
 | **[DISASTER_RECOVERY.md](DISASTER_RECOVERY.md)** | RPO/RTO objectives, restoration runbooks, and graceful degradation. |
 | **[AI_LIMITATIONS.md](AI_LIMITATIONS.md)** | Healthcare boundaries, non-diagnostic rules, and confirmation invariance. |
@@ -30,15 +34,15 @@
 
 ## 🚀 Key Features
 
-- **Autonomous 24/7 AI Receptionist**: Handles patient FAQs, clinic opening hours, verified service pricing, and dentist availability.
-- **Backend Confirmation Invariance**: The AI never claims an appointment is confirmed without Authoritative PostgreSQL database verification (`confirmationId`).
-- **Strict Multi-Tenant Row Level Security (RLS)**: Cryptographic and logical isolation across all clinic data tables.
-- **Concurrency & Double-Booking Prevention**: Database transactions and slot locks ensure zero overlapping bookings.
-- **Zero-Dependency Lightweight Widget**: `< 2.5 KB` asynchronous non-blocking iframe embed for dental websites.
-- **Platform Website Builder**: Drag-and-drop clinic microsites with instant custom domain publishing (`clinic.dentalai.site` / custom CNAMEs).
+- **Autonomous 24/7 AI Receptionist (Website & WhatsApp)**: Handles patient FAQs, clinic opening hours, verified service pricing, and dentist availability over web chat and official WhatsApp Business accounts.
+- **Unified Single AI & Booking Backend**: Both widget and WhatsApp channels utilize the exact same booking tools, availability logic, and patient deduplication.
+- **Human Staff Handoff**: Patients can request human assistance (`"Talk to staff"`), notifying clinic administrators and pausing AI automation.
+- **Automated WhatsApp Reminders**: 24-hour and 2-hour pre-appointment template reminders with duplicate avoidance.
+- **Indian Payment & UPI Support (Razorpay)**: UPI Intent, QR Code, Google Pay, PhonePe, Paytm, Netbanking, and Cards with recurring e-mandates.
+- **Multi-Tenant Row Level Security (RLS)**: Strict database partitioning ensures Clinic A never accesses Clinic B records.
+- **Backend Confirmation Invariance**: The AI never claims an appointment is booked without Authoritative PostgreSQL database confirmation (`confirmationId`).
+- **Platform Website Builder**: Drag-and-drop clinic microsites with instant custom domain publishing.
 - **Two-Way Calendar Sync**: Seamless integration with Google Calendar and Microsoft Outlook 365.
-- **Stripe Billing & Tier Enforcements**: Automated recurring subscriptions (Starter, Professional, Enterprise) with usage metering.
-- **Platform Admin Control Center**: Super-admin health telemetry, clinic provisioning, support ticket desks, and audit logs.
 
 ---
 
@@ -47,7 +51,6 @@
 ### 1. Prerequisites
 - **Node.js** >= 20.x
 - **npm** >= 10.x
-- **Supabase CLI** (optional for local PostgreSQL)
 
 ### 2. Installation
 ```bash
@@ -62,47 +65,8 @@ Copy `.env.example` to `.env.local` and populate the required API keys:
 cp .env.example .env.local
 ```
 
-Key environment variables:
-```env
-NEXT_PUBLIC_APP_URL="http://localhost:3000"
-NEXT_PUBLIC_SUPABASE_URL="https://your-project.supabase.co"
-NEXT_PUBLIC_SUPABASE_ANON_KEY="your-anon-key"
-SUPABASE_SERVICE_ROLE_KEY="your-service-role-key"
-
-OPENAI_API_KEY="sk-..."
-STRIPE_SECRET_KEY="sk_test_..."
-STRIPE_WEBHOOK_SECRET="whsec_..."
-RESEND_API_KEY="re_..."
-```
-
-### 4. Running the Development Server
+### 4. Run Development Server
 ```bash
 npm run dev
 ```
-Open [http://localhost:3000](http://localhost:3000) to view the application.
-
----
-
-## 🧪 Testing & Verification Pipeline
-
-```bash
-# Run ESLint validation
-npm run lint
-
-# Run TypeScript typechecking
-npm run typecheck
-
-# Run Vitest test suite (31 files, 266 tests)
-npm run test
-
-# Run Playwright End-to-End browser tests
-npm run test:e2e
-
-# Build production bundles
-npm run build
-```
-
----
-
-## 📄 License
-Proprietary — All rights reserved.
+Open **[http://localhost:3000](http://localhost:3000)** in your browser.

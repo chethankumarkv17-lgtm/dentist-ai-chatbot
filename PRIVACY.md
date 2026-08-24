@@ -1,21 +1,22 @@
 # Radiant Nobel — Data Privacy & Retention Policy
 
-Radiant Nobel is built upon **privacy-by-design** principles to protect patient confidentiality, clinic operational records, and staff credentials.
+Radiant Nobel is built upon **privacy-by-design** principles to protect patient confidentiality, clinic operational records, and staff credentials across Website and WhatsApp channels.
 
 ---
 
 ## 1. Data Minimization & Collection Boundaries
 
 - **Essential Booking Fields Only**: We only collect the bare minimum fields required for appointment coordination: Patient Name, Email, Phone Number, Selected Service, and Preferred Time Slot.
-- **Zero Sensitive Medical Records**: The platform explicitly **does not store** electronic health records (EHR), dental radiographs, detailed diagnostic charts, insurance social security numbers, or payment card numbers.
+- **WhatsApp Privacy Controls**: When a patient messages on WhatsApp, only their phone number and display profile name are stored to associate the booking. Medical commentary is never stored in open logs.
+- **Zero Sensitive Financial or Medical Records**: The platform explicitly **does not store** electronic health records (EHR), dental radiographs, detailed diagnostic charts, insurance social security numbers, or payment card / UPI credentials.
 - **No Unnecessary PHI Logging**: System error logs and analytics pipelines automatically mask and sanitize patient identifiers before persistence.
 
 ---
 
 ## 2. AI Receptionist Privacy Safeguards
 
-- **No Model Training on Patient Chats**: OpenAI API zero-data-retention agreements ensure patient conversations are never used to train foundational AI models.
-- **Strict Receptionist Scope**: The AI is bounded to appointment scheduling and clinic FAQs. If a patient shares sensitive clinical symptoms, the AI redirects to an in-person dental exam and does not store the clinical commentary in open logs.
+- **Anthropic Claude Zero Data Retention**: Enterprise API privacy guarantees ensure patient conversations are never used to train foundational AI models.
+- **Strict Receptionist Scope**: The AI is bounded to appointment scheduling and clinic FAQs. If a patient shares clinical symptoms, the AI redirects to an in-person dental exam and does not store clinical commentary in telemetry.
 - **Session Lifespans**: Transient conversation contexts are purged upon session completion.
 
 ---
@@ -23,7 +24,7 @@ Radiant Nobel is built upon **privacy-by-design** principles to protect patient 
 ## 3. Data Retention & Automatic Pruning
 
 Clinics can configure their data retention lifecycle directly in the Dashboard:
-- **Chat Transcripts**: Retained for 30, 90, or 180 days (default: 90 days), after which messages are permanently deleted via automated cron jobs.
+- **Chat Transcripts (Website & WhatsApp)**: Retained for 30, 90, or 180 days (default: 90 days), after which messages are permanently deleted.
 - **Completed Appointments**: Retained according to state/jurisdiction dental practice record mandates.
 - **Audit Logs**: Retained for 365 days for forensic tracking.
 
@@ -41,8 +42,8 @@ Upon patient request, clinic admins can invoke `deletePatientData()` to:
 3. Permanently purge associated chat messages and upload attachments.
 
 ### C. Organization & Account Deletion
-- **User Account Deletion**: Completely removes the staff profile from Supabase Auth and `clinic_members`.
-- **Clinic Organization Deletion**: Triggers an authoritative cascade deletion across `services`, `dentists`, `appointments`, `conversations`, `messages`, `knowledge_faqs`, and storage buckets.
+- **User Account Deletion**: Completely removes the staff profile from Supabase Auth and `organization_members`.
+- **Clinic Organization Deletion**: Triggers an authoritative cascade deletion across `services`, `dentists`, `appointments`, `conversations`, `messages`, `knowledge_faqs`, `whatsapp_connections`, and storage buckets.
 
 ---
 
