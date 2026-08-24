@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { Badge } from '@/components/ui/Badge';
 import { Card } from '@/components/ui/Card';
+import { RevealOnScroll } from '@/components/ui/RevealOnScroll';
 
 export default function FeaturesPage() {
   const featureSections = [
@@ -69,63 +70,69 @@ export default function FeaturesPage() {
   ];
 
   return (
-    <div className="py-16 sm:py-24 space-y-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 animate-fade-in">
+    <div className="py-16 sm:py-24 space-y-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 overflow-hidden">
       {/* Header */}
-      <div className="text-center max-w-3xl mx-auto space-y-4">
-        <Badge variant="pro" size="md">Complete Feature Suite</Badge>
-        <h1 className="text-4xl sm:text-5xl font-extrabold text-slate-900 tracking-tight">
-          Everything You Need to Run an Autonomous Dental Front Desk
-        </h1>
-        <p className="text-slate-600 text-base sm:text-lg">
-          Replace manual scheduling bottlenecks with intelligent 24/7 patient booking across Web, WhatsApp, and Voice.
-        </p>
-      </div>
+      <RevealOnScroll variant="fade-up" durationMs={500}>
+        <div className="text-center max-w-3xl mx-auto space-y-4">
+          <Badge variant="pro" size="md">Complete Feature Suite</Badge>
+          <h1 className="text-4xl sm:text-5xl font-extrabold text-slate-900 tracking-tight">
+            Everything You Need to Run an Autonomous Dental Front Desk
+          </h1>
+          <p className="text-slate-600 text-base sm:text-lg">
+            Replace manual scheduling bottlenecks with intelligent 24/7 patient booking across Web, WhatsApp, and Voice.
+          </p>
+        </div>
+      </RevealOnScroll>
 
       {/* Feature Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {featureSections.map((sec) => {
+        {featureSections.map((sec, idx) => {
           const Icon = sec.icon;
           return (
-            <Card key={sec.title} className="p-8 space-y-6 flex flex-col justify-between" hoverable>
-              <div className="space-y-4">
-                <div className={`w-12 h-12 rounded-2xl border flex items-center justify-center ${sec.color}`}>
-                  <Icon className="w-6 h-6" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-slate-900">{sec.title}</h3>
-                  <p className="text-xs text-slate-500 mt-1">{sec.subtitle}</p>
-                </div>
+            <RevealOnScroll key={sec.title} variant="fade-up" delayMs={idx * 150} durationMs={600}>
+              <Card className="p-8 space-y-6 flex flex-col justify-between h-full" hoverable>
+                <div className="space-y-4">
+                  <div className={`w-12 h-12 rounded-2xl border flex items-center justify-center ${sec.color}`}>
+                    <Icon className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-slate-900">{sec.title}</h3>
+                    <p className="text-xs text-slate-500 mt-1">{sec.subtitle}</p>
+                  </div>
 
-                <div className="space-y-3 pt-2">
-                  {sec.points.map((pt) => (
-                    <div key={pt} className="flex items-start gap-2.5 text-xs text-slate-700 font-medium">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                      <span>{pt}</span>
-                    </div>
-                  ))}
+                  <div className="space-y-3 pt-2">
+                    {sec.points.map((pt) => (
+                      <div key={pt} className="flex items-start gap-2.5 text-xs text-slate-700 font-medium">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                        <span>{pt}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            </Card>
+              </Card>
+            </RevealOnScroll>
           );
         })}
       </div>
 
       {/* CTA Box */}
-      <div className="bg-slate-900 text-white rounded-3xl p-8 sm:p-12 text-center space-y-6">
-        <h2 className="text-2xl sm:text-3xl font-bold">Experience the Future of Dental Scheduling</h2>
-        <p className="text-slate-400 text-sm max-w-xl mx-auto">
-          Start your 14-day free trial today. Connect your calendar and test your AI receptionist in under 5 minutes.
-        </p>
-        <div className="pt-2">
-          <Link
-            href="/signup"
-            className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold shadow-lg shadow-blue-500/25 transition-all"
-          >
-            <span>Start Free Trial</span>
-            <ArrowRight className="w-4 h-4" />
-          </Link>
+      <RevealOnScroll variant="scale-up" durationMs={550}>
+        <div className="bg-slate-900 text-white rounded-3xl p-8 sm:p-12 text-center space-y-6">
+          <h2 className="text-2xl sm:text-3xl font-bold">Experience the Future of Dental Scheduling</h2>
+          <p className="text-slate-400 text-sm max-w-xl mx-auto">
+            Start your 14-day free trial today. Connect your calendar and test your AI receptionist in under 5 minutes.
+          </p>
+          <div className="pt-2">
+            <Link
+              href="/signup"
+              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold shadow-lg shadow-blue-500/25 transition-all"
+            >
+              <span>Start Free Trial</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
         </div>
-      </div>
+      </RevealOnScroll>
     </div>
   );
 }
