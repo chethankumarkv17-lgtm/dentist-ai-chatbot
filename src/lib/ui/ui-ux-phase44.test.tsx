@@ -5,6 +5,8 @@ import { Badge } from '@/components/ui/Badge';
 import { Card, MetricCard } from '@/components/ui/Card';
 import { Skeleton, MetricCardSkeleton, DashboardTableSkeleton } from '@/components/ui/Skeleton';
 import { RevealOnScroll } from '@/components/ui/RevealOnScroll';
+import { DynamicTextSlider } from '@/components/home/DynamicTextSlider';
+import { CapabilitiesMarquee } from '@/components/home/CapabilitiesMarquee';
 import { Calendar } from 'lucide-react';
 
 describe('Phase 44 — Premium UI/UX, Design System & Accessibility Suite', () => {
@@ -72,6 +74,19 @@ describe('Phase 44 — Premium UI/UX, Design System & Accessibility Suite', () =
         </RevealOnScroll>
       );
       expect(container.textContent).toContain('Animated Section');
+    });
+  });
+
+  describe('5. Homepage Dynamic Appearing Text Slider & Marquee', () => {
+    it('renders DynamicTextSlider with active phrase', () => {
+      const { container } = render(<DynamicTextSlider />);
+      expect(container.textContent).toContain('answers patient phone calls 24/7');
+    });
+
+    it('renders CapabilitiesMarquee with duplicated capability items', () => {
+      const { container } = render(<CapabilitiesMarquee />);
+      expect(container.textContent).toContain('24/7 AI Voice Phone Receptionist');
+      expect(container.textContent).toContain('Official WhatsApp Business Cloud API');
     });
   });
 });

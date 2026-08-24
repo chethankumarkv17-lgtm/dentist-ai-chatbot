@@ -22,6 +22,7 @@ import { Card } from '@/components/ui/Card';
 import { RevealOnScroll } from '@/components/ui/RevealOnScroll';
 import { HeroBackgroundMotion } from '@/components/home/HeroBackgroundMotion';
 import { HeroTypographyMotion } from '@/components/home/HeroTypographyMotion';
+import { CapabilitiesMarquee } from '@/components/home/CapabilitiesMarquee';
 
 export default function LandingPage() {
   const channelCards = [
@@ -102,6 +103,11 @@ export default function LandingPage() {
           <HeroTypographyMotion />
         </div>
       </section>
+
+      {/* CONTINUOUS CAPABILITIES MARQUEE TEXT SLIDER */}
+      <div className="-mt-16 sm:-mt-20 relative z-20">
+        <CapabilitiesMarquee />
+      </div>
 
       {/* 2. OMNICHANNEL CHANNELS */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

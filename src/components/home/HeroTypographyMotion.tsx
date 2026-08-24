@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Sparkles, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { DynamicTextSlider } from '@/components/home/DynamicTextSlider';
 
 export function HeroTypographyMotion() {
   const [mounted, setMounted] = useState(false);
@@ -39,29 +40,51 @@ export function HeroTypographyMotion() {
       </div>
 
       {/* 2. Main Hero Headline with Slow Staggered Reveal */}
-      <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-[76px] font-black text-slate-900 tracking-[-0.035em] leading-[1.08] max-w-4xl mx-auto">
-        {/* Line 1 standard word */}
-        {line1Words.map((word) => {
-          const idx = globalWordIndex++;
-          return (
-            <span
-              key={word}
-              style={{
-                transitionDelay: reducedMotion ? '0ms' : `${idx * 60}ms`,
-                transitionDuration: '750ms',
-                transitionTimingFunction: 'cubic-bezier(0.22, 1, 0.36, 1)',
-              }}
-              className={`inline-block mr-3 transition-all ${
-                mounted || reducedMotion ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
-              }`}
-            >
-              {word}
-            </span>
-          );
-        })}{' '}
-        {/* Gradient emphasized phrase */}
-        <span className="inline-block bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 bg-clip-text text-transparent drop-shadow-2xs">
-          {gradientWords.map((word) => {
+      <div className="space-y-3">
+        <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-[76px] font-black text-slate-900 tracking-[-0.035em] leading-[1.08] max-w-4xl mx-auto">
+          {/* Line 1 standard word */}
+          {line1Words.map((word) => {
+            const idx = globalWordIndex++;
+            return (
+              <span
+                key={word}
+                style={{
+                  transitionDelay: reducedMotion ? '0ms' : `${idx * 60}ms`,
+                  transitionDuration: '750ms',
+                  transitionTimingFunction: 'cubic-bezier(0.22, 1, 0.36, 1)',
+                }}
+                className={`inline-block mr-3 transition-all ${
+                  mounted || reducedMotion ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
+                }`}
+              >
+                {word}
+              </span>
+            );
+          })}{' '}
+          {/* Gradient emphasized phrase */}
+          <span className="inline-block bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 bg-clip-text text-transparent drop-shadow-2xs">
+            {gradientWords.map((word) => {
+              const idx = globalWordIndex++;
+              return (
+                <span
+                  key={word}
+                  style={{
+                    transitionDelay: reducedMotion ? '0ms' : `${idx * 60}ms`,
+                    transitionDuration: '750ms',
+                    transitionTimingFunction: 'cubic-bezier(0.22, 1, 0.36, 1)',
+                  }}
+                  className={`inline-block mr-2.5 transition-all ${
+                    mounted || reducedMotion ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
+                  }`}
+                >
+                  {word}
+                </span>
+              );
+            })}
+          </span>
+          <br className="hidden sm:inline" />
+          {/* Line 2 words */}
+          {line2Words.map((word) => {
             const idx = globalWordIndex++;
             return (
               <span
@@ -79,33 +102,28 @@ export function HeroTypographyMotion() {
               </span>
             );
           })}
-        </span>
-        <br className="hidden sm:inline" />
-        {/* Line 2 words */}
-        {line2Words.map((word) => {
-          const idx = globalWordIndex++;
-          return (
-            <span
-              key={word}
-              style={{
-                transitionDelay: reducedMotion ? '0ms' : `${idx * 60}ms`,
-                transitionDuration: '750ms',
-                transitionTimingFunction: 'cubic-bezier(0.22, 1, 0.36, 1)',
-              }}
-              className={`inline-block mr-2.5 transition-all ${
-                mounted || reducedMotion ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
-              }`}
-            >
-              {word}
-            </span>
-          );
-        })}
-      </h1>
+        </h1>
+
+        {/* Dynamic Appearing Text Slider */}
+        <div
+          style={{
+            transitionDelay: reducedMotion ? '0ms' : '220ms',
+            transitionDuration: '750ms',
+            transitionTimingFunction: 'cubic-bezier(0.22, 1, 0.36, 1)',
+          }}
+          className={`flex flex-wrap items-center justify-center gap-2 text-base sm:text-xl md:text-2xl font-bold text-slate-700 tracking-tight transition-all ${
+            mounted || reducedMotion ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+          }`}
+        >
+          <span>Automates your clinic &amp;</span>
+          <DynamicTextSlider />
+        </div>
+      </div>
 
       {/* 3. Subheading with Delayed Smooth Slow Fade */}
       <p
         style={{
-          transitionDelay: reducedMotion ? '0ms' : '280ms',
+          transitionDelay: reducedMotion ? '0ms' : '320ms',
           transitionDuration: '850ms',
           transitionTimingFunction: 'cubic-bezier(0.22, 1, 0.36, 1)',
         }}
@@ -122,7 +140,7 @@ export function HeroTypographyMotion() {
       {/* 4. Interactive Call to Actions with Staggered Entrance */}
       <div
         style={{
-          transitionDelay: reducedMotion ? '0ms' : '400ms',
+          transitionDelay: reducedMotion ? '0ms' : '420ms',
           transitionDuration: '950ms',
           transitionTimingFunction: 'cubic-bezier(0.22, 1, 0.36, 1)',
         }}
@@ -148,7 +166,7 @@ export function HeroTypographyMotion() {
       {/* 5. Trust Badges Staggered Entrance */}
       <div
         style={{
-          transitionDelay: reducedMotion ? '0ms' : '520ms',
+          transitionDelay: reducedMotion ? '0ms' : '540ms',
           transitionDuration: '1000ms',
           transitionTimingFunction: 'cubic-bezier(0.22, 1, 0.36, 1)',
         }}
