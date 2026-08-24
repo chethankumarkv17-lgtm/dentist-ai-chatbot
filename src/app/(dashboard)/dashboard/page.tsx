@@ -1,26 +1,38 @@
 import React from 'react';
-import { createClient } from '@/lib/supabase/server-auth';
+import { createClient, getCurrentUser } from '@/lib/supabase/server-auth';
 import ErrorState from '@/components/dashboard/ErrorState';
 import { Calendar, Users, MessageCircle, TrendingUp, XCircle, Clock, AlertCircle } from 'lucide-react';
 
 export default async function DashboardOverview() {
-  const supabase = createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
 
   if (!user) {
     return <ErrorState title="Unauthorized" message="You must be logged in to view this page." />;
   }
 
+  const supabase = createClient();
   let metrics = null;
 
   try {
-    const { data: member } = await supabase.from('organization_members').select('organization_id').eq('user_id', user.id).single();
-    if (!member) throw new Error("No organization found");
+    const { data: member } = await supabase
+      .from('organization_members')
+      .select('organization_id')
+      .eq('user_id', user.id)
+      .maybeSingle();
 
-    const { data: clinic } = await supabase.from('clinics').select('id').eq('organization_id', member.organization_id).single();
-    if (!clinic) throw new Error("No clinic found");
+    const orgId = member?.organization_id;
+    let clinicId: string | undefined;
 
-    const clinicId = clinic.id;
+    if (orgId) {
+      const { data: clinic } = await supabase
+        .from('clinics')
+        .select('id')
+        .eq('organization_id', orgId)
+        .maybeSingle();
+      clinicId = clinic?.id;
+    }
+
+    if (clinicId) {
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -41,8 +53,9 @@ export default async function DashboardOverview() {
       supabase.from('conversations').select('*', { count: 'exact', head: true }).eq('clinic_id', clinicId).gte('created_at', today.toISOString()),
     ]);
     
-    metrics = { todayCount, upcomingCount, newPatientsCount, cancellationsCount, chatCount };
-  } catch (error: unknown) {
+      metrics = { todayCount, upcomingCount, newPatientsCount, cancellationsCount, chatCount };
+    }
+  } catch {
     // Graceful fallback when DB is missing
     metrics = null;
   }

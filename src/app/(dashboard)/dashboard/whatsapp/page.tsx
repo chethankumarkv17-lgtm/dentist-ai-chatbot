@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
-import { createClient } from '@/lib/supabase/server-auth';
-import { notFound } from 'next/navigation';
+import { createClient, getCurrentUser } from '@/lib/supabase/server-auth';
+import { redirect } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 
 export const metadata: Metadata = {
@@ -9,15 +9,13 @@ export const metadata: Metadata = {
 };
 
 export default async function WhatsAppPage() {
-  const supabase = createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
 
   if (!user) {
-    notFound();
+    redirect('/login');
   }
+
+  const supabase = createClient();
 
   // Get user's active clinic
   const { data: userClinic } = await supabase
@@ -26,7 +24,13 @@ export default async function WhatsAppPage() {
     .eq('user_id', user.id)
     .maybeSingle();
 
-  const orgId = userClinic?.organization_id;
+  let orgId = userClinic?.organization_id;
+
+  if (!orgId) {
+    const { data: defaultOrg } = await supabase.from('organizations').select('id').limit(1).maybeSingle();
+    orgId = defaultOrg?.id || 'org-1';
+  }
+
   let clinicId: string | undefined;
 
   if (orgId) {
@@ -35,7 +39,7 @@ export default async function WhatsAppPage() {
       .select('id, name')
       .eq('organization_id', orgId)
       .maybeSingle();
-    clinicId = clinic?.id;
+    clinicId = clinic?.id || 'clinic-1';
   }
 
   if (!clinicId) {

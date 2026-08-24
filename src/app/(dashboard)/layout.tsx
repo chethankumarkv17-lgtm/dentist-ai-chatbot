@@ -1,38 +1,11 @@
 import React from 'react';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { cookies } from 'next/headers';
-import { createClient } from '@/lib/supabase/server-auth';
+import { getCurrentUser } from '@/lib/supabase/server-auth';
 import { logout } from '@/app/actions/auth';
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const supabase = createClient();
-  let user: { id: string; email?: string } | null = null;
-
-  try {
-    const { data } = await supabase.auth.getUser();
-    user = data.user;
-  } catch {
-    user = null;
-  }
-
-  // Check demo session cookie
-  let demoEmail: string | undefined = undefined;
-  try {
-    const cookieStore = await cookies();
-    demoEmail = cookieStore.get('demo_user_email')?.value;
-  } catch {
-    // Ignore in non-request contexts
-  }
-
-  if (!user && demoEmail) {
-    user = { id: 'demo-user-id', email: demoEmail };
-  }
-
-  // Fallback for local development if not authenticated
-  if (!user && (process.env.NODE_ENV === 'development' || process.env.NEXT_PUBLIC_SUPABASE_URL?.includes('mock.supabase'))) {
-    user = { id: 'demo-user-id', email: 'dr.smith@downtowndental.com' };
-  }
+  const user = await getCurrentUser();
 
   if (!user) {
     redirect('/login');
