@@ -20,6 +20,8 @@ import {
 import { Badge } from '@/components/ui/Badge';
 import { Card } from '@/components/ui/Card';
 import { RevealOnScroll } from '@/components/ui/RevealOnScroll';
+import { HeroBackgroundMotion } from '@/components/home/HeroBackgroundMotion';
+import { HeroTypographyMotion } from '@/components/home/HeroTypographyMotion';
 
 export default function LandingPage() {
   const channelCards = [
@@ -93,64 +95,11 @@ export default function LandingPage() {
 
   return (
     <div className="space-y-24 sm:space-y-32 pb-20 overflow-hidden">
-      {/* 1. HERO SECTION */}
-      <section className="relative overflow-hidden pt-12 sm:pt-20 pb-16 bg-gradient-to-b from-slate-50 via-white to-slate-50 border-b border-slate-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-8">
-          <RevealOnScroll variant="fade-down" durationMs={500}>
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-200/80 text-blue-700 text-xs font-bold shadow-2xs">
-              <Sparkles className="w-4 h-4 text-blue-600" />
-              <span>The Omnichannel Dental AI Suite • Website, WhatsApp & Voice</span>
-            </div>
-          </RevealOnScroll>
-
-          <RevealOnScroll variant="fade-up" delayMs={100} durationMs={600}>
-            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold text-slate-900 tracking-tight max-w-4xl mx-auto leading-[1.1]">
-              Autonomous <span className="text-blue-600">24/7 AI Receptionist</span> for Dental Practices
-            </h1>
-          </RevealOnScroll>
-
-          <RevealOnScroll variant="fade-up" delayMs={200} durationMs={600}>
-            <p className="text-base sm:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
-              Never miss a patient call or inquiry again. Automate appointment bookings, verify dentist availability in real-time, and send automated WhatsApp reminders with zero double bookings.
-            </p>
-          </RevealOnScroll>
-
-          {/* Action CTAs */}
-          <RevealOnScroll variant="scale-up" delayMs={300} durationMs={600}>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 pt-2">
-              <Link
-                href="/signup"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-base shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/30 transition-all group touch-target"
-              >
-                <span>Start 14-Day Free Trial</span>
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </Link>
-              <Link
-                href="/login"
-                className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 rounded-xl bg-white hover:bg-slate-50 text-slate-800 font-bold text-base border border-slate-200 shadow-2xs hover:border-slate-300 transition-all touch-target"
-              >
-                Enter Interactive Demo
-              </Link>
-            </div>
-          </RevealOnScroll>
-
-          {/* Trust Badges */}
-          <RevealOnScroll variant="fade-up" delayMs={400} durationMs={600}>
-            <div className="pt-8 flex flex-wrap items-center justify-center gap-6 sm:gap-10 text-xs font-semibold text-slate-500">
-              <div className="flex items-center gap-1.5">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                <span>Zero Double-Booking Guarantee</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                <span>Razorpay UPI & e-Mandate Ready</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                <span>24/7 Inbound Voice & WhatsApp</span>
-              </div>
-            </div>
-          </RevealOnScroll>
+      {/* 1. CINEMATIC HERO SECTION WITH MOTION GRAPHICS */}
+      <section className="relative overflow-hidden pt-12 sm:pt-24 pb-16 sm:pb-24 bg-gradient-to-b from-slate-50/90 via-white to-slate-50/90 border-b border-slate-100">
+        <HeroBackgroundMotion />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <HeroTypographyMotion />
         </div>
       </section>
 
@@ -159,10 +108,10 @@ export default function LandingPage() {
         <RevealOnScroll variant="fade-up" durationMs={500}>
           <div className="text-center max-w-3xl mx-auto space-y-4 mb-16">
             <Badge variant="pro" size="md">Unified Omnichannel AI</Badge>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 tracking-[-0.03em]">
               One Core Brain. Three Seamless Patient Channels.
             </h2>
-            <p className="text-slate-600 text-base">
+            <p className="text-slate-600 text-base sm:text-lg">
               Patients connect from their preferred communication channel. The unified AI orchestrator handles scheduling with single-source database truth.
             </p>
           </div>
@@ -184,7 +133,7 @@ export default function LandingPage() {
                       </span>
                     </div>
 
-                    <h3 className="text-xl font-bold text-slate-900 mb-2">{ch.title}</h3>
+                    <h3 className="text-xl font-bold text-slate-900 mb-2 tracking-tight">{ch.title}</h3>
                     <p className="text-slate-600 text-sm leading-relaxed mb-6">{ch.description}</p>
                   </div>
 
@@ -205,11 +154,16 @@ export default function LandingPage() {
 
       {/* 3. CORE ARCHITECTURAL PILLARS */}
       <RevealOnScroll variant="scale-up" durationMs={600}>
-        <section className="bg-slate-900 text-white py-20 rounded-3xl mx-4 sm:mx-6 lg:mx-8 px-6 sm:px-12">
-          <div className="max-w-7xl mx-auto">
+        <section className="bg-slate-900 text-white py-20 rounded-3xl mx-4 sm:mx-6 lg:mx-8 px-6 sm:px-12 relative overflow-hidden">
+          <div
+            aria-hidden="true"
+            className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-3xl pointer-events-none"
+          />
+
+          <div className="max-w-7xl mx-auto relative z-10">
             <div className="text-center max-w-3xl mx-auto space-y-4 mb-16">
               <span className="text-xs font-bold uppercase tracking-wider text-blue-400">Enterprise Engineering</span>
-              <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-[-0.03em]">
                 Engineered Specifically for High-Trust Healthcare
               </h2>
               <p className="text-slate-400 text-sm sm:text-base">
@@ -226,7 +180,7 @@ export default function LandingPage() {
                       <div className="w-10 h-10 rounded-xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-blue-400">
                         <Icon className="w-5 h-5" />
                       </div>
-                      <h3 className="font-bold text-base text-white">{feat.title}</h3>
+                      <h3 className="font-bold text-base text-white tracking-tight">{feat.title}</h3>
                       <p className="text-xs text-slate-400 leading-relaxed">{feat.desc}</p>
                     </div>
                   </RevealOnScroll>
@@ -242,7 +196,7 @@ export default function LandingPage() {
         <RevealOnScroll variant="fade-up" durationMs={500}>
           <div className="text-center space-y-3">
             <Badge variant="neutral">Clear Answers</Badge>
-            <h2 className="text-3xl font-extrabold text-slate-900">Frequently Asked Questions</h2>
+            <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-[-0.03em]">Frequently Asked Questions</h2>
           </div>
         </RevealOnScroll>
 
@@ -261,8 +215,8 @@ export default function LandingPage() {
       {/* 5. BOTTOM CTA BANNER */}
       <RevealOnScroll variant="scale-up" durationMs={600}>
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-3xl p-8 sm:p-14 text-center text-white shadow-xl shadow-blue-500/20 space-y-6">
-            <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight max-w-2xl mx-auto">
+          <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 rounded-3xl p-8 sm:p-14 text-center text-white shadow-2xl shadow-blue-500/25 space-y-6 relative overflow-hidden">
+            <h2 className="text-3xl sm:text-5xl font-black tracking-[-0.03em] max-w-2xl mx-auto leading-tight">
               Ready to Automate Inbound Dental Scheduling?
             </h2>
             <p className="text-blue-100 text-base sm:text-lg max-w-xl mx-auto leading-relaxed">
@@ -271,7 +225,7 @@ export default function LandingPage() {
             <div className="pt-2">
               <Link
                 href="/signup"
-                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-white hover:bg-slate-100 text-blue-700 font-extrabold text-base shadow-lg transition-all touch-target"
+                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-white hover:bg-slate-100 text-blue-700 font-extrabold text-base shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-100 transition-all touch-target"
               >
                 <span>Get Started Free — 14-Day Trial</span>
                 <ArrowRight className="w-5 h-5" />
