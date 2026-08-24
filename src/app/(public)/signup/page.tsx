@@ -1,16 +1,102 @@
+import React from 'react';
+import Link from 'next/link';
 import { signup } from '@/app/actions/auth';
+import { Stethoscope, ArrowRight, ShieldCheck, CheckCircle2 } from 'lucide-react';
 
 export default function SignupPage() {
   return (
-    <div className="max-w-md mx-auto mt-10">
-      <h1 className="text-2xl font-bold mb-4">Sign Up</h1>
-      <form action={signup} className="flex flex-col gap-4">
-        <input name="first_name" placeholder="First Name" required className="border p-2" />
-        <input name="last_name" placeholder="Last Name" required className="border p-2" />
-        <input name="email" type="email" placeholder="Email" required className="border p-2" />
-        <input name="password" type="password" placeholder="Password" required className="border p-2" />
-        <button type="submit" className="bg-blue-500 text-white p-2 rounded">Sign Up</button>
-      </form>
+    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4 py-12">
+      <div className="max-w-md w-full bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-100 animate-fade-in">
+        {/* Header */}
+        <div className="bg-slate-900 p-6 text-center text-white border-b border-slate-800">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-blue-600 mb-3 shadow-lg shadow-blue-500/30">
+            <Stethoscope className="w-6 h-6 text-white" />
+          </div>
+          <h1 className="text-xl font-bold tracking-tight">Create Practice Account</h1>
+          <p className="text-xs text-slate-400 mt-1">Start your 14-day free trial. No credit card required.</p>
+        </div>
+
+        <div className="p-8 space-y-6">
+          {/* Trust points */}
+          <div className="bg-blue-50/70 border border-blue-100 rounded-xl p-3.5 space-y-2 text-xs text-blue-900 font-medium">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+              <span>Full 24/7 AI Receptionist & Chatbot</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+              <span>WhatsApp Business & Calendar Sync</span>
+            </div>
+          </div>
+
+          <form action={signup} className="space-y-4">
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">First Name</label>
+                <input
+                  name="first_name"
+                  type="text"
+                  required
+                  placeholder="Dr. Rahul"
+                  className="w-full px-3.5 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Last Name</label>
+                <input
+                  name="last_name"
+                  type="text"
+                  required
+                  placeholder="Deshpande"
+                  className="w-full px-3.5 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Clinic Work Email</label>
+              <input
+                name="email"
+                type="email"
+                required
+                placeholder="dentist@apexdental.com"
+                className="w-full px-3.5 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Create Password</label>
+              <input
+                name="password"
+                type="password"
+                required
+                placeholder="••••••••"
+                className="w-full px-3.5 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold shadow-md shadow-blue-500/25 transition-all group touch-target"
+            >
+              <span>Create Practice & Onboard</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+            </button>
+          </form>
+
+          <div className="pt-2 text-center text-xs text-slate-500">
+            Already have an account?{' '}
+            <Link href="/login" className="text-blue-600 font-bold hover:underline">
+              Sign In to Practice
+            </Link>
+          </div>
+
+          <div className="pt-2 border-t border-slate-100 flex items-center justify-center gap-1.5 text-[11px] text-slate-400">
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
+            <span>Encrypted • HIPAA & Razorpay Compliant</span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

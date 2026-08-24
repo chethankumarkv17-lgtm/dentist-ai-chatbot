@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { MessageCircle, X, Send, RotateCcw } from 'lucide-react';
+import { MessageCircle, X, Send, RotateCcw, Calendar, Clock, Sparkles } from 'lucide-react';
 
 interface Message {
   id: string;
@@ -23,12 +23,22 @@ function WidgetContent() {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  const quickPrompts = [
+    '📅 Book Teeth Cleaning',
+    '⏰ Clinic Hours Today',
+    '💰 Treatment Pricing',
+    '👨‍⚕️ Available Dentists',
+  ];
+
   useEffect(() => {
     // Notify parent to resize
-    window.parent.postMessage({
-      type: 'DENTALAI_WIDGET_RESIZE',
-      status: isOpen ? 'open' : 'closed'
-    }, '*');
+    window.parent.postMessage(
+      {
+        type: 'DENTALAI_WIDGET_RESIZE',
+        status: isOpen ? 'open' : 'closed',
+      },
+      '*'
+    );
   }, [isOpen]);
 
   useEffect(() => {
@@ -36,19 +46,23 @@ function WidgetContent() {
 
     // Fetch public config
     fetch(`/api/widget/config?id=${clinicId}`)
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         setConfig(data);
         // Load history or initialize
         const history = localStorage.getItem(`dentalai_chat_${clinicId}`);
         if (history) {
           setMessages(JSON.parse(history));
         } else {
-          setMessages([{
-            id: 'welcome',
-            role: 'assistant',
-            content: data.greeting || 'Hello! How can I help you today?'
-          }]);
+          setMessages([
+            {
+              id: 'welcome',
+              role: 'assistant',
+              content:
+                data.greeting ||
+                'Hello! Welcome to our dental clinic. How can I assist you with appointment scheduling or treatments today?',
+            },
+          ]);
         }
       })
       .catch(() => setError('Failed to load clinic configuration.'));
@@ -61,12 +75,11 @@ function WidgetContent() {
     }
   }, [messages, clinicId]);
 
-  const handleSend = async (e?: React.FormEvent) => {
-    e?.preventDefault();
-    if (!inputValue.trim() || isLoading) return;
+  const sendQuery = async (text: string) => {
+    if (!text.trim() || isLoading) return;
 
-    const userMessage: Message = { id: Date.now().toString(), role: 'user', content: inputValue.trim() };
-    setMessages(prev => [...prev, userMessage]);
+    const userMessage: Message = { id: Date.now().toString(), role: 'user', content: text.trim() };
+    setMessages((prev) => [...prev, userMessage]);
     setInputValue('');
     setIsLoading(true);
     setError(null);
@@ -78,30 +91,39 @@ function WidgetContent() {
         body: JSON.stringify({
           widgetId: clinicId,
           message: userMessage.content,
-          history: messages.slice(-5) // Send last 5 for context
-        })
+          history: messages.slice(-5),
+        }),
       });
 
       if (!res.ok) throw new Error('Network response was not ok');
       const data = await res.json();
 
-      setMessages(prev => [...prev, { id: Date.now().toString(), role: 'assistant', content: data.reply }]);
+      setMessages((prev) => [
+        ...prev,
+        { id: Date.now().toString(), role: 'assistant', content: data.reply },
+      ]);
     } catch {
       setError('Connection lost. Please try again.');
-      // Remove the user message so they can retry, or just keep it and show error.
     } finally {
       setIsLoading(false);
     }
   };
 
+  const handleSend = async (e?: React.FormEvent) => {
+    e?.preventDefault();
+    await sendQuery(inputValue);
+  };
+
   const handleReset = () => {
     if (!clinicId) return;
     localStorage.removeItem(`dentalai_chat_${clinicId}`);
-    setMessages([{
-      id: 'welcome',
-      role: 'assistant',
-      content: config?.greeting || 'Hello! How can I help you today?'
-    }]);
+    setMessages([
+      {
+        id: 'welcome',
+        role: 'assistant',
+        content: config?.greeting || 'Hello! How can I assist you with scheduling today?',
+      },
+    ]);
     setError(null);
   };
 
@@ -109,9 +131,9 @@ function WidgetContent() {
 
   if (!isOpen) {
     return (
-      <button 
+      <button
         onClick={() => setIsOpen(true)}
-        className="w-full h-full rounded-full bg-blue-600 text-white flex items-center justify-center shadow-lg hover:scale-105 transition-transform"
+        className="w-full h-full rounded-full text-white flex items-center justify-center shadow-xl hover:scale-105 transition-transform touch-target"
         style={{ backgroundColor: config?.themeColor || '#2563eb' }}
         aria-label="Open chat assistant"
       >
@@ -121,35 +143,46 @@ function WidgetContent() {
   }
 
   return (
-    <div className="flex flex-col h-full w-full bg-white sm:rounded-2xl shadow-xl overflow-hidden border border-slate-200">
+    <div className="flex flex-col h-full w-full bg-white sm:rounded-2xl shadow-2xl overflow-hidden border border-slate-200 animate-fade-in font-sans">
       {/* Header */}
-      <div 
-        className="flex items-center justify-between px-4 py-3 text-white"
+      <div
+        className="flex items-center justify-between px-4 py-3 text-white shadow-xs"
         style={{ backgroundColor: config?.themeColor || '#2563eb' }}
       >
         <div className="flex flex-col">
-          <span className="font-semibold text-sm sm:text-base">{config?.clinicName || 'Clinic Assistant'}</span>
-          <span className="text-xs opacity-90">Usually responds instantly</span>
+          <span className="font-bold text-sm sm:text-base tracking-tight leading-tight">
+            {config?.clinicName || 'AI Clinic Receptionist'}
+          </span>
+          <span className="text-[11px] opacity-90 font-medium">● 24/7 Live Scheduling</span>
         </div>
-        <div className="flex items-center gap-2">
-          <button onClick={handleReset} className="p-1 hover:bg-white/20 rounded" title="Restart Conversation">
+        <div className="flex items-center gap-1.5">
+          <button
+            onClick={handleReset}
+            className="p-1.5 hover:bg-white/20 rounded-lg transition-colors touch-target flex items-center justify-center"
+            title="Restart Conversation"
+            aria-label="Restart Conversation"
+          >
             <RotateCcw className="w-4 h-4" />
           </button>
-          <button onClick={() => setIsOpen(false)} className="p-1 hover:bg-white/20 rounded" aria-label="Close chat">
+          <button
+            onClick={() => setIsOpen(false)}
+            className="p-1.5 hover:bg-white/20 rounded-lg transition-colors touch-target flex items-center justify-center"
+            aria-label="Close chat"
+          >
             <X className="w-5 h-5" />
           </button>
         </div>
       </div>
 
-      {/* Chat Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50 relative">
-        {messages.map(msg => (
+      {/* Chat Messages */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-3.5 bg-slate-50 relative">
+        {messages.map((msg) => (
           <div key={msg.id} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-            <div 
-              className={`max-w-[85%] rounded-2xl px-4 py-2 text-sm ${
-                msg.role === 'user' 
-                  ? 'bg-blue-600 text-white rounded-br-none' 
-                  : 'bg-white border border-slate-200 text-slate-800 rounded-bl-none shadow-sm'
+            <div
+              className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-xs sm:text-sm leading-relaxed ${
+                msg.role === 'user'
+                  ? 'bg-blue-600 text-white rounded-br-none shadow-xs'
+                  : 'bg-white border border-slate-200/80 text-slate-800 rounded-bl-none shadow-xs'
               }`}
               style={msg.role === 'user' ? { backgroundColor: config?.themeColor || '#2563eb' } : {}}
             >
@@ -157,40 +190,56 @@ function WidgetContent() {
             </div>
           </div>
         ))}
+
         {isLoading && (
           <div className="flex justify-start">
-             <div className="bg-white border border-slate-200 rounded-2xl rounded-bl-none px-4 py-3 shadow-sm flex gap-1 items-center">
-                <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce"></span>
-                <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce delay-75"></span>
-                <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce delay-150"></span>
-             </div>
+            <div className="bg-white border border-slate-200 rounded-2xl rounded-bl-none px-4 py-3 shadow-xs flex gap-1.5 items-center">
+              <span className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" />
+              <span className="w-2 h-2 bg-blue-600 rounded-full animate-bounce [animation-delay:150ms]" />
+              <span className="w-2 h-2 bg-blue-600 rounded-full animate-bounce [animation-delay:300ms]" />
+            </div>
           </div>
         )}
         <div ref={messagesEndRef} />
       </div>
 
+      {/* Quick Action Chips */}
+      <div className="px-3 py-2 bg-white border-t border-slate-100 flex items-center gap-1.5 overflow-x-auto whitespace-nowrap scrollbar-none">
+        {quickPrompts.map((prompt) => (
+          <button
+            key={prompt}
+            onClick={() => sendQuery(prompt.replace(/^[^\s]+ /, ''))}
+            disabled={isLoading}
+            className="px-2.5 py-1 rounded-full bg-slate-100 hover:bg-slate-200 text-[11px] font-semibold text-slate-700 transition-colors shrink-0 disabled:opacity-50"
+          >
+            {prompt}
+          </button>
+        ))}
+      </div>
+
       {/* Error Bar */}
       {error && (
-        <div className="bg-red-50 p-2 text-center text-xs text-red-600 border-t border-red-100">
+        <div className="bg-rose-50 p-2 text-center text-xs text-rose-700 border-t border-rose-100 font-medium">
           {error}
         </div>
       )}
 
-      {/* Input Area */}
+      {/* Input Box */}
       <form onSubmit={handleSend} className="p-3 bg-white border-t border-slate-200 flex gap-2">
-        <input 
-          type="text" 
+        <input
+          type="text"
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
-          placeholder="Type your message..."
-          className="flex-1 bg-slate-100 border-transparent focus:bg-white focus:border-blue-500 rounded-full px-4 py-2 text-sm outline-none transition-all"
+          placeholder="Ask a question or book a slot..."
+          className="flex-1 bg-slate-100 border border-transparent focus:bg-white focus:border-blue-500 rounded-full px-4 py-2.5 text-xs sm:text-sm text-slate-900 outline-none transition-all"
           disabled={isLoading}
         />
-        <button 
-          type="submit" 
+        <button
+          type="submit"
           disabled={!inputValue.trim() || isLoading}
-          className="bg-blue-600 text-white p-2 rounded-full disabled:opacity-50 hover:bg-blue-700 transition-colors flex items-center justify-center w-10 h-10 flex-shrink-0"
-          style={{ backgroundColor: inputValue.trim() ? (config?.themeColor || '#2563eb') : '#94a3b8' }}
+          className="text-white p-2.5 rounded-full disabled:opacity-40 transition-all flex items-center justify-center w-10 h-10 shrink-0 touch-target"
+          style={{ backgroundColor: inputValue.trim() ? config?.themeColor || '#2563eb' : '#94a3b8' }}
+          aria-label="Send message"
         >
           <Send className="w-4 h-4 ml-0.5" />
         </button>

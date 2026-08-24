@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import { createClient, getCurrentUser } from '@/lib/supabase/server-auth';
 import { redirect } from 'next/navigation';
 import { getOrganizationEntitlements } from '@/lib/billing/entitlements';
+import { VoiceVisualizerClient } from '@/components/voice/VoiceVisualizerClient';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
@@ -119,6 +120,9 @@ export default async function VoiceDashboardPage() {
       ) : (
         /* PRO/PREMIUM ELIGIBLE DASHBOARD */
         <div className="space-y-6">
+          {/* Interactive Voice Simulator */}
+          <VoiceVisualizerClient clinicName={clinic?.name || 'Radiant Nobel Dental'} />
+
           {/* Usage Gauges */}
           <div className="grid gap-6 md:grid-cols-3">
             <div className="rounded-xl border bg-white p-5 shadow-sm">
