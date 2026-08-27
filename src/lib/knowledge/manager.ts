@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server-auth';
 import { sanitizeUntrustedContent } from '@/lib/ai/guardrails';
+import { StructuredExtractionResult } from './extractor';
 
 export interface StructuredClinicKnowledge {
   clinic: {
@@ -39,17 +40,209 @@ export interface IngestedWebsiteData {
   url: string;
   sanitizedContent: string;
   ingestedAt: string;
-  isAuthoritative: false; // Explicitly marked non-authoritative
+  isAuthoritative: boolean;
 }
 
 export interface ClinicKnowledgeBundle {
   trustedData: StructuredClinicKnowledge;
   untrustedWebsiteContext: IngestedWebsiteData[];
+  approvedKnowledge?: StructuredExtractionResult;
+}
+
+/**
+ * Saves draft crawled knowledge for dentist review and approval.
+ */
+export async function saveDraftKnowledgeSource(
+  clinicId: string,
+  organizationId: string,
+  url: string,
+  extracted: StructuredExtractionResult,
+  crawledPagesCount: number,
+  warnings: string[]
+): Promise<{ success: boolean; id?: string; error?: string }> {
+  if (!clinicId || !url) {
+    return { success: false, error: 'Clinic ID and URL are required' };
+  }
+
+  const supabase = createClient();
+
+  try {
+    const { data, error } = await supabase
+      .from('clinic_knowledge_sources')
+      .upsert(
+        {
+          clinic_id: clinicId,
+          organization_id: organizationId,
+          url,
+          status: 'crawled',
+          pages_discovered: crawledPagesCount,
+          extracted_data: extracted,
+          warnings,
+          last_scanned_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: 'clinic_id,url' }
+      )
+      .select('id')
+      .single();
+
+    if (error) {
+      return { success: false, error: error.message };
+    }
+
+    return { success: true, id: data?.id };
+  } catch (err: unknown) {
+    return { success: false, error: (err as Error)?.message || 'Failed to save draft knowledge source' };
+  }
+}
+
+/**
+ * Commits approved knowledge into authoritative tables and marks knowledge source as published.
+ */
+export async function approveAndPublishKnowledge(
+  clinicId: string,
+  organizationId: string,
+  sourceId: string,
+  approvedData: StructuredExtractionResult
+): Promise<{ success: boolean; error?: string }> {
+  if (!clinicId || !sourceId) {
+    return { success: false, error: 'Clinic ID and Source ID are required' };
+  }
+
+  const supabase = createClient();
+
+  try {
+    // 1. Update clinic profile info
+    if (approvedData.clinic) {
+      await supabase
+        .from('clinics')
+        .update({
+          name: approvedData.clinic.name,
+          phone: approvedData.clinic.phone || null,
+          email: approvedData.clinic.email || null,
+          address: approvedData.clinic.address || null,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', clinicId);
+    }
+
+    // 2. Publish services
+    if (approvedData.services && approvedData.services.length > 0) {
+      for (const srv of approvedData.services) {
+        await supabase.from('services').upsert(
+          {
+            clinic_id: clinicId,
+            name: srv.name,
+            description: srv.description || null,
+            duration_minutes: srv.duration_minutes || 30,
+            price: srv.price || null,
+            is_active: true,
+            is_bookable: true,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: 'clinic_id,name' }
+        );
+      }
+    }
+
+    // 3. Publish dentists
+    if (approvedData.dentists && approvedData.dentists.length > 0) {
+      for (const d of approvedData.dentists) {
+        await supabase.from('dentists').upsert(
+          {
+            clinic_id: clinicId,
+            name: d.name,
+            specialty: d.specialty || null,
+            bio: d.bio || null,
+            is_active: true,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: 'clinic_id,name' }
+        );
+      }
+    }
+
+    // 4. Publish business hours
+    if (approvedData.hours && approvedData.hours.length > 0) {
+      for (const h of approvedData.hours) {
+        await supabase.from('business_hours').upsert(
+          {
+            clinic_id: clinicId,
+            day_of_week: h.day_of_week,
+            open_time: h.open_time,
+            close_time: h.close_time,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: 'clinic_id,day_of_week' }
+        );
+      }
+    }
+
+    // 5. Publish FAQs
+    if (approvedData.faqs && approvedData.faqs.length > 0) {
+      for (const faq of approvedData.faqs) {
+        await supabase.from('clinic_faqs').upsert(
+          {
+            clinic_id: clinicId,
+            question: faq.question,
+            answer: faq.answer,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: 'clinic_id,question' }
+        );
+      }
+    }
+
+    // 6. Mark knowledge source record as published
+    await supabase
+      .from('clinic_knowledge_sources')
+      .update({
+        status: 'published',
+        extracted_data: approvedData,
+        approved_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', sourceId)
+      .eq('clinic_id', clinicId);
+
+    return { success: true };
+  } catch (err: unknown) {
+    return { success: false, error: (err as Error)?.message || 'Failed to approve and publish knowledge' };
+  }
+}
+
+/**
+ * Deletes a clinic knowledge base source.
+ */
+export async function deleteKnowledgeSource(
+  clinicId: string,
+  sourceId: string
+): Promise<{ success: boolean; error?: string }> {
+  if (!clinicId || !sourceId) {
+    return { success: false, error: 'Clinic ID and Source ID are required' };
+  }
+
+  const supabase = createClient();
+
+  try {
+    const { error } = await supabase
+      .from('clinic_knowledge_sources')
+      .delete()
+      .eq('id', sourceId)
+      .eq('clinic_id', clinicId);
+
+    if (error) {
+      return { success: false, error: error.message };
+    }
+
+    return { success: true };
+  } catch (err: unknown) {
+    return { success: false, error: (err as Error)?.message || 'Failed to delete knowledge source' };
+  }
 }
 
 /**
  * Ingests and sanitizes public content from an existing website.
- * Never grants authoritative status to scraped text.
  */
 export async function ingestWebsiteContent(
   clinicId: string,
@@ -60,7 +253,7 @@ export async function ingestWebsiteContent(
     return { success: false, error: 'Clinic ID and URL are required' };
   }
 
-  // 1. Basic URL validation
+  // Basic URL validation
   try {
     const parsedUrl = new URL(url);
     if (!['http:', 'https:'].includes(parsedUrl.protocol)) {
@@ -70,7 +263,7 @@ export async function ingestWebsiteContent(
     return { success: false, error: 'Invalid website URL format' };
   }
 
-  // 2. Strict HTML & Prompt Injection Sanitization
+  // 1. Strict HTML & Prompt Injection Sanitization
   const cleanedText = rawContent
     .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, ' ')
     .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, ' ')
@@ -86,30 +279,6 @@ export async function ingestWebsiteContent(
     ingestedAt: new Date().toISOString(),
     isAuthoritative: false,
   };
-
-  const supabase = createClient();
-  try {
-    // Look up clinic website if exists
-    const { data: website } = await supabase
-      .from('clinic_websites')
-      .select('id')
-      .eq('clinic_id', clinicId)
-      .maybeSingle();
-
-    if (website) {
-      await supabase.from('website_pages').upsert({
-        website_id: website.id,
-        path: url,
-        title: 'Ingested Public Content',
-        content: {
-          text: sanitized,
-          isAuthoritative: false,
-        },
-      });
-    }
-  } catch {
-    // Database storage fallback
-  }
 
   return { success: true, data: websiteRecord };
 }
@@ -129,14 +298,44 @@ export async function getClinicKnowledge(
     // 1. Fetch Authoritative Structured Data in parallel
     const [clinicRes, servicesRes, dentistsRes, hoursRes, faqsRes] = await Promise.all([
       supabase.from('clinics').select('id, name, address, phone, email, timezone').eq('id', clinicId).single(),
-      supabase.from('services').select('id, name, description, duration_minutes, price').eq('clinic_id', clinicId).eq('is_active', true).eq('is_bookable', true),
+      supabase
+        .from('services')
+        .select('id, name, description, duration_minutes, price')
+        .eq('clinic_id', clinicId)
+        .eq('is_active', true)
+        .eq('is_bookable', true),
       supabase.from('dentists').select('id, name, specialty, bio').eq('clinic_id', clinicId).eq('is_active', true),
-      supabase.from('business_hours').select('day_of_week, open_time, close_time').eq('clinic_id', clinicId).order('day_of_week', { ascending: true }),
-      supabase.from('clinic_faqs').select('id, question, answer').eq('clinic_id', clinicId).order('created_at', { ascending: true }),
+      supabase
+        .from('business_hours')
+        .select('day_of_week, open_time, close_time')
+        .eq('clinic_id', clinicId)
+        .order('day_of_week', { ascending: true }),
+      supabase
+        .from('clinic_faqs')
+        .select('id, question, answer')
+        .eq('clinic_id', clinicId)
+        .order('created_at', { ascending: true }),
     ]);
 
     if (clinicRes.error || !clinicRes.data) {
       return { success: false, error: 'Clinic not found' };
+    }
+
+    let approvedKnowledge: StructuredExtractionResult | undefined;
+    try {
+      const { data: source } = await supabase
+        .from('clinic_knowledge_sources')
+        .select('*')
+        .eq('clinic_id', clinicId)
+        .order('updated_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (source && source.extracted_data) {
+        approvedKnowledge = source.extracted_data as StructuredExtractionResult;
+      }
+    } catch {
+      // Graceful fallback for mock/database variations
     }
 
     const trustedData: StructuredClinicKnowledge = {
@@ -152,6 +351,7 @@ export async function getClinicKnowledge(
       data: {
         trustedData,
         untrustedWebsiteContext: untrustedExcerpts,
+        approvedKnowledge,
       },
     };
   } catch (err: unknown) {
@@ -160,15 +360,13 @@ export async function getClinicKnowledge(
 }
 
 /**
- * Evaluates business facts using strict priority resolution:
- * Structured data is unconditionally authoritative over untrusted scraped website content.
+ * Evaluates business facts using strict priority resolution.
  */
 export function resolveAuthoritativeFact(
   topic: 'hours' | 'services' | 'dentists' | 'pricing',
   structuredKnowledge: StructuredClinicKnowledge,
   _untrustedWebsiteText?: string
 ): { factSource: 'STRUCTURED_AUTHORITATIVE'; value: unknown } {
-  // Discard any conflicting claims in untrustedWebsiteText
   switch (topic) {
     case 'hours':
       return {
@@ -188,7 +386,7 @@ export function resolveAuthoritativeFact(
     case 'pricing':
       return {
         factSource: 'STRUCTURED_AUTHORITATIVE',
-        value: structuredKnowledge.services.map(s => ({
+        value: structuredKnowledge.services.map((s) => ({
           service: s.name,
           price: s.price !== undefined ? `$${s.price}` : 'Contact clinic for estimate',
         })),
