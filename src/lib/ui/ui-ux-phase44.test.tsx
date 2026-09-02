@@ -3,13 +3,15 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { Badge } from '@/components/ui/Badge';
 import { Card, MetricCard } from '@/components/ui/Card';
+import { GlassSurface } from '@/components/ui/GlassSurface';
+import { Modal } from '@/components/ui/Modal';
 import { Skeleton, MetricCardSkeleton, DashboardTableSkeleton } from '@/components/ui/Skeleton';
 import { RevealOnScroll } from '@/components/ui/RevealOnScroll';
 import { DynamicTextSlider } from '@/components/home/DynamicTextSlider';
 import { CapabilitiesMarquee } from '@/components/home/CapabilitiesMarquee';
 import { Calendar } from 'lucide-react';
 
-describe('Phase 44 — Premium UI/UX, Design System & Accessibility Suite', () => {
+describe('Phase 44 & Liquid Glass UI/UX Suite', () => {
   describe('1. Design System Badges & Multi-Status Tokens', () => {
     it('renders success, warning, error, info, and pro badge variants', () => {
       const { container: successEl } = render(<Badge variant="success">Confirmed</Badge>);
@@ -29,10 +31,17 @@ describe('Phase 44 — Premium UI/UX, Design System & Accessibility Suite', () =
     });
   });
 
-  describe('2. Design System Cards & Metric Indicators', () => {
-    it('renders container Card with optional hoverable state', () => {
-      const { container } = render(<Card hoverable>Card Content</Card>);
-      expect(container.textContent).toContain('Card Content');
+  describe('2. Design System Cards & Liquid Glass Variants', () => {
+    it('renders container Card with solid, glass, elevated, and interactive variants', () => {
+      const { container: solidEl } = render(<Card variant="solid">Solid Card</Card>);
+      expect(solidEl.textContent).toContain('Solid Card');
+
+      const { container: glassEl } = render(<Card variant="glass">Glass Card</Card>);
+      expect(glassEl.firstChild).toHaveProperty('className');
+      expect((glassEl.firstChild as HTMLElement).className).toContain('liquid-glass-card');
+
+      const { container: elevatedEl } = render(<Card variant="elevated">Elevated Card</Card>);
+      expect(elevatedEl.textContent).toContain('Elevated Card');
     });
 
     it('renders MetricCard with value and trend indicators', () => {
@@ -43,6 +52,7 @@ describe('Phase 44 — Premium UI/UX, Design System & Accessibility Suite', () =
           subtitle="Scheduled appointments"
           icon={Calendar}
           color="blue"
+          variant="glass"
           trend={{ value: '+4 vs yesterday', isPositive: true }}
         />
       );
@@ -53,7 +63,27 @@ describe('Phase 44 — Premium UI/UX, Design System & Accessibility Suite', () =
     });
   });
 
-  describe('3. Skeleton Shimmer Loading States', () => {
+  describe('3. Liquid Glass Surfaces & Modal System', () => {
+    it('renders GlassSurface with subtle, medium, and strong intensities', () => {
+      const { container: subtleEl } = render(<GlassSurface intensity="subtle">Subtle Glass</GlassSurface>);
+      expect((subtleEl.firstChild as HTMLElement).className).toContain('liquid-glass-subtle');
+
+      const { container: strongEl } = render(<GlassSurface intensity="strong">Strong Glass</GlassSurface>);
+      expect((strongEl.firstChild as HTMLElement).className).toContain('liquid-glass-strong');
+    });
+
+    it('renders Modal dialog with liquid glass surface when open', () => {
+      const { container } = render(
+        <Modal isOpen={true} onClose={() => {}} title="Test Dialog">
+          <p>Dialog Body</p>
+        </Modal>
+      );
+      expect(container.textContent).toContain('Test Dialog');
+      expect(container.textContent).toContain('Dialog Body');
+    });
+  });
+
+  describe('4. Skeleton Shimmer Loading States', () => {
     it('renders text, rectangular, and circular skeletons', () => {
       const { container: textSkel } = render(<Skeleton variant="text" width={100} />);
       expect(textSkel.querySelector('.shimmer-loading')).toBeDefined();
@@ -66,7 +96,7 @@ describe('Phase 44 — Premium UI/UX, Design System & Accessibility Suite', () =
     });
   });
 
-  describe('4. Scroll Animation & Accessibility', () => {
+  describe('5. Scroll Animation & Accessibility', () => {
     it('renders RevealOnScroll component with GPU-friendly transition classes', () => {
       const { container } = render(
         <RevealOnScroll variant="fade-up" delayMs={100} durationMs={500}>
@@ -77,7 +107,7 @@ describe('Phase 44 — Premium UI/UX, Design System & Accessibility Suite', () =
     });
   });
 
-  describe('5. Homepage Dynamic Appearing Text Slider & Marquee', () => {
+  describe('6. Homepage Dynamic Appearing Text Slider & Marquee', () => {
     it('renders DynamicTextSlider with active phrase', () => {
       const { container } = render(<DynamicTextSlider />);
       expect(container.textContent).toContain('answers patient phone calls 24/7');

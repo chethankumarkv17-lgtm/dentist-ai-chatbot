@@ -51,22 +51,22 @@ export function Modal({
       aria-labelledby={title ? 'modal-title' : undefined}
       className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
     >
-      {/* Backdrop */}
+      {/* Soft Tinted Glass Backdrop */}
       <div
-        className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity animate-fade-in"
+        className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity animate-fade-in"
         onClick={onClose}
       />
 
-      {/* Dialog Surface */}
+      {/* Liquid Glass Dialog Surface */}
       <div
-        className={`relative w-full ${maxWidthStyles[maxWidth]} bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden z-10 animate-fade-in max-h-[90vh] flex flex-col`}
+        className={`relative w-full ${maxWidthStyles[maxWidth]} bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-slate-200/80 overflow-hidden z-10 animate-fade-in max-h-[90vh] flex flex-col`}
       >
         {/* Header */}
         {(title || description) && (
-          <div className="flex items-start justify-between p-6 border-b border-slate-100">
+          <div className="flex items-start justify-between p-6 border-b border-slate-100/80 bg-slate-50/50">
             <div>
               {title && (
-                <h3 id="modal-title" className="text-lg font-bold text-slate-900">
+                <h3 id="modal-title" className="text-lg font-bold text-slate-900 tracking-tight">
                   {title}
                 </h3>
               )}
@@ -76,7 +76,7 @@ export function Modal({
             </div>
             <button
               onClick={onClose}
-              className="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors touch-target flex items-center justify-center"
+              className="p-2 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100/80 transition-colors touch-target flex items-center justify-center cursor-pointer"
               aria-label="Close dialog"
             >
               <X className="w-5 h-5" />
