@@ -23,7 +23,17 @@ export default function PublicLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="min-h-screen flex flex-col bg-white text-slate-900 font-sans selection:bg-blue-100 selection:text-blue-900">
+    <div className="min-h-screen flex flex-col bg-slate-50/70 text-slate-900 font-sans selection:bg-blue-100 selection:text-blue-900 relative">
+      {/* Background Liquid Atmosphere Gradients */}
+      <div
+        aria-hidden="true"
+        className="fixed inset-0 pointer-events-none overflow-hidden select-none -z-10"
+      >
+        <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-blue-500/10 rounded-full blur-3xl" />
+        <div className="absolute top-1/3 right-10 w-[500px] h-[500px] bg-indigo-500/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 left-10 w-[600px] h-[600px] bg-cyan-500/10 rounded-full blur-3xl" />
+      </div>
+
       <Navbar />
       <main className="flex-grow">{children}</main>
       <Footer />

@@ -79,7 +79,6 @@ export function DashboardLayoutClient({ userEmail, children }: DashboardLayoutCl
     },
   ];
 
-  // Quick bottom bar items for mobile screens
   const mobileBottomNav = [
     { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { label: 'Bookings', href: '/dashboard/appointments', icon: Calendar },
@@ -89,9 +88,18 @@ export function DashboardLayoutClient({ userEmail, children }: DashboardLayoutCl
   ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 font-sans">
-      {/* Top Header with Liquid Glass Blur */}
-      <header className="sticky top-0 z-40 h-16 bg-slate-900/95 backdrop-blur-md text-white flex items-center justify-between px-4 sm:px-6 border-b border-slate-800/80 shadow-xs">
+    <div className="min-h-screen flex flex-col bg-slate-50/80 text-slate-900 font-sans relative">
+      {/* Background Liquid Atmosphere Gradients for Dashboard */}
+      <div
+        aria-hidden="true"
+        className="fixed inset-0 pointer-events-none overflow-hidden select-none -z-10"
+      >
+        <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-blue-500/8 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/3 left-10 w-[500px] h-[500px] bg-indigo-500/8 rounded-full blur-3xl" />
+      </div>
+
+      {/* Top Header with Liquid Glass */}
+      <header className="sticky top-0 z-40 h-16 bg-slate-900/95 backdrop-blur-xl text-white flex items-center justify-between px-4 sm:px-6 border-b border-slate-800 shadow-md">
         <div className="flex items-center gap-3">
           {/* Mobile hamburger toggle */}
           <button
@@ -107,7 +115,7 @@ export function DashboardLayoutClient({ userEmail, children }: DashboardLayoutCl
               <Stethoscope className="w-4 h-4 text-white" />
             </div>
             <div>
-              <span className="font-extrabold text-sm sm:text-base tracking-tight text-white block leading-tight">
+              <span className="font-black text-sm sm:text-base tracking-tight text-white block leading-tight">
                 Radiant Nobel
               </span>
               <span className="text-[10px] font-bold text-blue-400 uppercase tracking-wider block">
@@ -139,8 +147,8 @@ export function DashboardLayoutClient({ userEmail, children }: DashboardLayoutCl
       </header>
 
       <div className="flex flex-1 overflow-hidden relative">
-        {/* Desktop Sidebar with Soft Liquid Glass Surface */}
-        <aside className="w-64 bg-white/85 backdrop-blur-md border-r border-slate-200/70 hidden md:flex md:flex-col overflow-y-auto shrink-0 select-none">
+        {/* Desktop Sidebar with True Liquid Glass Surface */}
+        <aside className="w-64 liquid-glass-strong border-r border-slate-200/80 hidden md:flex md:flex-col overflow-y-auto shrink-0 select-none">
           <div className="p-4 space-y-6 flex-1">
             {navSections.map((sec) => (
               <div key={sec.title} className="space-y-1">
@@ -157,8 +165,8 @@ export function DashboardLayoutClient({ userEmail, children }: DashboardLayoutCl
                         href={item.href}
                         className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all duration-200 ${
                           isActive
-                            ? 'bg-blue-50/90 text-blue-700 font-bold border border-blue-200/60 shadow-2xs'
-                            : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
+                            ? 'bg-blue-50/95 text-blue-700 font-black border border-blue-200 shadow-2xs'
+                            : 'text-slate-600 hover:text-slate-900 hover:bg-white/70'
                         }`}
                       >
                         <div className="flex items-center gap-2.5">
@@ -166,7 +174,7 @@ export function DashboardLayoutClient({ userEmail, children }: DashboardLayoutCl
                           <span>{item.label}</span>
                         </div>
                         {item.badge && (
-                          <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded-md bg-blue-100/80 text-blue-700 border border-blue-200/60">
+                          <span className="text-[10px] font-black px-1.5 py-0.5 rounded-md bg-blue-100/90 text-blue-700 border border-blue-200">
                             {item.badge}
                           </span>
                         )}
@@ -178,8 +186,8 @@ export function DashboardLayoutClient({ userEmail, children }: DashboardLayoutCl
             ))}
           </div>
 
-          <div className="p-4 border-t border-slate-200/60 bg-slate-50/50">
-            <div className="flex items-center gap-2 text-xs font-semibold text-slate-600">
+          <div className="p-4 border-t border-slate-200/70 bg-white/40">
+            <div className="flex items-center gap-2 text-xs font-bold text-slate-700">
               <Sparkles className="w-3.5 h-3.5 text-blue-600 animate-pulse" />
               <span>Omnichannel Dental AI</span>
             </div>
@@ -194,9 +202,9 @@ export function DashboardLayoutClient({ userEmail, children }: DashboardLayoutCl
               className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs transition-opacity"
               onClick={() => setMobileMenuOpen(false)}
             />
-            <div className="relative w-4/5 max-w-xs bg-white/95 backdrop-blur-xl border-r border-slate-200/80 p-4 overflow-y-auto z-10 flex flex-col justify-between shadow-2xl animate-fade-in">
+            <div className="relative w-4/5 max-w-xs liquid-glass-strong border-r border-slate-200 p-4 overflow-y-auto z-10 flex flex-col justify-between shadow-2xl animate-fade-in">
               <div className="space-y-6">
-                <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div className="flex items-center justify-between pb-3 border-b border-slate-200/60">
                   <span className="font-extrabold text-sm text-slate-900">Navigation Menu</span>
                   <button
                     onClick={() => setMobileMenuOpen(false)}
@@ -222,8 +230,8 @@ export function DashboardLayoutClient({ userEmail, children }: DashboardLayoutCl
                             onClick={() => setMobileMenuOpen(false)}
                             className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-colors ${
                               isActive
-                                ? 'bg-blue-50 text-blue-700 font-bold border border-blue-200/80'
-                                : 'text-slate-700 hover:bg-slate-100/80'
+                                ? 'bg-blue-50 text-blue-700 font-bold border border-blue-200'
+                                : 'text-slate-700 hover:bg-white/80'
                             }`}
                           >
                             <div className="flex items-center gap-2.5">
@@ -265,7 +273,7 @@ export function DashboardLayoutClient({ userEmail, children }: DashboardLayoutCl
       </div>
 
       {/* 1-Tap Mobile Bottom Navigation Bar with Liquid Glass */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/85 backdrop-blur-lg border-t border-slate-200/70 shadow-lg px-2 py-1.5 flex items-center justify-around select-none">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 liquid-glass-navbar border-t border-slate-200/80 shadow-2xl px-2 py-1.5 flex items-center justify-around select-none">
         {mobileBottomNav.map((btn) => {
           const Icon = btn.icon;
           const isActive = pathname === btn.href;
