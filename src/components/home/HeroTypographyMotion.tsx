@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Sparkles, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { DynamicTextSlider } from '@/components/home/DynamicTextSlider';
+import { HeroProductPreview } from '@/components/home/HeroProductPreview';
 
 export function HeroTypographyMotion() {
   const [mounted, setMounted] = useState(false);
@@ -24,14 +25,14 @@ export function HeroTypographyMotion() {
 
   return (
     <div className="relative z-10 max-w-5xl mx-auto text-center space-y-8">
-      {/* 1. Pill Badge */}
+      {/* 1. Spatial Pill Badge */}
       <div
         style={{
           transitionDelay: reducedMotion ? '0ms' : '0ms',
           transitionDuration: '750ms',
           transitionTimingFunction: 'cubic-bezier(0.22, 1, 0.36, 1)',
         }}
-        className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50/90 border border-blue-200/80 text-blue-700 text-xs font-bold shadow-2xs transition-all ${
+        className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full liquid-glass text-blue-700 text-xs font-black shadow-2xs transition-all ${
           mounted || reducedMotion ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'
         }`}
       >
@@ -39,9 +40,9 @@ export function HeroTypographyMotion() {
         <span className="tracking-wide uppercase text-[11px]">The Omnichannel Dental AI Suite • Website, WhatsApp & Voice</span>
       </div>
 
-      {/* 2. Main Hero Headline with Slow Staggered Reveal */}
-      <div className="space-y-3">
-        <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-[76px] font-black text-slate-900 tracking-[-0.035em] leading-[1.08] max-w-4xl mx-auto">
+      {/* 2. Main Hero Headline with 100% Guaranteed 24/7 AI Receptionist Visibility */}
+      <div className="space-y-4">
+        <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-[78px] font-black text-slate-900 tracking-[-0.035em] leading-[1.08] max-w-4xl mx-auto">
           {/* Line 1 standard word */}
           {line1Words.map((word) => {
             const idx = globalWordIndex++;
@@ -61,27 +62,25 @@ export function HeroTypographyMotion() {
               </span>
             );
           })}{' '}
-          {/* Gradient emphasized phrase */}
-          <span className="inline-block bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 bg-clip-text text-transparent drop-shadow-2xs">
-            {gradientWords.map((word) => {
-              const idx = globalWordIndex++;
-              return (
-                <span
-                  key={word}
-                  style={{
-                    transitionDelay: reducedMotion ? '0ms' : `${idx * 60}ms`,
-                    transitionDuration: '750ms',
-                    transitionTimingFunction: 'cubic-bezier(0.22, 1, 0.36, 1)',
-                  }}
-                  className={`inline-block mr-2.5 transition-all ${
-                    mounted || reducedMotion ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
-                  }`}
-                >
-                  {word}
-                </span>
-              );
-            })}
-          </span>
+          {/* Bright, 100% visible 24/7 AI Receptionist gradient phrase */}
+          {gradientWords.map((word) => {
+            const idx = globalWordIndex++;
+            return (
+              <span
+                key={word}
+                style={{
+                  transitionDelay: reducedMotion ? '0ms' : `${idx * 60}ms`,
+                  transitionDuration: '750ms',
+                  transitionTimingFunction: 'cubic-bezier(0.22, 1, 0.36, 1)',
+                }}
+                className={`inline-block mr-2.5 font-black bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 bg-clip-text text-transparent [box-decoration-break:clone] [-webkit-box-decoration-break:clone] transition-all transform ${
+                  mounted || reducedMotion ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
+                }`}
+              >
+                {word}
+              </span>
+            );
+          })}
           <br className="hidden sm:inline" />
           {/* Line 2 words */}
           {line2Words.map((word) => {
@@ -137,7 +136,7 @@ export function HeroTypographyMotion() {
         <span className="font-semibold text-slate-900">Voice Telephony</span> with real-time calendar synchronization.
       </p>
 
-      {/* 4. Interactive Call to Actions with Staggered Entrance */}
+      {/* 4. Interactive Call to Actions */}
       <div
         style={{
           transitionDelay: reducedMotion ? '0ms' : '420ms',
@@ -150,14 +149,14 @@ export function HeroTypographyMotion() {
       >
         <Link
           href="/signup"
-          className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-sm sm:text-base shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/35 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 group touch-target"
+          className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-black text-sm sm:text-base shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/35 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 group touch-target"
         >
           <span>Start 14-Day Free Trial</span>
           <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
         </Link>
         <Link
           href="/login"
-          className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 rounded-xl bg-white hover:bg-slate-50 text-slate-800 font-bold text-sm sm:text-base border border-slate-200 shadow-2xs hover:border-slate-300 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 touch-target"
+          className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 rounded-xl liquid-glass hover:liquid-glass-strong text-slate-800 font-bold text-sm sm:text-base border border-slate-200/80 shadow-2xs hover:border-slate-300 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 touch-target"
         >
           Enter Interactive Demo
         </Link>
@@ -170,7 +169,7 @@ export function HeroTypographyMotion() {
           transitionDuration: '1000ms',
           transitionTimingFunction: 'cubic-bezier(0.22, 1, 0.36, 1)',
         }}
-        className={`pt-6 flex flex-wrap items-center justify-center gap-5 sm:gap-8 text-xs font-semibold text-slate-500 transition-all ${
+        className={`pt-2 flex flex-wrap items-center justify-center gap-5 sm:gap-8 text-xs font-bold text-slate-500 transition-all ${
           mounted || reducedMotion ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
         }`}
       >
@@ -187,6 +186,9 @@ export function HeroTypographyMotion() {
           <span>Official WhatsApp Cloud API</span>
         </div>
       </div>
+
+      {/* 6. Realistic Floating Spatial Glass AI Receptionist Product Preview */}
+      <HeroProductPreview />
     </div>
   );
 }
