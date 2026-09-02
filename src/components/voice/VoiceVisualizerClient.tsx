@@ -1,9 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { PhoneCall, PhoneOff, AlertCircle } from 'lucide-react';
+import { PhoneCall, PhoneOff, AlertCircle, Mic, MicOff, Volume2, Sparkles } from 'lucide-react';
 import { Badge } from '@/components/ui/Badge';
-import { LiquidOrb, AIOrbState } from '@/components/ui/LiquidOrb';
 
 export type VoiceState = 'idle' | 'connecting' | 'listening' | 'thinking' | 'speaking' | 'ended';
 
@@ -41,13 +40,6 @@ export function VoiceVisualizerClient({ clinicName = 'Radiant Dental Clinic' }: 
     setTranscript('Call ended.');
   };
 
-  const getOrbState = (): AIOrbState => {
-    if (state === 'listening') return 'listening';
-    if (state === 'thinking') return 'thinking';
-    if (state === 'speaking') return 'responding';
-    return 'idle';
-  };
-
   return (
     <div className="liquid-glass-strong rounded-3xl p-6 sm:p-8 border border-white/80 shadow-2xl space-y-6 text-slate-900">
       <div className="flex items-center justify-between">
@@ -60,14 +52,36 @@ export function VoiceVisualizerClient({ clinicName = 'Radiant Dental Clinic' }: 
         </Badge>
       </div>
 
-      {/* 3D Liquid Orb Voice Centerpiece */}
-      <div className="flex flex-col items-center justify-center py-4 space-y-4">
-        <LiquidOrb
-          state={getOrbState()}
-          size="lg"
-          showStateLabel={false}
-          interactive={false}
-        />
+      {/* Clean Voice Visualizer Sphere with Glowing Acoustic Rings */}
+      <div className="flex flex-col items-center justify-center py-6 space-y-4">
+        <div className="relative flex items-center justify-center">
+          {state !== 'idle' && (
+            <>
+              <div className="absolute w-28 h-28 rounded-full bg-purple-500/20 animate-ping" />
+              <div className="absolute w-24 h-24 rounded-full bg-blue-500/30 animate-pulse" />
+            </>
+          )}
+
+          <div
+            className={`w-20 h-20 rounded-2xl flex items-center justify-center transition-all duration-300 shadow-md ${
+              state === 'idle'
+                ? 'bg-slate-100 text-slate-400 border border-slate-200'
+                : state === 'listening'
+                ? 'bg-emerald-600 text-white shadow-emerald-500/30'
+                : state === 'thinking'
+                ? 'bg-amber-600 text-white shadow-amber-500/30'
+                : state === 'speaking'
+                ? 'bg-purple-600 text-white shadow-purple-500/40'
+                : 'bg-blue-600 text-white shadow-blue-500/30'
+            }`}
+          >
+            {state === 'idle' && <MicOff className="w-8 h-8" />}
+            {state === 'connecting' && <PhoneCall className="w-8 h-8 animate-bounce" />}
+            {state === 'listening' && <Mic className="w-8 h-8" />}
+            {state === 'thinking' && <Sparkles className="w-8 h-8 animate-spin" />}
+            {state === 'speaking' && <Volume2 className="w-8 h-8" />}
+          </div>
+        </div>
 
         {/* State Label */}
         <p className="text-xs font-black tracking-wider uppercase text-slate-600">

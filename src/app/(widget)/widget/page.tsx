@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { MessageCircle, X, Send, RotateCcw, Calendar, Clock, Sparkles } from 'lucide-react';
-import { AIStatusOrb } from '@/components/ui/AIStatusOrb';
 
 interface Message {
   id: string;
@@ -142,22 +141,19 @@ function WidgetContent() {
 
   return (
     <div className="flex flex-col h-full w-full bg-white/95 backdrop-blur-xl sm:rounded-3xl shadow-2xl overflow-hidden border border-slate-200/80 animate-fade-in font-sans">
-      {/* Liquid Glass Header with AI Status Orb */}
+      {/* Liquid Glass Header */}
       <div
         className="flex items-center justify-between px-5 py-3.5 text-white shadow-xs"
         style={{ backgroundColor: config?.themeColor || '#2563eb' }}
       >
-        <div className="flex items-center gap-2.5">
-          <AIStatusOrb state={isLoading ? 'thinking' : 'idle'} showText={false} className="bg-white/20 border-white/40 text-white" />
-          <div className="flex flex-col">
-            <span className="font-extrabold text-sm sm:text-base tracking-tight leading-tight">
-              {config?.clinicName || 'AI Clinic Receptionist'}
-            </span>
-            <span className="text-[11px] opacity-95 font-semibold flex items-center gap-1 mt-0.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse" />
-              24/7 Live Scheduling
-            </span>
-          </div>
+        <div className="flex flex-col">
+          <span className="font-extrabold text-sm sm:text-base tracking-tight leading-tight">
+            {config?.clinicName || 'AI Clinic Receptionist'}
+          </span>
+          <span className="text-[11px] opacity-95 font-semibold flex items-center gap-1 mt-0.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse" />
+            24/7 Live Scheduling
+          </span>
         </div>
         <div className="flex items-center gap-1.5">
           <button
