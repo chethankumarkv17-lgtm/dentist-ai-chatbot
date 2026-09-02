@@ -111,11 +111,11 @@ export function HeroTypographyMotion() {
             transitionDuration: '750ms',
             transitionTimingFunction: 'cubic-bezier(0.22, 1, 0.36, 1)',
           }}
-          className={`flex flex-wrap items-center justify-center gap-2 text-base sm:text-xl md:text-2xl font-bold text-slate-700 tracking-tight transition-all ${
+          className={`flex flex-wrap items-baseline justify-center gap-x-2 gap-y-1 text-base sm:text-xl md:text-2xl font-bold text-slate-700 tracking-tight transition-all min-h-[1.75rem] sm:min-h-[2rem] ${
             mounted || reducedMotion ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
           }`}
         >
-          <span>Automates your clinic &amp;</span>
+          <span className="shrink-0">Automates your clinic &amp;</span>
           <DynamicTextSlider />
         </div>
       </div>
