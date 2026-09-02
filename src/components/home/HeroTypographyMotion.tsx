@@ -17,11 +17,7 @@ export function HeroTypographyMotion() {
     }
   }, []);
 
-  const line1Words = ['Autonomous'];
-  const gradientWords = ['24/7', 'AI', 'Receptionist'];
   const line2Words = ['for', 'Modern', 'Dental', 'Practices'];
-
-  let globalWordIndex = 0;
 
   return (
     <div className="relative z-10 max-w-5xl mx-auto text-center space-y-8">
@@ -40,67 +36,49 @@ export function HeroTypographyMotion() {
         <span className="tracking-wide uppercase text-[11px]">The Omnichannel Dental AI Suite • Website, WhatsApp & Voice</span>
       </div>
 
-      {/* 2. Main Hero Headline with 100% Guaranteed 24/7 AI Receptionist Visibility */}
+      {/* 2. Main Hero Headline with "24/7 AI Receptionist" strictly kept on a Single Unbroken Line */}
       <div className="space-y-4">
-        <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-[78px] font-black text-slate-900 tracking-[-0.035em] leading-[1.08] max-w-4xl mx-auto">
-          {/* Line 1 standard word */}
-          {line1Words.map((word) => {
-            const idx = globalWordIndex++;
-            return (
-              <span
-                key={word}
-                style={{
-                  transitionDelay: reducedMotion ? '0ms' : `${idx * 60}ms`,
-                  transitionDuration: '750ms',
-                  transitionTimingFunction: 'cubic-bezier(0.22, 1, 0.36, 1)',
-                }}
-                className={`inline-block mr-3 transition-all ${
-                  mounted || reducedMotion ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
-                }`}
-              >
-                {word}
-              </span>
-            );
-          })}{' '}
-          {/* Bright, 100% visible 24/7 AI Receptionist gradient phrase */}
-          {gradientWords.map((word) => {
-            const idx = globalWordIndex++;
-            return (
-              <span
-                key={word}
-                style={{
-                  transitionDelay: reducedMotion ? '0ms' : `${idx * 60}ms`,
-                  transitionDuration: '750ms',
-                  transitionTimingFunction: 'cubic-bezier(0.22, 1, 0.36, 1)',
-                }}
-                className={`inline-block mr-2.5 font-black bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 bg-clip-text text-transparent [box-decoration-break:clone] [-webkit-box-decoration-break:clone] transition-all transform ${
-                  mounted || reducedMotion ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
-                }`}
-              >
-                {word}
-              </span>
-            );
-          })}
-          <br className="hidden sm:inline" />
-          {/* Line 2 words */}
-          {line2Words.map((word) => {
-            const idx = globalWordIndex++;
-            return (
-              <span
-                key={word}
-                style={{
-                  transitionDelay: reducedMotion ? '0ms' : `${idx * 60}ms`,
-                  transitionDuration: '750ms',
-                  transitionTimingFunction: 'cubic-bezier(0.22, 1, 0.36, 1)',
-                }}
-                className={`inline-block mr-2.5 transition-all ${
-                  mounted || reducedMotion ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
-                }`}
-              >
-                {word}
-              </span>
-            );
-          })}
+        <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-[72px] font-black text-slate-900 tracking-[-0.035em] leading-[1.12] max-w-5xl mx-auto">
+          <span
+            style={{
+              transitionDelay: reducedMotion ? '0ms' : '0ms',
+              transitionDuration: '750ms',
+              transitionTimingFunction: 'cubic-bezier(0.22, 1, 0.36, 1)',
+            }}
+            className={`inline-block mr-2.5 transition-all ${
+              mounted || reducedMotion ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
+            }`}
+          >
+            Autonomous
+          </span>
+          <span
+            style={{
+              transitionDelay: reducedMotion ? '0ms' : '100ms',
+              transitionDuration: '750ms',
+              transitionTimingFunction: 'cubic-bezier(0.22, 1, 0.36, 1)',
+            }}
+            className={`whitespace-nowrap inline-block font-black bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 bg-clip-text text-transparent [box-decoration-break:clone] [-webkit-box-decoration-break:clone] px-1 transition-all transform ${
+              mounted || reducedMotion ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
+            }`}
+          >
+            24/7 AI Receptionist
+          </span>
+          <br className="hidden md:inline" />{' '}
+          {line2Words.map((word, idx) => (
+            <span
+              key={word}
+              style={{
+                transitionDelay: reducedMotion ? '0ms' : `${(idx + 3) * 60}ms`,
+                transitionDuration: '750ms',
+                transitionTimingFunction: 'cubic-bezier(0.22, 1, 0.36, 1)',
+              }}
+              className={`inline-block mr-2.5 transition-all ${
+                mounted || reducedMotion ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
+              }`}
+            >
+              {word}
+            </span>
+          ))}
         </h1>
 
         {/* Dynamic Appearing Text Slider */}
