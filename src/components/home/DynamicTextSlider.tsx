@@ -53,7 +53,6 @@ export function DynamicTextSlider({
       if (!mountedRef.current) return;
 
       if (reducedMotion) {
-        // For reduced motion: instant switch without sliding transforms
         setIndex((prev) => (prev + 1) % phrases.length);
         return;
       }
@@ -94,9 +93,9 @@ export function DynamicTextSlider({
 
     switch (phase) {
       case 'exiting':
-        return 'opacity-0 -translate-y-2.5 transition-all duration-300 ease-in';
+        return 'opacity-0 -translate-y-2 transition-all duration-300 ease-in';
       case 'entering':
-        return 'opacity-0 translate-y-2.5 transition-none';
+        return 'opacity-0 translate-y-2 transition-none';
       case 'visible':
       default:
         return 'opacity-100 translate-y-0 transition-all duration-400 ease-out';
@@ -105,7 +104,7 @@ export function DynamicTextSlider({
 
   return (
     <span
-      className={`inline-flex items-center justify-center text-center align-baseline relative ${className}`}
+      className={`inline align-baseline relative ${className}`}
       aria-live="polite"
       aria-atomic="true"
     >
@@ -113,7 +112,7 @@ export function DynamicTextSlider({
         style={{
           transitionTimingFunction: 'cubic-bezier(0.22, 1, 0.36, 1)',
         }}
-        className={`inline-block font-extrabold bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 bg-clip-text text-transparent transform will-change-[transform,opacity] ${getPhaseStyles()}`}
+        className={`inline font-black bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 bg-clip-text text-transparent [box-decoration-break:clone] [-webkit-box-decoration-break:clone] px-1 py-0.5 transform will-change-[transform,opacity] ${getPhaseStyles()}`}
       >
         {phrases[index]}
       </span>
