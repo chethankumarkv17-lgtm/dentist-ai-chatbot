@@ -90,16 +90,16 @@ export default function PricingPage() {
       <RevealOnScroll variant="fade-up" durationMs={500}>
         <div className="text-center max-w-3xl mx-auto space-y-4">
           <Badge variant="pro" size="md">Transparent Indian Pricing</Badge>
-          <h1 className="text-4xl sm:text-5xl font-extrabold text-slate-900 tracking-tight">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-slate-900 tracking-[-0.03em]">
             Predictable Practice Plans. Zero Surprises.
           </h1>
-          <p className="text-slate-600 text-base sm:text-lg">
+          <p className="text-slate-600 text-base sm:text-lg leading-relaxed">
             Start with our 14-day free trial. Upgrade or cancel anytime with Indian UPI, Netbanking, or Cards.
           </p>
 
           {/* Billing Cycle Toggle */}
           <div className="pt-6 flex items-center justify-center gap-4">
-            <span className={`text-sm font-bold ${!annual ? 'text-slate-900' : 'text-slate-500'}`}>
+            <span className={`text-sm font-extrabold ${!annual ? 'text-slate-900' : 'text-slate-500'}`}>
               Monthly Billing
             </span>
             <button
@@ -118,10 +118,10 @@ export default function PricingPage() {
               />
             </button>
             <div className="flex items-center gap-2">
-              <span className={`text-sm font-bold ${annual ? 'text-slate-900' : 'text-slate-500'}`}>
+              <span className={`text-sm font-extrabold ${annual ? 'text-slate-900' : 'text-slate-500'}`}>
                 Annual Billing
               </span>
-              <span className="text-xs font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">
+              <span className="text-xs font-black text-emerald-800 bg-emerald-100/90 border border-emerald-200 px-2.5 py-0.5 rounded-full shadow-2xs">
                 Save 20%
               </span>
             </div>
@@ -129,45 +129,45 @@ export default function PricingPage() {
         </div>
       </RevealOnScroll>
 
-      {/* Plan Cards */}
+      {/* Plan Cards with Liquid Glass */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
         {plans.map((p, idx) => {
           const price = annual ? p.annualPrice : p.monthlyPrice;
           return (
-            <RevealOnScroll key={p.key} variant="fade-up" delayMs={idx * 150} durationMs={550}>
+            <RevealOnScroll key={p.key} variant="fade-up" delayMs={idx * 120} durationMs={600}>
               <div
-                className={`relative bg-white rounded-3xl p-8 border flex flex-col justify-between h-full transition-all duration-200 ${
+                className={`relative rounded-3xl p-8 flex flex-col justify-between h-full transition-all duration-300 ${
                   p.popular
-                    ? 'border-blue-600 ring-2 ring-blue-600/20 shadow-xl shadow-blue-500/10'
-                    : 'border-slate-200 shadow-sm hover:shadow-md'
+                    ? 'liquid-glass-strong border-2 border-blue-500/80 shadow-2xl scale-[1.02] z-10'
+                    : 'liquid-glass-card hover:border-slate-300'
                 }`}
               >
                 {p.badge && (
                   <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                    <span className="bg-blue-600 text-white text-xs font-extrabold px-3.5 py-1 rounded-full shadow-md">
+                    <span className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-black px-4 py-1 rounded-full shadow-md shadow-blue-500/30">
                       {p.badge}
                     </span>
                   </div>
                 )}
 
                 <div>
-                  <h3 className="text-xl font-extrabold text-slate-900">{p.name}</h3>
+                  <h3 className="text-xl font-black text-slate-900 tracking-tight">{p.name}</h3>
                   <p className="text-xs text-slate-500 mt-1 min-h-[36px]">{p.description}</p>
 
-                  <div className="mt-6 mb-8 pb-6 border-b border-slate-100">
+                  <div className="mt-6 mb-8 pb-6 border-b border-slate-200/70">
                     <div className="flex items-baseline gap-1">
                       <span className="text-4xl sm:text-5xl font-black text-slate-900">₹{price.toLocaleString('en-IN')}</span>
-                      <span className="text-xs font-semibold text-slate-500">/month</span>
+                      <span className="text-xs font-bold text-slate-500">/month</span>
                     </div>
-                    <p className="text-[11px] text-slate-400 mt-1">
+                    <p className="text-[11px] text-slate-400 mt-1 font-medium">
                       {annual ? 'Billed annually with 20% savings' : 'Billed monthly, cancel anytime'}
                     </p>
                   </div>
 
                   <div className="space-y-3">
-                    <p className="text-xs font-bold text-slate-900 uppercase tracking-wider">Features Included:</p>
+                    <p className="text-xs font-black text-slate-900 uppercase tracking-wider">Features Included:</p>
                     {p.features.map((feat) => (
-                      <div key={feat} className="flex items-start gap-2.5 text-xs text-slate-700 font-medium">
+                      <div key={feat} className="flex items-start gap-2.5 text-xs text-slate-700 font-semibold">
                         <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                         <span>{feat}</span>
                       </div>
@@ -175,12 +175,12 @@ export default function PricingPage() {
                   </div>
                 </div>
 
-                <div className="pt-8 mt-8 border-t border-slate-100">
+                <div className="pt-8 mt-8 border-t border-slate-200/70">
                   <Link
                     href={p.href}
-                    className={`w-full inline-flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl font-bold text-sm transition-all shadow-sm ${
+                    className={`w-full inline-flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl font-extrabold text-sm transition-all shadow-md touch-target cursor-pointer ${
                       p.popular
-                        ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-blue-500/25'
+                        ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-blue-500/25'
                         : 'bg-slate-900 hover:bg-slate-800 text-white'
                     }`}
                   >
@@ -196,12 +196,12 @@ export default function PricingPage() {
 
       {/* Payment Methods Notice */}
       <RevealOnScroll variant="fade-up" durationMs={450}>
-        <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-6 text-center max-w-3xl mx-auto space-y-2">
-          <div className="flex items-center justify-center gap-2 text-xs font-bold text-slate-800">
+        <div className="liquid-glass rounded-2xl p-6 text-center max-w-3xl mx-auto space-y-2 border border-slate-200/80">
+          <div className="flex items-center justify-center gap-2 text-xs font-extrabold text-slate-900">
             <ShieldCheck className="w-4 h-4 text-blue-600" />
             <span>Supported Payment Methods in India</span>
           </div>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-slate-600 font-medium">
             UPI Intent (Google Pay, PhonePe, Paytm), Dynamic UPI QR, Net Banking (50+ Banks), Visa, Mastercard, RuPay & RBI e-Mandates.
           </p>
         </div>

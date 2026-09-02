@@ -5,20 +5,29 @@ import { Stethoscope, ArrowRight, ShieldCheck, CheckCircle2 } from 'lucide-react
 
 export default function SignupPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4 py-12">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-100 animate-fade-in">
+    <div className="min-h-screen flex items-center justify-center p-4 py-12 relative overflow-hidden">
+      {/* Background Liquid Atmosphere */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 pointer-events-none overflow-hidden select-none -z-10"
+      >
+        <div className="absolute top-1/4 right-1/3 w-[600px] h-[600px] bg-blue-500/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 left-1/4 w-[500px] h-[500px] bg-indigo-500/10 rounded-full blur-3xl" />
+      </div>
+
+      <div className="max-w-md w-full liquid-glass-strong rounded-3xl shadow-2xl overflow-hidden border border-white/80 animate-fade-in relative z-10">
         {/* Header */}
-        <div className="bg-slate-900 p-6 text-center text-white border-b border-slate-800">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-blue-600 mb-3 shadow-lg shadow-blue-500/30">
+        <div className="bg-slate-900/90 backdrop-blur-md p-6 text-center text-white border-b border-slate-800">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 mb-3 shadow-lg shadow-blue-500/30">
             <Stethoscope className="w-6 h-6 text-white" />
           </div>
-          <h1 className="text-xl font-bold tracking-tight">Create Practice Account</h1>
-          <p className="text-xs text-slate-400 mt-1">Start your 14-day free trial. No credit card required.</p>
+          <h1 className="text-xl font-black tracking-tight text-white">Create Practice Account</h1>
+          <p className="text-xs text-slate-300 mt-1 font-medium">Start your 14-day free trial. No credit card required.</p>
         </div>
 
         <div className="p-8 space-y-6">
-          {/* Trust points */}
-          <div className="bg-blue-50/70 border border-blue-100 rounded-xl p-3.5 space-y-2 text-xs text-blue-900 font-medium">
+          {/* Trust points with Liquid Glass */}
+          <div className="bg-blue-50/90 border border-blue-200/80 rounded-2xl p-3.5 space-y-2 text-xs text-blue-900 font-bold shadow-2xs">
             <div className="flex items-center gap-2">
               <CheckCircle2 className="w-3.5 h-3.5 text-blue-600 shrink-0" />
               <span>Full 24/7 AI Receptionist & Chatbot</span>
@@ -32,66 +41,66 @@ export default function SignupPage() {
           <form action={signup} className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">First Name</label>
+                <label className="block text-xs font-black text-slate-800 mb-1">First Name</label>
                 <input
                   name="first_name"
                   type="text"
                   required
                   placeholder="Dr. Rahul"
-                  className="w-full px-3.5 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
+                  className="w-full px-3.5 py-2.5 liquid-glass-input rounded-xl text-sm focus:outline-none transition-all"
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Last Name</label>
+                <label className="block text-xs font-black text-slate-800 mb-1">Last Name</label>
                 <input
                   name="last_name"
                   type="text"
                   required
                   placeholder="Deshpande"
-                  className="w-full px-3.5 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
+                  className="w-full px-3.5 py-2.5 liquid-glass-input rounded-xl text-sm focus:outline-none transition-all"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">Clinic Work Email</label>
+              <label className="block text-xs font-black text-slate-800 mb-1">Clinic Work Email</label>
               <input
                 name="email"
                 type="email"
                 required
                 placeholder="dentist@apexdental.com"
-                className="w-full px-3.5 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
+                className="w-full px-3.5 py-2.5 liquid-glass-input rounded-xl text-sm focus:outline-none transition-all"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">Create Password</label>
+              <label className="block text-xs font-black text-slate-800 mb-1">Create Password</label>
               <input
                 name="password"
                 type="password"
                 required
                 placeholder="••••••••"
-                className="w-full px-3.5 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
+                className="w-full px-3.5 py-2.5 liquid-glass-input rounded-xl text-sm focus:outline-none transition-all"
               />
             </div>
 
             <button
               type="submit"
-              className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold shadow-md shadow-blue-500/25 transition-all group touch-target"
+              className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-sm font-black shadow-md shadow-blue-500/25 transition-all group touch-target cursor-pointer"
             >
               <span>Create Practice & Onboard</span>
               <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
             </button>
           </form>
 
-          <div className="pt-2 text-center text-xs text-slate-500">
+          <div className="pt-2 text-center text-xs text-slate-600 font-medium">
             Already have an account?{' '}
-            <Link href="/login" className="text-blue-600 font-bold hover:underline">
+            <Link href="/login" className="text-blue-600 font-black hover:underline">
               Sign In to Practice
             </Link>
           </div>
 
-          <div className="pt-2 border-t border-slate-100 flex items-center justify-center gap-1.5 text-[11px] text-slate-400">
+          <div className="pt-2 border-t border-slate-200/60 flex items-center justify-center gap-1.5 text-[11px] text-slate-400 font-medium">
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
             <span>Encrypted • HIPAA & Razorpay Compliant</span>
           </div>
