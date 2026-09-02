@@ -119,4 +119,31 @@ describe('Phase 44 & Liquid Glass UI/UX Suite', () => {
       expect(container.textContent).toContain('Official WhatsApp Business Cloud API');
     });
   });
+
+  describe('7. Liquid Glass 3D AI Orb & Status Widgets', () => {
+    it('renders LiquidOrb in idle state and responds to interactive state change', async () => {
+      const { LiquidOrb } = await import('@/components/ui/LiquidOrb');
+      const { container } = render(<LiquidOrb state="idle" size="hero" showStateLabel={true} interactive={true} />);
+      expect(container.textContent).toContain('AI Receptionist');
+      expect(container.textContent).toContain('Autonomous 24/7 Practice Copilot');
+    });
+
+    it('renders LiquidOrb across listening, thinking, and responding states', async () => {
+      const { LiquidOrb } = await import('@/components/ui/LiquidOrb');
+      const { container: listening } = render(<LiquidOrb state="listening" size="md" showStateLabel={true} />);
+      expect(listening.textContent).toContain('Listening...');
+
+      const { container: thinking } = render(<LiquidOrb state="thinking" size="md" showStateLabel={true} />);
+      expect(thinking.textContent).toContain('Thinking...');
+
+      const { container: responding } = render(<LiquidOrb state="responding" size="md" showStateLabel={true} />);
+      expect(responding.textContent).toContain('Responding...');
+    });
+
+    it('renders AIStatusOrb compact widget', async () => {
+      const { AIStatusOrb } = await import('@/components/ui/AIStatusOrb');
+      const { container } = render(<AIStatusOrb state="idle" showText={true} />);
+      expect(container.textContent).toContain('AI Receptionist Active');
+    });
+  });
 });

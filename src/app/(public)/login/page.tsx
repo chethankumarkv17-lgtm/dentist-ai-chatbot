@@ -1,11 +1,12 @@
 import React from 'react';
 import Link from 'next/link';
 import { login, quickDemoLogin } from '@/app/actions/auth';
-import { Sparkles, ArrowRight, ShieldCheck, Stethoscope } from 'lucide-react';
+import { Sparkles, ArrowRight, ShieldCheck } from 'lucide-react';
+import { LiquidOrb } from '@/components/ui/LiquidOrb';
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen flex flex-col items-center justify-center p-4 relative overflow-hidden py-12">
       {/* Background Liquid Atmosphere */}
       <div
         aria-hidden="true"
@@ -15,14 +16,24 @@ export default function LoginPage() {
         <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-indigo-500/10 rounded-full blur-3xl" />
       </div>
 
+      {/* Floating 3D Liquid Orb Above Card */}
+      <div className="mb-4 relative z-10 flex flex-col items-center animate-fade-in">
+        <LiquidOrb
+          state="idle"
+          size="md"
+          showStateLabel={false}
+          interactive={false}
+        />
+        <span className="text-[11px] font-black uppercase tracking-widest text-slate-400 mt-1">
+          AI Receptionist Access
+        </span>
+      </div>
+
       <div className="max-w-md w-full liquid-glass-strong rounded-3xl shadow-2xl overflow-hidden border border-white/80 animate-fade-in relative z-10">
         {/* Header with Liquid Glass Gradient */}
         <div className="bg-slate-900/90 backdrop-blur-md p-6 text-center text-white border-b border-slate-800">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 mb-3 shadow-lg shadow-blue-500/30">
-            <Stethoscope className="w-6 h-6 text-white" />
-          </div>
-          <h1 className="text-xl font-black tracking-tight text-white">Radiant Nobel</h1>
-          <p className="text-xs text-slate-300 mt-1 font-medium">Autonomous 24/7 AI Receptionist Platform</p>
+          <h1 className="text-xl font-black tracking-tight text-white">Welcome Back</h1>
+          <p className="text-xs text-slate-300 mt-1 font-medium">Sign in to manage your 24/7 AI Receptionist & practice</p>
         </div>
 
         <div className="p-8 space-y-6">

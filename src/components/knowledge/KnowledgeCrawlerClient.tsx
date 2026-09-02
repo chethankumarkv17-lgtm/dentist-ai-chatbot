@@ -29,6 +29,7 @@ import {
   deleteKnowledgeBaseAction,
 } from '@/app/actions/knowledge';
 import { StructuredExtractionResult } from '@/lib/knowledge/extractor';
+import { LiquidOrb, AIOrbState } from '@/components/ui/LiquidOrb';
 
 interface KnowledgeCrawlerClientProps {
   clinicId: string;
@@ -58,6 +59,7 @@ export function KnowledgeCrawlerClient({ clinicId, initialSource }: KnowledgeCra
   const [activeTab, setActiveTab] = useState<'overview' | 'services' | 'dentists' | 'hours' | 'faqs' | 'test'>('overview');
   const [isScanning, setIsScanning] = useState(false);
   const [scanStep, setScanStep] = useState<string>('');
+  const [orbScanState, setOrbScanState] = useState<AIOrbState>('idle');
   const [isPublishing, setIsPublishing] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
@@ -78,17 +80,26 @@ export function KnowledgeCrawlerClient({ clinicId, initialSource }: KnowledgeCra
 
     setIsScanning(true);
     setFeedback(null);
-    setScanStep('Validating website URL and security policies...');
+    setOrbScanState('listening');
+    setScanStep('Scanning your clinic...');
 
     try {
-      setTimeout(() => setScanStep('Crawling permitted public HTML pages...'), 1200);
-      setTimeout(() => setScanStep('Extracting clinical metadata, treatments & hours...'), 2400);
+      setTimeout(() => {
+        setOrbScanState('thinking');
+        setScanStep('Reading clinic information...');
+      }, 1200);
+
+      setTimeout(() => {
+        setOrbScanState('responding');
+        setScanStep('Building your AI receptionist...');
+      }, 2400);
 
       const res = await scanWebsiteAction(clinicId, url);
 
       if (!res.success || !res.extracted) {
         setFeedback({ type: 'error', message: res.error || 'Website scan failed.' });
         setIsScanning(false);
+        setOrbScanState('idle');
         return;
       }
 
@@ -98,15 +109,17 @@ export function KnowledgeCrawlerClient({ clinicId, initialSource }: KnowledgeCra
       setPagesCount(res.pagesDiscovered || 1);
       setWarnings(res.warnings || []);
       setLastScannedAt(new Date().toISOString());
+      setOrbScanState('idle');
+      setScanStep('Your AI receptionist is ready!');
       setFeedback({
         type: 'success',
         message: `Successfully crawled ${res.pagesDiscovered} pages! Review the extracted clinical knowledge below.`,
       });
     } catch (err: unknown) {
       setFeedback({ type: 'error', message: (err as Error)?.message || 'Scan error occurred.' });
+      setOrbScanState('idle');
     } finally {
       setIsScanning(false);
-      setScanStep('');
     }
   };
 
@@ -306,14 +319,22 @@ export function KnowledgeCrawlerClient({ clinicId, initialSource }: KnowledgeCra
           </div>
 
           {isScanning && (
-            <div className="pt-2 flex items-center gap-2 text-xs font-semibold text-blue-600 animate-pulse">
-              <Sparkles className="w-4 h-4" />
-              <span>{scanStep || 'Processing website pages...'}</span>
+            <div className="p-6 rounded-2xl liquid-glass border border-blue-200/80 flex flex-col items-center justify-center text-center space-y-4 animate-fade-in shadow-md">
+              <LiquidOrb
+                state={orbScanState}
+                size="md"
+                showStateLabel={false}
+                interactive={false}
+              />
+              <div className="space-y-1">
+                <p className="text-sm font-black text-slate-900 tracking-tight">{scanStep}</p>
+                <p className="text-xs text-slate-500">Autonomous clinical entity & schedule extraction in progress</p>
+              </div>
             </div>
           )}
 
           {lastScannedAt && (
-            <p className="text-[11px] text-slate-500">
+            <p className="text-[11px] text-slate-500 font-medium">
               Last scanned: {new Date(lastScannedAt).toLocaleString()} • {pagesCount} pages discovered
             </p>
           )}

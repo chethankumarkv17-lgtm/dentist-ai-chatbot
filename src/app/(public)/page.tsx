@@ -22,7 +22,7 @@ import { Card } from '@/components/ui/Card';
 import { GlassSurface } from '@/components/ui/GlassSurface';
 import { RevealOnScroll } from '@/components/ui/RevealOnScroll';
 import { HeroBackgroundMotion } from '@/components/home/HeroBackgroundMotion';
-import { HeroTypographyMotion } from '@/components/home/HeroTypographyMotion';
+import { HeroLiquidGlass } from '@/components/home/HeroLiquidGlass';
 import { CapabilitiesMarquee } from '@/components/home/CapabilitiesMarquee';
 
 export default function LandingPage() {
@@ -98,11 +98,9 @@ export default function LandingPage() {
   return (
     <div className="space-y-24 sm:space-y-32 pb-20 overflow-hidden">
       {/* 1. CINEMATIC HERO SECTION WITH MOTION GRAPHICS */}
-      <section className="relative overflow-hidden pt-12 sm:pt-24 pb-16 sm:pb-24 bg-gradient-to-b from-slate-50/70 via-white to-slate-50/70 border-b border-slate-100">
+      <section className="relative overflow-hidden pt-6 sm:pt-16 pb-16 sm:pb-24 border-b border-slate-100">
         <HeroBackgroundMotion />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <HeroTypographyMotion />
-        </div>
+        <HeroLiquidGlass />
       </section>
 
       {/* CONTINUOUS CAPABILITIES MARQUEE TEXT SLIDER */}
