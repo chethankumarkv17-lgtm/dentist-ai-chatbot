@@ -76,8 +76,8 @@ export function TeamCarousel({ onSelectMember }: TeamCarouselProps) {
         const step = getStep();
         const singleSetWidth = step * teamMembers.length;
 
-        // Gentle constant speed: 36px per second
-        offsetRef.current -= (36 * delta) / 1000;
+        // Fluid continuous speed: 70px per second (comfortably fast & readable)
+        offsetRef.current -= (70 * delta) / 1000;
 
         // Invisible wrap when Set 2 completes into Set 3
         if (offsetRef.current <= -2 * singleSetWidth) {
@@ -108,7 +108,7 @@ export function TeamCarousel({ onSelectMember }: TeamCarouselProps) {
     resumeTimerRef.current = setTimeout(() => {
       isAnimatingTransitionRef.current = false;
       setIsPaused(false);
-    }, 3000);
+    }, 2200);
   }, []);
 
   // Smoothly slide to a specific target offset with transition
@@ -121,7 +121,7 @@ export function TeamCarousel({ onSelectMember }: TeamCarouselProps) {
     const step = getStep();
     const singleSetWidth = step * teamMembers.length;
 
-    trackRef.current.style.transition = 'transform 420ms cubic-bezier(0.22, 1, 0.36, 1)';
+    trackRef.current.style.transition = 'transform 350ms cubic-bezier(0.22, 1, 0.36, 1)';
     trackRef.current.style.transform = `translate3d(${targetOffset}px, 0, 0)`;
     offsetRef.current = targetOffset;
 
@@ -149,7 +149,7 @@ export function TeamCarousel({ onSelectMember }: TeamCarouselProps) {
       }
       isAnimatingTransitionRef.current = false;
       scheduleResume();
-    }, 440);
+    }, 370);
   }, [getStep, scheduleResume]);
 
   // Back / Previous Button Handler (Always shifts backwards by 1 card)
