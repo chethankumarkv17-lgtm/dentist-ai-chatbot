@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Sparkles, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { DynamicTextSlider } from '@/components/home/DynamicTextSlider';
 import { HeroProductPreview } from '@/components/home/HeroProductPreview';
+import { LiquidButton } from '@/components/ui/liquid-glass-button';
 
 export function HeroTypographyMotion() {
   const [mounted, setMounted] = useState(false);
@@ -125,18 +126,25 @@ export function HeroTypographyMotion() {
           mounted || reducedMotion ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
         }`}
       >
-        <Link
-          href="/signup"
-          className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-black text-sm sm:text-base shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/35 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 group touch-target"
-        >
-          <span>Start 14-Day Free Trial</span>
-          <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+        <Link href="/signup" className="w-full sm:w-auto inline-block">
+          <LiquidButton
+            size="xl"
+            className="w-full sm:w-auto font-black text-sm sm:text-base px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/35 rounded-xl touch-target group"
+          >
+            <span className="inline-flex items-center gap-2.5">
+              <span>Start 14-Day Free Trial</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+            </span>
+          </LiquidButton>
         </Link>
-        <Link
-          href="/login"
-          className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 rounded-xl liquid-glass hover:liquid-glass-strong text-slate-800 font-bold text-sm sm:text-base border border-slate-200/80 shadow-2xs hover:border-slate-300 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 touch-target"
-        >
-          Enter Interactive Demo
+        <Link href="/login" className="w-full sm:w-auto inline-block">
+          <LiquidButton
+            size="xl"
+            variant="default"
+            className="w-full sm:w-auto font-bold text-sm sm:text-base px-8 py-4 text-slate-800 rounded-xl liquid-glass hover:liquid-glass-strong border border-slate-200/80 shadow-2xs hover:border-slate-300 touch-target"
+          >
+            <span>Enter Interactive Demo</span>
+          </LiquidButton>
         </Link>
       </div>
 
