@@ -428,7 +428,7 @@ body {
   display: flex;
   width: max-content;
   will-change: transform;
-  animation: teamTrackSlide 22s linear infinite;
+  animation: teamTrackSlide 28s linear infinite;
 }
 
 .animate-team-infinite:hover,
