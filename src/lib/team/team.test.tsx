@@ -27,6 +27,7 @@ describe('Editorial Team Members Suite (Light Theme & Infinite Carousel)', () =>
         expect(member.name).toBeTruthy();
         expect(member.role).toBeTruthy();
         expect(member.image).toMatch(/^\/team\/[a-z0-9-]+\.webp$/);
+        expect(member.email).toMatch(/^[a-z0-9.]+@gmail\.com$/);
         expect(member.description).toBeTruthy();
         expect(member.linkedin).toBeTruthy();
       });
@@ -37,6 +38,7 @@ describe('Editorial Team Members Suite (Light Theme & Infinite Carousel)', () =>
       expect(chethan).toBeDefined();
       expect(chethan?.role).toContain('AI/ML');
       expect(chethan?.image).toBe('/team/chethan.webp');
+      expect(chethan?.email).toBe('chethankumar.ai@gmail.com');
     });
   });
 
@@ -97,7 +99,7 @@ describe('Editorial Team Members Suite (Light Theme & Infinite Carousel)', () =>
   });
 
   describe('4. TeamCard Component', () => {
-    it('renders member name, index, role, description, and accessible LinkedIn link', () => {
+    it('renders member name, index, role, description, email, and accessible LinkedIn link', () => {
       const mockSelect = vi.fn();
       const member = teamMembers[0];
 
@@ -106,6 +108,7 @@ describe('Editorial Team Members Suite (Light Theme & Infinite Carousel)', () =>
       expect(screen.getByText(member.index)).toBeDefined();
       expect(screen.getByText(member.name)).toBeDefined();
       expect(screen.getByText(member.role)).toBeDefined();
+      expect(screen.getByText(member.email!)).toBeDefined();
       expect(screen.getByText(member.description)).toBeDefined();
 
       const linkedinLink = screen.getByLabelText(new RegExp(`LinkedIn profile of ${member.name}`, 'i'));
@@ -127,7 +130,7 @@ describe('Editorial Team Members Suite (Light Theme & Infinite Carousel)', () =>
   });
 
   describe('5. TeamModal Component', () => {
-    it('renders expanded profile details with bio and skill chips when active', () => {
+    it('renders expanded profile details with bio, email, and skill chips when active', () => {
       const mockClose = vi.fn();
       const member = teamMembers[0];
 
@@ -135,6 +138,7 @@ describe('Editorial Team Members Suite (Light Theme & Infinite Carousel)', () =>
 
       expect(screen.getByRole('dialog')).toBeDefined();
       expect(screen.getByText(member.name)).toBeDefined();
+      expect(screen.getByText(member.email!)).toBeDefined();
       expect(screen.getByText(/Overview & Focus/i)).toBeDefined();
 
       member.skills?.forEach((skill) => {

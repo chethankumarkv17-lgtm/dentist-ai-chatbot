@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { ArrowUpRight, User } from 'lucide-react';
+import { ArrowUpRight, User, Mail } from 'lucide-react';
 import { TeamMember } from '@/data/teamMembers';
 
 interface TeamCardProps {
@@ -64,7 +64,7 @@ export function TeamCard({ member, onSelect, className = '' }: TeamCardProps) {
 
       {/* 2. Editorial Info Section */}
       <div className="p-5 sm:p-6 flex flex-col justify-between flex-1 space-y-4">
-        <div className="space-y-3">
+        <div className="space-y-2.5">
           {/* Index in Technical Monospace + Muted Tag */}
           <div className="flex items-center justify-between">
             <span className="font-mono text-xs font-bold px-2 py-0.5 rounded-sm bg-blue-50 text-blue-700 border border-blue-200/80">
@@ -85,13 +85,28 @@ export function TeamCard({ member, onSelect, className = '' }: TeamCardProps) {
             {member.role}
           </p>
 
+          {/* Gmail / Contact Link */}
+          {member.email && (
+            <div className="pt-0.5">
+              <a
+                href={`mailto:${member.email}`}
+                onClick={(e) => e.stopPropagation()}
+                aria-label={`Send email to ${member.name} at ${member.email}`}
+                className="inline-flex items-center gap-1.5 text-xs font-mono text-slate-600 hover:text-blue-600 bg-slate-50 hover:bg-blue-50/80 border border-slate-200/90 hover:border-blue-200 px-2.5 py-1 rounded-md transition-colors w-fit max-w-full truncate group/email"
+              >
+                <Mail className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                <span className="truncate">{member.email}</span>
+              </a>
+            </div>
+          )}
+
           {/* Description */}
-          <p className="text-xs sm:text-sm text-slate-600 font-normal leading-relaxed line-clamp-3">
+          <p className="text-xs sm:text-sm text-slate-600 font-normal leading-relaxed line-clamp-3 pt-1">
             {member.description}
           </p>
         </div>
 
-        {/* 3. Footer with LinkedIn Link */}
+        {/* 3. Footer with LinkedIn & Details Quick Actions */}
         <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
           <a
             href={member.linkedin}

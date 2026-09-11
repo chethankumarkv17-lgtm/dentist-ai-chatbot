@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { X, ArrowUpRight, CheckCircle2, User } from 'lucide-react';
+import { X, ArrowUpRight, CheckCircle2, User, Mail } from 'lucide-react';
 import { TeamMember } from '@/data/teamMembers';
 
 interface TeamModalProps {
@@ -116,6 +116,18 @@ export function TeamModal({ member, onClose }: TeamModalProps) {
               <p className="text-xs font-mono uppercase text-blue-600 font-bold tracking-wider mt-1">
                 {member.role}
               </p>
+
+              {member.email && (
+                <div className="mt-2.5">
+                  <a
+                    href={`mailto:${member.email}`}
+                    className="inline-flex items-center gap-1.5 text-xs font-mono text-slate-700 hover:text-blue-600 bg-slate-50 hover:bg-blue-50/80 border border-slate-200 px-2.5 py-1 rounded-md transition-colors"
+                  >
+                    <Mail className="w-3.5 h-3.5 text-blue-600" />
+                    <span>{member.email}</span>
+                  </a>
+                </div>
+              )}
             </div>
 
             <div className="pt-2 border-t border-slate-100 space-y-1.5">
@@ -147,18 +159,29 @@ export function TeamModal({ member, onClose }: TeamModalProps) {
               </div>
             )}
 
-            {/* LinkedIn CTA */}
-            <div className="pt-4 border-t border-slate-100">
+            {/* Action CTAs: LinkedIn + Email */}
+            <div className="pt-4 border-t border-slate-100 flex flex-wrap items-center gap-3">
               <a
                 href={member.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={`Open ${member.name} LinkedIn profile in a new tab`}
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-mono font-bold tracking-wider uppercase rounded-xl transition-all duration-300 shadow-sm group touch-target"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-mono font-bold tracking-wider uppercase rounded-xl transition-all duration-300 shadow-sm group touch-target"
               >
-                <span>Connect on LinkedIn</span>
+                <span>LinkedIn</span>
                 <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
               </a>
+
+              {member.email && (
+                <a
+                  href={`mailto:${member.email}`}
+                  aria-label={`Send email to ${member.name}`}
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 hover:bg-blue-100/80 text-blue-700 border border-blue-200/80 text-xs font-mono font-bold tracking-wider uppercase rounded-xl transition-all duration-300 shadow-2xs touch-target"
+                >
+                  <Mail className="w-4 h-4 text-blue-600" />
+                  <span>Send Email</span>
+                </a>
+              )}
             </div>
           </div>
         </div>
@@ -166,3 +189,4 @@ export function TeamModal({ member, onClose }: TeamModalProps) {
     </div>
   );
 }
+
