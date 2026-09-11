@@ -60,13 +60,21 @@ export function TeamModal({ member, onClose }: TeamModalProps) {
         {/* Top Blue Accent Line */}
         <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-blue-600 to-indigo-600" />
 
-        {/* Header with Close button */}
+        {/* Header with Back & Close button */}
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Back to team overview"
+              className="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-mono font-bold rounded-lg transition-colors cursor-pointer mr-1"
+            >
+              <span>← Back</span>
+            </button>
             <span className="font-mono text-xs font-bold px-2.5 py-0.5 rounded-sm bg-blue-50 text-blue-700 border border-blue-200/80 uppercase tracking-wider">
               {member.index} / PROFILE
             </span>
-            <span className="text-[11px] font-mono text-slate-400 uppercase tracking-widest font-semibold">
+            <span className="text-[11px] font-mono text-slate-400 uppercase tracking-widest font-semibold hidden sm:inline">
               TECH TITAN
             </span>
           </div>

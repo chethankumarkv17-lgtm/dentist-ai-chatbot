@@ -146,14 +146,18 @@ describe('Editorial Team Members Suite (Light Theme & Infinite Carousel)', () =>
       });
     });
 
-    it('calls onClose when close button is clicked', () => {
+    it('calls onClose when close button or back button is clicked', () => {
       const mockClose = vi.fn();
       const member = teamMembers[0];
 
-      render(<TeamModal member={member} onClose={mockClose} />);
+      const { rerender } = render(<TeamModal member={member} onClose={mockClose} />);
       const closeBtn = screen.getByLabelText(/Close profile details/i);
       fireEvent.click(closeBtn);
       expect(mockClose).toHaveBeenCalledTimes(1);
+
+      const backBtn = screen.getByLabelText(/Back to team overview/i);
+      fireEvent.click(backBtn);
+      expect(mockClose).toHaveBeenCalledTimes(2);
     });
 
     it('calls onClose when Escape key is pressed', () => {
