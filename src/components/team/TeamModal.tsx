@@ -57,13 +57,13 @@ export function TeamModal({ member, onClose }: TeamModalProps) {
         className="relative w-full max-w-2xl bg-white border border-slate-200/90 rounded-2xl p-6 sm:p-8 text-slate-900 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Top Lime Accent Line */}
-        <div className="absolute top-0 left-0 right-0 h-[3px] bg-[#B7FF3C]" />
+        {/* Top Blue Accent Line */}
+        <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-blue-600 to-indigo-600" />
 
         {/* Header with Close button */}
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-center gap-2">
-            <span className="font-mono text-xs font-bold px-2.5 py-0.5 rounded-sm bg-[#B7FF3C]/25 text-slate-900 border border-[#B7FF3C]/40 uppercase tracking-wider">
+            <span className="font-mono text-xs font-bold px-2.5 py-0.5 rounded-sm bg-blue-50 text-blue-700 border border-blue-200/80 uppercase tracking-wider">
               {member.index} / PROFILE
             </span>
             <span className="text-[11px] font-mono text-slate-400 uppercase tracking-widest font-semibold">
@@ -113,7 +113,7 @@ export function TeamModal({ member, onClose }: TeamModalProps) {
               <h3 id="modal-member-name" className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
                 {member.name}
               </h3>
-              <p className="text-xs font-mono uppercase text-emerald-800 font-bold tracking-wider mt-1">
+              <p className="text-xs font-mono uppercase text-blue-600 font-bold tracking-wider mt-1">
                 {member.role}
               </p>
             </div>
@@ -137,9 +137,9 @@ export function TeamModal({ member, onClose }: TeamModalProps) {
                   {member.skills.map((skill) => (
                     <span
                       key={skill}
-                      className="text-xs font-mono px-2.5 py-1 bg-slate-100 border border-slate-200 text-slate-700 rounded-md flex items-center gap-1.5"
+                      className="text-xs font-mono px-2.5 py-1 bg-blue-50/70 border border-blue-100 text-slate-700 rounded-md flex items-center gap-1.5"
                     >
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                      <CheckCircle2 className="w-3.5 h-3.5 text-blue-600 shrink-0" />
                       <span>{skill}</span>
                     </span>
                   ))}

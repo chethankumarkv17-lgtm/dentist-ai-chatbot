@@ -17,7 +17,7 @@ export function TeamSection() {
       {/* Subtle Warm Minimal Ambient Glow */}
       <div
         aria-hidden="true"
-        className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-slate-100/60 rounded-full blur-[120px] pointer-events-none -z-10"
+        className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-blue-50/60 rounded-full blur-[120px] pointer-events-none -z-10"
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -27,17 +27,17 @@ export function TeamSection() {
             {/* Left: Section Label & Large Display Heading */}
             <div className="lg:col-span-7 space-y-4">
               <div className="flex items-center gap-2.5">
-                <span className="font-mono text-xs font-bold px-2.5 py-0.5 rounded-sm bg-[#B7FF3C]/30 text-slate-900 border border-[#B7FF3C]/50 uppercase tracking-widest">
+                <span className="font-mono text-xs font-bold px-2.5 py-0.5 rounded-sm bg-blue-50 text-blue-700 border border-blue-200/80 uppercase tracking-widest">
                   01 / TEAM
                 </span>
-                <div className="h-[1.5px] w-10 bg-[#B7FF3C]" />
+                <div className="h-[1.5px] w-10 bg-blue-600" />
               </div>
 
               <h2 className="text-3xl sm:text-5xl lg:text-[58px] font-black text-slate-900 tracking-[-0.04em] leading-[1.06]">
                 <span>Meet the minds behind the project</span>
                 <span
                   aria-hidden="true"
-                  className="inline-block w-2.5 h-2.5 rounded-full bg-[#B7FF3C] ml-1.5 align-baseline"
+                  className="inline-block w-2.5 h-2.5 rounded-full bg-blue-600 ml-1.5 align-baseline shadow-xs"
                 />
               </h2>
             </div>
@@ -45,7 +45,7 @@ export function TeamSection() {
             {/* Right: Technical Subtitle, Vertical Divider & Mission Statement */}
             <div className="lg:col-span-5 lg:border-l lg:border-slate-200/90 lg:pl-8 space-y-3.5 pt-1 lg:pt-3">
               <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-[#B7FF3C] animate-pulse" />
+                <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
                 <span className="font-mono text-xs uppercase tracking-widest text-slate-900 font-bold">
                   TECH TITAN
                 </span>
@@ -73,7 +73,7 @@ export function TeamSection() {
         <RevealOnScroll variant="fade-up" delayMs={300} durationMs={600}>
           <div className="mt-12 sm:mt-16 pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-mono text-slate-400">
             <div className="flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-600" />
               <span>RADIANT NOBEL CLINICAL AI LABS</span>
             </div>
             <span>ALL RIGHTS RESERVED • {teamMembers.length} CORE MEMBERS</span>

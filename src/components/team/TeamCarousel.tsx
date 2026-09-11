@@ -123,7 +123,7 @@ export function TeamCarousel({ onSelectMember }: TeamCarouselProps) {
           type="button"
           onClick={handlePrev}
           aria-label="Previous team member"
-          className="pointer-events-auto p-2.5 sm:p-3 rounded-full bg-white/90 hover:bg-white text-slate-800 border border-slate-200/90 hover:border-[#B7FF3C] hover:text-black shadow-md hover:shadow-lg transition-all duration-200 -translate-x-1 sm:translate-x-0 cursor-pointer touch-target flex items-center justify-center group"
+          className="pointer-events-auto p-2.5 sm:p-3 rounded-full bg-white/95 hover:bg-white text-slate-800 border border-slate-200/90 hover:border-blue-600 hover:text-blue-600 shadow-md hover:shadow-lg transition-all duration-200 -translate-x-1 sm:translate-x-0 cursor-pointer touch-target flex items-center justify-center group"
         >
           <ChevronLeft className="w-5 h-5 group-hover:-translate-x-0.5 transition-transform" />
         </button>
@@ -132,7 +132,7 @@ export function TeamCarousel({ onSelectMember }: TeamCarouselProps) {
           type="button"
           onClick={handleNext}
           aria-label="Next team member"
-          className="pointer-events-auto p-2.5 sm:p-3 rounded-full bg-white/90 hover:bg-white text-slate-800 border border-slate-200/90 hover:border-[#B7FF3C] hover:text-black shadow-md hover:shadow-lg transition-all duration-200 translate-x-1 sm:translate-x-0 cursor-pointer touch-target flex items-center justify-center group"
+          className="pointer-events-auto p-2.5 sm:p-3 rounded-full bg-white/95 hover:bg-white text-slate-800 border border-slate-200/90 hover:border-blue-600 hover:text-blue-600 shadow-md hover:shadow-lg transition-all duration-200 translate-x-1 sm:translate-x-0 cursor-pointer touch-target flex items-center justify-center group"
         >
           <ChevronRight className="w-5 h-5 group-hover:translate-x-0.5 transition-transform" />
         </button>
@@ -159,7 +159,7 @@ export function TeamCarousel({ onSelectMember }: TeamCarouselProps) {
               <span
                 className={`block h-1 rounded-full transition-all duration-300 ${
                   isActive
-                    ? 'w-10 sm:w-12 bg-[#B7FF3C] shadow-xs'
+                    ? 'w-10 sm:w-12 bg-blue-600 shadow-xs'
                     : 'w-6 sm:w-8 bg-slate-200 group-hover:bg-slate-300'
                 }`}
               />

@@ -25,7 +25,7 @@ export function TeamCard({ member, onSelect, className = '' }: TeamCardProps) {
   return (
     <article
       onClick={() => onSelect?.(member)}
-      className={`group relative flex flex-col justify-between bg-white border border-slate-200/80 hover:border-slate-400/80 rounded-xl overflow-hidden shadow-xs hover:shadow-md transition-all duration-300 hover:-translate-y-1 select-none ${
+      className={`group relative flex flex-col justify-between bg-white border border-slate-200/80 hover:border-blue-400/80 rounded-xl overflow-hidden shadow-xs hover:shadow-md transition-all duration-300 hover:-translate-y-1 select-none ${
         onSelect ? 'cursor-pointer' : ''
       } ${className}`}
     >
@@ -42,7 +42,7 @@ export function TeamCard({ member, onSelect, className = '' }: TeamCardProps) {
           />
         ) : (
           <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-b from-slate-50 to-slate-100 text-slate-400 p-6 text-center">
-            <div className="w-14 h-14 rounded-lg border border-slate-300 flex items-center justify-center mb-2 bg-white text-slate-800 font-mono text-lg font-bold tracking-widest shadow-2xs group-hover:border-emerald-600 transition-colors">
+            <div className="w-14 h-14 rounded-lg border border-slate-300 flex items-center justify-center mb-2 bg-white text-slate-800 font-mono text-lg font-bold tracking-widest shadow-2xs group-hover:border-blue-600 transition-colors">
               {initials}
             </div>
             <User className="w-5 h-5 text-slate-400 mb-1" />
@@ -55,7 +55,7 @@ export function TeamCard({ member, onSelect, className = '' }: TeamCardProps) {
         {/* Top-Right Expand Badge */}
         {onSelect && (
           <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-            <span className="text-[10px] font-mono uppercase tracking-wider bg-white/90 backdrop-blur-xs text-slate-900 border border-slate-200 px-2 py-0.5 rounded-md shadow-2xs font-bold">
+            <span className="text-[10px] font-mono uppercase tracking-wider bg-white/90 backdrop-blur-xs text-blue-700 border border-blue-200 px-2 py-0.5 rounded-md shadow-2xs font-bold">
               View Bio
             </span>
           </div>
@@ -67,7 +67,7 @@ export function TeamCard({ member, onSelect, className = '' }: TeamCardProps) {
         <div className="space-y-3">
           {/* Index in Technical Monospace + Muted Tag */}
           <div className="flex items-center justify-between">
-            <span className="font-mono text-xs font-bold px-2 py-0.5 rounded-sm bg-[#B7FF3C]/25 text-slate-900 border border-[#B7FF3C]/40">
+            <span className="font-mono text-xs font-bold px-2 py-0.5 rounded-sm bg-blue-50 text-blue-700 border border-blue-200/80">
               {member.index}
             </span>
             <span className="text-[10px] font-mono text-slate-400 uppercase tracking-widest font-semibold">
@@ -76,12 +76,12 @@ export function TeamCard({ member, onSelect, className = '' }: TeamCardProps) {
           </div>
 
           {/* Member Name */}
-          <h3 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight group-hover:text-blue-900 transition-colors">
+          <h3 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight group-hover:text-blue-600 transition-colors">
             {member.name}
           </h3>
 
           {/* Role */}
-          <p className="text-xs font-mono uppercase font-bold tracking-wider text-emerald-800">
+          <p className="text-xs font-mono uppercase font-bold tracking-wider text-blue-600">
             {member.role}
           </p>
 
@@ -99,24 +99,24 @@ export function TeamCard({ member, onSelect, className = '' }: TeamCardProps) {
             rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}
             aria-label={`LinkedIn profile of ${member.name}`}
-            className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-slate-700 hover:text-slate-900 transition-colors group/link uppercase tracking-wider touch-target"
+            className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-slate-700 hover:text-blue-600 transition-colors group/link uppercase tracking-wider touch-target"
           >
             <span>LinkedIn</span>
             <ArrowUpRight className="w-3.5 h-3.5 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform duration-200" />
           </a>
 
           {onSelect && (
-            <span className="text-[11px] font-mono text-slate-400 group-hover:text-slate-700 transition-colors">
+            <span className="text-[11px] font-mono text-slate-400 group-hover:text-blue-600 transition-colors">
               Details →
             </span>
           )}
         </div>
       </div>
 
-      {/* 4. Bottom Lime Accent Line (20% default -> 100% on hover) */}
+      {/* 4. Bottom Blue Accent Line (20% default -> 100% on hover) */}
       <div
         aria-hidden="true"
-        className="absolute bottom-0 left-0 h-[2.5px] bg-[#B7FF3C] w-[20%] group-hover:w-full transition-all duration-400 ease-out"
+        className="absolute bottom-0 left-0 h-[2.5px] bg-blue-600 w-[20%] group-hover:w-full transition-all duration-400 ease-out"
       />
     </article>
   );
