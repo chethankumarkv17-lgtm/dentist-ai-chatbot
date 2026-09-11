@@ -29,15 +29,15 @@ export function TeamCard({ member, onSelect, className = '' }: TeamCardProps) {
         onSelect ? 'cursor-pointer' : ''
       } ${className}`}
     >
-      {/* 1. 4:3 Aspect Ratio Grayscale Photo Area */}
-      <div className="relative w-full aspect-[4/3] bg-slate-100 border-b border-slate-200/80 overflow-hidden">
+      {/* 1. Consistent 4:5 Aspect Ratio Grayscale Photo Area */}
+      <div className="relative w-full aspect-[4/5] bg-slate-100 border-b border-slate-200/80 overflow-hidden">
         {!imageError ? (
           <Image
             src={member.image}
             alt={`${member.name} — ${member.role}`}
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 320px"
-            className="object-cover grayscale transition-all duration-500 group-hover:grayscale-[0.6] group-hover:scale-[1.02]"
+            className="object-cover object-center grayscale transition-all duration-500 ease-out group-hover:grayscale-[0.5] group-hover:scale-[1.02]"
             onError={() => setImageError(true)}
           />
         ) : (

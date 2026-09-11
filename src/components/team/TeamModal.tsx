@@ -83,15 +83,15 @@ export function TeamModal({ member, onClose }: TeamModalProps) {
 
         {/* Content Body: Image + Bio */}
         <div className="grid grid-cols-1 sm:grid-cols-12 gap-6 items-start">
-          {/* Left: 4:3 Photo */}
-          <div className="sm:col-span-5 relative aspect-[4/3] bg-slate-100 border border-slate-200 rounded-xl overflow-hidden shadow-2xs">
+          {/* Left: 4:5 Photo */}
+          <div className="sm:col-span-5 relative aspect-[4/5] bg-slate-100 border border-slate-200 rounded-xl overflow-hidden shadow-2xs">
             {!imageError ? (
               <Image
                 src={member.image}
                 alt={`${member.name} — ${member.role}`}
                 fill
                 sizes="(max-width: 640px) 100vw, 240px"
-                className="object-cover grayscale"
+                className="object-cover object-center grayscale transition-all duration-500 hover:grayscale-[0.5]"
                 onError={() => setImageError(true)}
               />
             ) : (
