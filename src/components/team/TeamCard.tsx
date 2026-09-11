@@ -12,7 +12,7 @@ interface TeamCardProps {
 }
 
 export function TeamCard({ member, onSelect, className = '' }: TeamCardProps) {
-  const [imageError, setImageError] = useState(false);
+  const [imageState, setImageState] = useState<'loading' | 'loaded' | 'error'>('loading');
 
   const initials = member.name
     .split(' ')
@@ -31,16 +31,39 @@ export function TeamCard({ member, onSelect, className = '' }: TeamCardProps) {
     >
       {/* 1. Consistent 4:5 Aspect Ratio Grayscale Photo Area */}
       <div className="relative w-full aspect-[4/5] bg-slate-100 border-b border-slate-200/80 overflow-hidden">
-        {!imageError ? (
+        {/* Loading Skeleton — visible while image is loading, hidden once loaded or errored */}
+        {imageState === 'loading' && (
+          <div className="absolute inset-0 z-10 bg-slate-100 animate-pulse">
+            <div className="w-full h-full flex flex-col items-center justify-center gap-3">
+              <div className="w-16 h-16 rounded-full bg-slate-200" />
+              <div className="w-24 h-3 rounded bg-slate-200" />
+              <div className="w-16 h-2.5 rounded bg-slate-200" />
+            </div>
+          </div>
+        )}
+
+        {/* Actual Image — always rendered (unless errored) so onLoad/onError can fire */}
+        {imageState !== 'error' && (
           <Image
             src={member.image}
             alt={`${member.name} — ${member.role}`}
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 320px"
-            className="object-cover object-center grayscale transition-all duration-500 ease-out group-hover:grayscale-[0.5] group-hover:scale-[1.02]"
-            onError={() => setImageError(true)}
+            className={`object-cover object-center grayscale transition-all duration-500 ease-out group-hover:grayscale-[0.5] group-hover:scale-[1.02] ${
+              imageState === 'loading' ? 'opacity-0' : 'opacity-100'
+            }`}
+            onLoad={() => setImageState('loaded')}
+            onError={() => {
+              console.warn(
+                `[TeamCard] Image failed to load for "${member.name}" (${member.id}): ${member.image}`
+              );
+              setImageState('error');
+            }}
           />
-        ) : (
+        )}
+
+        {/* Error Fallback — intentional empty state with initials */}
+        {imageState === 'error' && (
           <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-b from-slate-50 to-slate-100 text-slate-400 p-6 text-center">
             <div className="w-14 h-14 rounded-lg border border-slate-300 flex items-center justify-center mb-2 bg-white text-slate-800 font-mono text-lg font-bold tracking-widest shadow-2xs group-hover:border-blue-600 transition-colors">
               {initials}
@@ -48,6 +71,9 @@ export function TeamCard({ member, onSelect, className = '' }: TeamCardProps) {
             <User className="w-5 h-5 text-slate-400 mb-1" />
             <span className="text-[10px] font-mono uppercase tracking-widest text-slate-500">
               {member.role}
+            </span>
+            <span className="mt-2 text-[9px] font-mono text-slate-400/80 italic">
+              Photo unavailable
             </span>
           </div>
         )}

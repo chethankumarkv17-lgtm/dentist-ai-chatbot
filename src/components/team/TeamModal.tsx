@@ -11,10 +11,10 @@ interface TeamModalProps {
 }
 
 export function TeamModal({ member, onClose }: TeamModalProps) {
-  const [imageError, setImageError] = useState(false);
+  const [imageState, setImageState] = useState<'loading' | 'loaded' | 'error'>('loading');
 
   useEffect(() => {
-    setImageError(false);
+    setImageState('loading');
   }, [member]);
 
   useEffect(() => {
@@ -93,16 +93,37 @@ export function TeamModal({ member, onClose }: TeamModalProps) {
         <div className="grid grid-cols-1 sm:grid-cols-12 gap-6 items-start">
           {/* Left: 4:5 Photo */}
           <div className="sm:col-span-5 relative aspect-[4/5] bg-slate-100 border border-slate-200 rounded-xl overflow-hidden shadow-2xs">
-            {!imageError ? (
+            {/* Loading Skeleton */}
+            {imageState === 'loading' && (
+              <div className="absolute inset-0 z-10 bg-slate-100 animate-pulse">
+                <div className="w-full h-full flex flex-col items-center justify-center gap-3">
+                  <div className="w-14 h-14 rounded-full bg-slate-200" />
+                  <div className="w-20 h-3 rounded bg-slate-200" />
+                  <div className="w-14 h-2.5 rounded bg-slate-200" />
+                </div>
+              </div>
+            )}
+
+            {imageState !== 'error' && (
               <Image
                 src={member.image}
                 alt={`${member.name} — ${member.role}`}
                 fill
                 sizes="(max-width: 640px) 100vw, 240px"
-                className="object-cover object-center grayscale transition-all duration-500 hover:grayscale-[0.5]"
-                onError={() => setImageError(true)}
+                className={`object-cover object-center grayscale transition-all duration-500 hover:grayscale-[0.5] ${
+                  imageState === 'loading' ? 'opacity-0' : 'opacity-100'
+                }`}
+                onLoad={() => setImageState('loaded')}
+                onError={() => {
+                  console.warn(
+                    `[TeamModal] Image failed to load for "${member.name}" (${member.id}): ${member.image}`
+                  );
+                  setImageState('error');
+                }}
               />
-            ) : (
+            )}
+
+            {imageState === 'error' && (
               <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-b from-slate-50 to-slate-100 text-slate-400 p-4 text-center">
                 <div className="w-14 h-14 rounded-lg border border-slate-300 flex items-center justify-center mb-2 bg-white text-slate-900 font-mono text-lg font-bold tracking-widest shadow-2xs">
                   {initials}
@@ -110,6 +131,9 @@ export function TeamModal({ member, onClose }: TeamModalProps) {
                 <User className="w-5 h-5 text-slate-400 mb-1" />
                 <span className="text-[10px] font-mono uppercase tracking-widest text-slate-500">
                   {member.role}
+                </span>
+                <span className="mt-2 text-[9px] font-mono text-slate-400/80 italic">
+                  Photo unavailable
                 </span>
               </div>
             )}
