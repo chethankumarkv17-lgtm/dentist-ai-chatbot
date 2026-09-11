@@ -13,6 +13,8 @@ export function TeamCarousel({ onSelectMember }: TeamCarouselProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
+  const [hasEnteredView, setHasEnteredView] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const trackRef = useRef<HTMLDivElement>(null);
   const offsetRef = useRef(0);
@@ -44,6 +46,30 @@ export function TeamCarousel({ onSelectMember }: TeamCarouselProps) {
       trackRef.current.style.transform = `translate3d(${-singleSetWidth}px, 0, 0)`;
     }
   }, [getStep]);
+
+  // Staggered entrance: observe when carousel scrolls into view (once)
+  useEffect(() => {
+    if (reducedMotion) {
+      setHasEnteredView(true);
+      return;
+    }
+    const el = containerRef.current;
+    if (!el || typeof IntersectionObserver === 'undefined') {
+      setHasEnteredView(true);
+      return;
+    }
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) {
+          setHasEnteredView(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1, rootMargin: '0px 0px -30px 0px' }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [reducedMotion]);
 
   // Window resize handler to maintain alignment
   useEffect(() => {
@@ -217,6 +243,7 @@ export function TeamCarousel({ onSelectMember }: TeamCarouselProps) {
 
   return (
     <div
+      ref={containerRef}
       className="relative w-full overflow-hidden select-none py-4 team-track-container"
       onMouseEnter={() => {
         if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
@@ -243,18 +270,32 @@ export function TeamCarousel({ onSelectMember }: TeamCarouselProps) {
           ref={trackRef}
           className="flex gap-5 sm:gap-6 pr-5 sm:pr-6 py-4 w-max shrink-0 will-change-transform"
         >
-          {trackItems.map((member, idx) => (
-            <div
-              key={`track-card-${member.id}-${idx}`}
-              className="w-[280px] sm:w-[320px] lg:w-[310px] xl:w-[330px] shrink-0 transition-transform duration-300"
-            >
-              <TeamCard
-                member={member}
-                onSelect={onSelectMember}
-                className="h-full"
-              />
-            </div>
-          ))}
+          {trackItems.map((member, idx) => {
+            // Stagger delay based on position within a set (0-5), 100ms apart
+            const setPosition = idx % teamMembers.length;
+            const staggerDelay = setPosition * 100;
+
+            return (
+              <div
+                key={`track-card-${member.id}-${idx}`}
+                className={`w-[280px] sm:w-[320px] lg:w-[310px] xl:w-[330px] shrink-0 transition-all duration-700 ${
+                  hasEnteredView
+                    ? 'opacity-100 translate-y-0'
+                    : 'opacity-0 translate-y-5'
+                }`}
+                style={{
+                  transitionDelay: hasEnteredView ? `${staggerDelay}ms` : '0ms',
+                  transitionTimingFunction: 'cubic-bezier(0.22, 1, 0.36, 1)',
+                }}
+              >
+                <TeamCard
+                  member={member}
+                  onSelect={onSelectMember}
+                  className="h-full"
+                />
+              </div>
+            );
+          })}
         </div>
       </div>
 
