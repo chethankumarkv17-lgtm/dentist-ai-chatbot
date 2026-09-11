@@ -14,12 +14,9 @@ export function TeamCarousel({ onSelectMember }: TeamCarouselProps) {
   const [isPaused, setIsPaused] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
 
-  const containerRef = useRef<HTMLDivElement>(null);
+  const scrollWrapperRef = useRef<HTMLDivElement>(null);
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
-
-  // Duplicated track items to ensure seamless infinite looping with 0 jumps
-  const duplicatedMembers = [...teamMembers, ...teamMembers, ...teamMembers];
 
   useEffect(() => {
     if (typeof window !== 'undefined' && window.matchMedia) {
@@ -27,7 +24,7 @@ export function TeamCarousel({ onSelectMember }: TeamCarouselProps) {
     }
   }, []);
 
-  // Update active pagination indicator on a periodic interval during auto-scroll
+  // Update active pagination indicator in sync with the loop
   useEffect(() => {
     if (isPaused || reducedMotion) return;
 
@@ -40,15 +37,15 @@ export function TeamCarousel({ onSelectMember }: TeamCarouselProps) {
 
   const handlePrev = () => {
     setActiveIndex((prev) => (prev - 1 + teamMembers.length) % teamMembers.length);
-    if (containerRef.current && typeof containerRef.current.scrollBy === 'function') {
-      containerRef.current.scrollBy({ left: -320, behavior: 'smooth' });
+    if (scrollWrapperRef.current && typeof scrollWrapperRef.current.scrollBy === 'function') {
+      scrollWrapperRef.current.scrollBy({ left: -320, behavior: 'smooth' });
     }
   };
 
   const handleNext = () => {
     setActiveIndex((prev) => (prev + 1) % teamMembers.length);
-    if (containerRef.current && typeof containerRef.current.scrollBy === 'function') {
-      containerRef.current.scrollBy({ left: 320, behavior: 'smooth' });
+    if (scrollWrapperRef.current && typeof scrollWrapperRef.current.scrollBy === 'function') {
+      scrollWrapperRef.current.scrollBy({ left: 320, behavior: 'smooth' });
     }
   };
 
@@ -64,7 +61,7 @@ export function TeamCarousel({ onSelectMember }: TeamCarouselProps) {
     const diffY = touchStartY.current - e.touches[0].clientY;
 
     // Only handle horizontal swipes if horizontal movement exceeds vertical
-    if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 40) {
+    if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 35) {
       if (diffX > 0) {
         handleNext();
       } else {
@@ -91,34 +88,63 @@ export function TeamCarousel({ onSelectMember }: TeamCarouselProps) {
       onTouchEnd={handleTouchEnd}
       aria-label="Team members carousel"
     >
-      {/* 1. Continuous Infinite Track */}
+      {/* Edge Fade Masks for Smooth In/Out Transition */}
+      <div className="hidden sm:block absolute left-0 top-0 bottom-16 w-12 lg:w-20 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
+      <div className="hidden sm:block absolute right-0 top-0 bottom-16 w-12 lg:w-20 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
+
+      {/* 1. Twin-Track 100% Seamless Infinite Loop */}
       <div
-        ref={containerRef}
-        className="overflow-x-hidden overflow-y-visible px-2 sm:px-4"
+        ref={scrollWrapperRef}
+        className="w-full overflow-x-hidden overflow-y-visible px-2 sm:px-4"
       >
-        <div
-          className={`flex gap-5 sm:gap-6 py-4 ${
-            reducedMotion ? 'overflow-x-auto scrollbar-none' : 'animate-team-track'
-          }`}
-          style={isPaused ? { animationPlayState: 'paused' } : undefined}
-        >
-          {duplicatedMembers.map((member, idx) => (
-            <div
-              key={`${member.id}-${idx}`}
-              className="w-[280px] sm:w-[320px] lg:w-[310px] xl:w-[330px] shrink-0 transition-transform duration-300"
-            >
-              <TeamCard
-                member={member}
-                onSelect={onSelectMember}
-                className="h-full"
-              />
-            </div>
-          ))}
+        <div className="flex w-max">
+          {/* Primary Track (Set 1) */}
+          <div
+            className={`flex gap-5 sm:gap-6 pr-5 sm:pr-6 py-4 shrink-0 ${
+              reducedMotion ? 'overflow-x-auto scrollbar-none' : 'animate-team-infinite'
+            }`}
+            style={isPaused ? { animationPlayState: 'paused' } : undefined}
+          >
+            {teamMembers.map((member) => (
+              <div
+                key={`primary-${member.id}`}
+                className="w-[280px] sm:w-[320px] lg:w-[310px] xl:w-[330px] shrink-0 transition-transform duration-300"
+              >
+                <TeamCard
+                  member={member}
+                  onSelect={onSelectMember}
+                  className="h-full"
+                />
+              </div>
+            ))}
+          </div>
+
+          {/* Secondary Clone Track (Set 2 - Exact duplicate for zero-glitch continuous loop) */}
+          <div
+            aria-hidden="true"
+            className={`flex gap-5 sm:gap-6 pr-5 sm:pr-6 py-4 shrink-0 ${
+              reducedMotion ? 'hidden' : 'animate-team-infinite'
+            }`}
+            style={isPaused ? { animationPlayState: 'paused' } : undefined}
+          >
+            {teamMembers.map((member) => (
+              <div
+                key={`clone-${member.id}`}
+                className="w-[280px] sm:w-[320px] lg:w-[310px] xl:w-[330px] shrink-0 transition-transform duration-300"
+              >
+                <TeamCard
+                  member={member}
+                  onSelect={onSelectMember}
+                  className="h-full"
+                />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
       {/* 2. Manual Carousel Navigation Buttons (Left / Right) */}
-      <div className="flex items-center justify-between pointer-events-none absolute inset-y-0 left-0 right-0 px-2 sm:px-4">
+      <div className="flex items-center justify-between pointer-events-none absolute inset-y-0 left-0 right-0 px-2 sm:px-4 z-20">
         <button
           type="button"
           onClick={handlePrev}
@@ -148,7 +174,7 @@ export function TeamCarousel({ onSelectMember }: TeamCarouselProps) {
           const isActive = activeIndex === idx;
           return (
             <button
-              key={member.id}
+              key={`dot-${member.id}`}
               type="button"
               role="tab"
               aria-selected={isActive}

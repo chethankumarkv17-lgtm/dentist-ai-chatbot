@@ -414,30 +414,30 @@ body {
   min-width: 44px;
 }
 
-/* Continuous Team Infinite Carousel */
-@keyframes teamInfiniteTrack {
+/* Continuous Team Infinite Carousel (Twin Track 100% Seamless) */
+@keyframes teamTrackSlide {
   0% {
     transform: translate3d(0, 0, 0);
   }
   100% {
-    transform: translate3d(-50%, 0, 0);
+    transform: translate3d(-100%, 0, 0);
   }
 }
 
-.animate-team-track {
+.animate-team-infinite {
   display: flex;
   width: max-content;
   will-change: transform;
-  animation: teamInfiniteTrack 24s linear infinite;
+  animation: teamTrackSlide 22s linear infinite;
 }
 
-.animate-team-track:hover,
-.team-track-container:hover .animate-team-track {
+.animate-team-infinite:hover,
+.team-track-container:hover .animate-team-infinite {
   animation-play-state: paused;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .animate-team-track {
+  .animate-team-infinite {
     animation: none !important;
   }
 }
