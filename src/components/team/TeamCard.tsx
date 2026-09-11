@@ -168,6 +168,20 @@ export function TeamCard({ member, onSelect, className = '' }: TeamCardProps) {
           <p className="text-xs sm:text-sm text-slate-600 font-normal leading-relaxed line-clamp-3 pt-1">
             {member.description}
           </p>
+
+          {/* Tech Stack Badges */}
+          {member.techStack && member.techStack.length > 0 && (
+            <div className="flex flex-wrap gap-1.5 pt-2">
+              {member.techStack.map((tech) => (
+                <span
+                  key={tech}
+                  className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full bg-blue-50/80 text-blue-700/90 border border-blue-100"
+                >
+                  {tech}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* 3. Footer with LinkedIn & Details Quick Actions */}
