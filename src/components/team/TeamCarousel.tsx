@@ -14,163 +14,205 @@ export function TeamCarousel({ onSelectMember }: TeamCarouselProps) {
   const [isPaused, setIsPaused] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
 
-  const scrollWrapperRef = useRef<HTMLDivElement>(null);
-  const isInteractingRef = useRef(false);
-  const resumeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const touchStartX = useRef<number | null>(null);
-  const touchStartY = useRef<number | null>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const offsetRef = useRef(0);
+  const isAnimatingTransitionRef = useRef(false);
+  const resumeTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Quadruple items to allow infinite seamless bidirectional scrolling (24 cards)
+  const touchStartX = useRef<number | null>(null);
+  const touchStartOffset = useRef<number>(0);
+
+  // 4 identical sets (24 cards total) for infinite continuous translation
   const trackItems = [...teamMembers, ...teamMembers, ...teamMembers, ...teamMembers];
 
-  // Helper to get card width + gap dynamically
-  const getCardStep = useCallback(() => {
+  const getStep = useCallback(() => {
     if (typeof window === 'undefined') return 344;
-    return window.innerWidth < 640 ? 300 : 344; // 280px + 20px or 320px + 24px
+    return window.innerWidth < 640 ? 300 : 344; // 280+20 or 320+24
   }, []);
 
-  // Initialize scroll position to center set (Set 2)
+  // Initialize offset to -singleSetWidth (Start of Set 2)
   useEffect(() => {
     if (typeof window !== 'undefined' && window.matchMedia) {
       setReducedMotion(window.matchMedia('(prefers-reduced-motion: reduce)').matches);
     }
 
-    const container = scrollWrapperRef.current;
-    if (container) {
-      const step = getCardStep();
-      const singleSetWidth = step * teamMembers.length;
-      container.scrollLeft = singleSetWidth;
-    }
-  }, [getCardStep]);
-
-  // Wrap boundary check for seamless infinite looping
-  const handleScroll = useCallback(() => {
-    const container = scrollWrapperRef.current;
-    if (!container) return;
-
-    const step = getCardStep();
+    const step = getStep();
     const singleSetWidth = step * teamMembers.length;
+    offsetRef.current = -singleSetWidth;
 
-    if (singleSetWidth <= 0) return;
-
-    // Left boundary wrap
-    if (container.scrollLeft < singleSetWidth * 0.4) {
-      container.scrollLeft += singleSetWidth;
+    if (trackRef.current) {
+      trackRef.current.style.transform = `translate3d(${-singleSetWidth}px, 0, 0)`;
     }
-    // Right boundary wrap
-    else if (container.scrollLeft >= singleSetWidth * 2.6) {
-      container.scrollLeft -= singleSetWidth;
-    }
+  }, [getStep]);
 
-    // Calculate current visible card index
-    const offsetInSet = (container.scrollLeft - singleSetWidth) % singleSetWidth;
-    const computedIndex = Math.round(offsetInSet / step);
-    const normalized = ((computedIndex % teamMembers.length) + teamMembers.length) % teamMembers.length;
-    setActiveIndex(normalized);
-  }, [getCardStep]);
+  // Window resize handler to maintain alignment
+  useEffect(() => {
+    const handleResize = () => {
+      const step = getStep();
+      const singleSetWidth = step * teamMembers.length;
+      offsetRef.current = -singleSetWidth - activeIndex * step;
+      if (trackRef.current) {
+        trackRef.current.style.transition = 'none';
+        trackRef.current.style.transform = `translate3d(${offsetRef.current}px, 0, 0)`;
+      }
+    };
 
-  // Continuous auto-scroll animation loop (smooth 60fps)
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [activeIndex, getStep]);
+
+  // Continuous auto-scroll loop (60fps requestAnimationFrame)
   useEffect(() => {
     if (isPaused || reducedMotion) return;
 
-    let animationFrameId: number;
+    let animId: number;
     let lastTime = performance.now();
 
-    const animate = (currentTime: number) => {
+    const loop = (currentTime: number) => {
       const delta = currentTime - lastTime;
       lastTime = currentTime;
 
-      const container = scrollWrapperRef.current;
-      if (container && !isInteractingRef.current) {
-        // Continuous gentle scroll (approx 35px per second)
-        container.scrollLeft += (35 * delta) / 1000;
-        handleScroll();
+      if (!isAnimatingTransitionRef.current && trackRef.current) {
+        const step = getStep();
+        const singleSetWidth = step * teamMembers.length;
+
+        // Gentle constant speed: 36px per second
+        offsetRef.current -= (36 * delta) / 1000;
+
+        // Invisible wrap when Set 2 completes into Set 3
+        if (offsetRef.current <= -2 * singleSetWidth) {
+          offsetRef.current += singleSetWidth;
+        } else if (offsetRef.current >= 0) {
+          offsetRef.current -= singleSetWidth;
+        }
+
+        trackRef.current.style.transform = `translate3d(${offsetRef.current}px, 0, 0)`;
+
+        // Update active dot
+        const rel = -offsetRef.current - singleSetWidth;
+        const currentIdx = Math.round(rel / step);
+        const normalized = ((currentIdx % teamMembers.length) + teamMembers.length) % teamMembers.length;
+        setActiveIndex(normalized);
       }
 
-      animationFrameId = requestAnimationFrame(animate);
+      animId = requestAnimationFrame(loop);
     };
 
-    animationFrameId = requestAnimationFrame(animate);
+    animId = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(animId);
+  }, [isPaused, reducedMotion, getStep]);
 
-    return () => cancelAnimationFrame(animationFrameId);
-  }, [isPaused, reducedMotion, handleScroll]);
-
-  const triggerResumeTimer = () => {
-    if (resumeTimeoutRef.current) clearTimeout(resumeTimeoutRef.current);
-    resumeTimeoutRef.current = setTimeout(() => {
-      isInteractingRef.current = false;
+  // Helper to start resume timer
+  const scheduleResume = useCallback(() => {
+    if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
+    resumeTimerRef.current = setTimeout(() => {
+      isAnimatingTransitionRef.current = false;
       setIsPaused(false);
-    }, 2800);
-  };
+    }, 3000);
+  }, []);
 
-  // Back / Previous Button Handler (Moves backwards by 1 card)
-  const handlePrev = () => {
-    const container = scrollWrapperRef.current;
-    if (!container) return;
-
-    setIsPaused(true);
-    isInteractingRef.current = true;
-    const step = getCardStep();
-
-    if (typeof container.scrollBy === 'function') {
-      container.scrollBy({ left: -step, behavior: 'smooth' });
-    } else {
-      container.scrollLeft -= step;
-    }
-    triggerResumeTimer();
-  };
-
-  // Next Button Handler (Moves forward by 1 card)
-  const handleNext = () => {
-    const container = scrollWrapperRef.current;
-    if (!container) return;
+  // Smoothly slide to a specific target offset with transition
+  const slideToOffset = useCallback((targetOffset: number, newActiveIdx?: number) => {
+    if (!trackRef.current) return;
 
     setIsPaused(true);
-    isInteractingRef.current = true;
-    const step = getCardStep();
+    isAnimatingTransitionRef.current = true;
 
-    if (typeof container.scrollBy === 'function') {
-      container.scrollBy({ left: step, behavior: 'smooth' });
-    } else {
-      container.scrollLeft += step;
-    }
-    triggerResumeTimer();
-  };
-
-  // Pagination Dot Click
-  const handleGoTo = (index: number) => {
-    const container = scrollWrapperRef.current;
-    if (!container) return;
-
-    setIsPaused(true);
-    isInteractingRef.current = true;
-    const step = getCardStep();
+    const step = getStep();
     const singleSetWidth = step * teamMembers.length;
 
-    if (typeof container.scrollTo === 'function') {
-      container.scrollTo({
-        left: singleSetWidth + index * step,
-        behavior: 'smooth',
-      });
+    trackRef.current.style.transition = 'transform 420ms cubic-bezier(0.22, 1, 0.36, 1)';
+    trackRef.current.style.transform = `translate3d(${targetOffset}px, 0, 0)`;
+    offsetRef.current = targetOffset;
+
+    if (typeof newActiveIdx === 'number') {
+      setActiveIndex(((newActiveIdx % teamMembers.length) + teamMembers.length) % teamMembers.length);
     } else {
-      container.scrollLeft = singleSetWidth + index * step;
+      const rel = -targetOffset - singleSetWidth;
+      const currentIdx = Math.round(rel / step);
+      const normalized = ((currentIdx % teamMembers.length) + teamMembers.length) % teamMembers.length;
+      setActiveIndex(normalized);
     }
 
-    triggerResumeTimer();
-  };
+    setTimeout(() => {
+      if (trackRef.current) {
+        trackRef.current.style.transition = 'none';
 
-  // Mobile Touch Gestures
+        // Normalize offset into [-2 * singleSetWidth, -singleSetWidth]
+        while (offsetRef.current < -2 * singleSetWidth) {
+          offsetRef.current += singleSetWidth;
+        }
+        while (offsetRef.current > -singleSetWidth) {
+          offsetRef.current -= singleSetWidth;
+        }
+        trackRef.current.style.transform = `translate3d(${offsetRef.current}px, 0, 0)`;
+      }
+      isAnimatingTransitionRef.current = false;
+      scheduleResume();
+    }, 440);
+  }, [getStep, scheduleResume]);
+
+  // Back / Previous Button Handler (Always shifts backwards by 1 card)
+  const handlePrev = useCallback(() => {
+    const step = getStep();
+    const target = Math.round(offsetRef.current / step) * step + step;
+    slideToOffset(target);
+  }, [getStep, slideToOffset]);
+
+  // Next Button Handler (Always shifts forward by 1 card)
+  const handleNext = useCallback(() => {
+    const step = getStep();
+    const target = Math.round(offsetRef.current / step) * step - step;
+    slideToOffset(target);
+  }, [getStep, slideToOffset]);
+
+  // Go to dot index
+  const handleGoTo = useCallback((idx: number) => {
+    const step = getStep();
+    const singleSetWidth = step * teamMembers.length;
+    const target = -singleSetWidth - idx * step;
+    slideToOffset(target, idx);
+  }, [getStep, slideToOffset]);
+
+  // Mobile Touch Swipe Handling
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
-    touchStartY.current = e.touches[0].clientY;
+    touchStartOffset.current = offsetRef.current;
     setIsPaused(true);
-    isInteractingRef.current = true;
+    isAnimatingTransitionRef.current = true;
+    if (trackRef.current) {
+      trackRef.current.style.transition = 'none';
+    }
   };
 
-  const handleTouchEnd = () => {
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (touchStartX.current === null || !trackRef.current) return;
+    const currentX = e.touches[0].clientX;
+    const diff = currentX - touchStartX.current;
+    offsetRef.current = touchStartOffset.current + diff;
+    trackRef.current.style.transform = `translate3d(${offsetRef.current}px, 0, 0)`;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null) return;
+    const endTouch = e.changedTouches?.[0] || e.touches?.[0];
+    const endX = endTouch ? endTouch.clientX : touchStartX.current;
+    const diff = endX - touchStartX.current;
+    const step = getStep();
+
     touchStartX.current = null;
-    touchStartY.current = null;
-    triggerResumeTimer();
+
+    if (diff > 45) {
+      // Swiped Right -> Go Back
+      handlePrev();
+    } else if (diff < -45) {
+      // Swiped Left -> Go Next
+      handleNext();
+    } else {
+      // Snap to nearest
+      const nearest = Math.round(offsetRef.current / step) * step;
+      slideToOffset(nearest);
+    }
   };
 
   return (
@@ -178,12 +220,14 @@ export function TeamCarousel({ onSelectMember }: TeamCarouselProps) {
       className="relative w-full overflow-hidden select-none py-4 team-track-container"
       onMouseEnter={() => {
         setIsPaused(true);
-        isInteractingRef.current = true;
+        isAnimatingTransitionRef.current = true;
       }}
       onMouseLeave={() => {
-        triggerResumeTimer();
+        isAnimatingTransitionRef.current = false;
+        scheduleResume();
       }}
       onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
       aria-label="Team members carousel"
     >
@@ -191,13 +235,12 @@ export function TeamCarousel({ onSelectMember }: TeamCarouselProps) {
       <div className="hidden sm:block absolute left-0 top-0 bottom-16 w-12 lg:w-20 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
       <div className="hidden sm:block absolute right-0 top-0 bottom-16 w-12 lg:w-20 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
 
-      {/* 1. Seamless Smooth Scrollable Track */}
-      <div
-        ref={scrollWrapperRef}
-        onScroll={handleScroll}
-        className="w-full overflow-x-auto overflow-y-visible px-2 sm:px-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden scroll-smooth"
-      >
-        <div className="flex gap-5 sm:gap-6 pr-5 sm:pr-6 py-4 w-max shrink-0">
+      {/* 1. Hardware-Accelerated Continuous Transform Track */}
+      <div className="w-full overflow-hidden px-2 sm:px-4">
+        <div
+          ref={trackRef}
+          className="flex gap-5 sm:gap-6 pr-5 sm:pr-6 py-4 w-max shrink-0 will-change-transform"
+        >
           {trackItems.map((member, idx) => (
             <div
               key={`track-card-${member.id}-${idx}`}
@@ -268,3 +311,4 @@ export function TeamCarousel({ onSelectMember }: TeamCarouselProps) {
     </div>
   );
 }
+
