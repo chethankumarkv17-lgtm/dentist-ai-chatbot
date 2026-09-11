@@ -76,8 +76,8 @@ export function TeamCarousel({ onSelectMember }: TeamCarouselProps) {
         const step = getStep();
         const singleSetWidth = step * teamMembers.length;
 
-        // Fluid continuous speed: 70px per second (comfortably fast & readable)
-        offsetRef.current -= (70 * delta) / 1000;
+        // Fluid continuous fast speed: 95px per second (swift and smooth glide)
+        offsetRef.current -= (95 * delta) / 1000;
 
         // Invisible wrap when Set 2 completes into Set 3
         if (offsetRef.current <= -2 * singleSetWidth) {
@@ -219,12 +219,14 @@ export function TeamCarousel({ onSelectMember }: TeamCarouselProps) {
     <div
       className="relative w-full overflow-hidden select-none py-4 team-track-container"
       onMouseEnter={() => {
+        if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
         setIsPaused(true);
         isAnimatingTransitionRef.current = true;
       }}
       onMouseLeave={() => {
+        if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
         isAnimatingTransitionRef.current = false;
-        scheduleResume();
+        setIsPaused(false);
       }}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
