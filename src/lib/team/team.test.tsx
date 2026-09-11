@@ -15,15 +15,18 @@ vi.mock('next/image', () => ({
 
 describe('Editorial Team Members Suite (Light Theme & Infinite Carousel)', () => {
   describe('1. Centralized Team Data Validation', () => {
-    it('contains at least 4 team members with required editorial fields', () => {
-      expect(teamMembers.length).toBeGreaterThanOrEqual(4);
+    it('contains all 6 team members with required editorial fields and webp images', () => {
+      expect(teamMembers.length).toBe(6);
+
+      const expectedIds = ['chethan-kumar', 'sanjana', 'suhani', 'shreya', 'kishan', 'srujan'];
+      expect(teamMembers.map((m) => m.id)).toEqual(expectedIds);
 
       teamMembers.forEach((member) => {
         expect(member.id).toBeTruthy();
         expect(member.index).toMatch(/^\d{2}$/);
         expect(member.name).toBeTruthy();
         expect(member.role).toBeTruthy();
-        expect(member.image).toMatch(/^\/team\//);
+        expect(member.image).toMatch(/^\/team\/[a-z0-9-]+\.webp$/);
         expect(member.description).toBeTruthy();
         expect(member.linkedin).toBeTruthy();
       });
@@ -33,6 +36,7 @@ describe('Editorial Team Members Suite (Light Theme & Infinite Carousel)', () =>
       const chethan = teamMembers.find((m) => m.name.toLowerCase().includes('chethan'));
       expect(chethan).toBeDefined();
       expect(chethan?.role).toContain('AI/ML');
+      expect(chethan?.image).toBe('/team/chethan.webp');
     });
   });
 
