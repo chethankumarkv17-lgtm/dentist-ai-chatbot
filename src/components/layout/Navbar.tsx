@@ -21,6 +21,7 @@ export function Navbar() {
   const navLinks = [
     { label: 'Features', href: '/features' },
     { label: 'How It Works', href: '/how-it-works' },
+    { label: 'Team', href: '/#team' },
     { label: 'Pricing', href: '/pricing' },
     { label: 'Help', href: '/help' },
   ];

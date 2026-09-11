@@ -1,0 +1,130 @@
+import React from 'react';
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
+import { teamMembers } from '@/data/teamMembers';
+import { TeamSection } from '@/components/team/TeamSection';
+import { TeamCard } from '@/components/team/TeamCard';
+import { TeamModal } from '@/components/team/TeamModal';
+
+// Mock next/image to render standard img tag with alt & src
+vi.mock('next/image', () => ({
+  __esModule: true,
+  default: ({ src, alt, ...props }: any) => <img src={src} alt={alt} {...props} />,
+}));
+
+describe('Editorial Team Members Suite', () => {
+  describe('1. Centralized Team Data Validation', () => {
+    it('contains at least 4 team members with required editorial fields', () => {
+      expect(teamMembers.length).toBeGreaterThanOrEqual(4);
+
+      teamMembers.forEach((member) => {
+        expect(member.id).toBeTruthy();
+        expect(member.index).toMatch(/^\d{2}$/);
+        expect(member.name).toBeTruthy();
+        expect(member.role).toBeTruthy();
+        expect(member.image).toMatch(/^\/team\//);
+        expect(member.description).toBeTruthy();
+        expect(member.linkedin).toBeTruthy();
+      });
+    });
+
+    it('includes Chethan Kumar K V as AI/ML Engineer in the core team', () => {
+      const chethan = teamMembers.find((m) => m.name.toLowerCase().includes('chethan'));
+      expect(chethan).toBeDefined();
+      expect(chethan?.role).toContain('AI/ML');
+    });
+  });
+
+  describe('2. TeamSection Component', () => {
+    it('renders the editorial section header, TECH TITAN subtitle, and member cards', () => {
+      render(<TeamSection />);
+
+      expect(screen.getByText(/01 \/ TEAM/i)).toBeDefined();
+      expect(screen.getByText(/Meet the minds behind the project\./i)).toBeDefined();
+      expect(screen.getAllByText(/TECH TITAN/i).length).toBeGreaterThan(0);
+
+      teamMembers.forEach((member) => {
+        expect(screen.getByText(member.name)).toBeDefined();
+        expect(screen.getAllByText(member.role).length).toBeGreaterThan(0);
+      });
+    });
+
+    it('has id="team" and proper scroll margin for smooth navigation', () => {
+      const { container } = render(<TeamSection />);
+      const section = container.querySelector('#team');
+      expect(section).not.toBeNull();
+      expect(section?.className).toContain('scroll-mt-');
+    });
+  });
+
+  describe('3. TeamCard Component', () => {
+    it('renders member name, index, role, description, and accessible LinkedIn link', () => {
+      const mockSelect = vi.fn();
+      const member = teamMembers[0];
+
+      render(<TeamCard member={member} onSelect={mockSelect} />);
+
+      expect(screen.getByText(member.index)).toBeDefined();
+      expect(screen.getByText(member.name)).toBeDefined();
+      expect(screen.getByText(member.role)).toBeDefined();
+      expect(screen.getByText(member.description)).toBeDefined();
+
+      const linkedinLink = screen.getByLabelText(new RegExp(`Open ${member.name} LinkedIn profile`, 'i'));
+      expect(linkedinLink).toBeDefined();
+      expect(linkedinLink.getAttribute('href')).toBe(member.linkedin);
+    });
+
+    it('triggers onSelect callback when clicking the card', () => {
+      const mockSelect = vi.fn();
+      const member = teamMembers[0];
+
+      const { container } = render(<TeamCard member={member} onSelect={mockSelect} />);
+      const card = container.querySelector('article');
+      if (card) {
+        fireEvent.click(card);
+        expect(mockSelect).toHaveBeenCalledWith(member);
+      }
+    });
+  });
+
+  describe('4. TeamModal Component', () => {
+    it('renders expanded profile details with bio and skill chips when active', () => {
+      const mockClose = vi.fn();
+      const member = teamMembers[0];
+
+      render(<TeamModal member={member} onClose={mockClose} />);
+
+      expect(screen.getByRole('dialog')).toBeDefined();
+      expect(screen.getByText(member.name)).toBeDefined();
+      expect(screen.getByText(/Overview/i)).toBeDefined();
+
+      member.skills?.forEach((skill) => {
+        expect(screen.getByText(skill)).toBeDefined();
+      });
+    });
+
+    it('calls onClose when close button is clicked', () => {
+      const mockClose = vi.fn();
+      const member = teamMembers[0];
+
+      render(<TeamModal member={member} onClose={mockClose} />);
+      const closeBtn = screen.getByLabelText(/Close profile details/i);
+      fireEvent.click(closeBtn);
+      expect(mockClose).toHaveBeenCalledTimes(1);
+    });
+
+    it('calls onClose when Escape key is pressed', () => {
+      const mockClose = vi.fn();
+      const member = teamMembers[0];
+
+      render(<TeamModal member={member} onClose={mockClose} />);
+      fireEvent.keyDown(window, { key: 'Escape' });
+      expect(mockClose).toHaveBeenCalledTimes(1);
+    });
+
+    it('renders nothing when member is null', () => {
+      const { container } = render(<TeamModal member={null} onClose={vi.fn()} />);
+      expect(container.firstChild).toBeNull();
+    });
+  });
+});

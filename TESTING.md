@@ -7,8 +7,8 @@ Radiant Nobel maintains a **zero-regression testing standard** across all critic
 ## 1. Testing Pyramid & Tooling
 
 ```
-            ▲
-           / \
+             ▲
+           /   \
           / E2E \       Playwright (Browser user flows)
          /───────\
         / AI Eval \     Vitest (18 AI Quality & Safety Scenarios)

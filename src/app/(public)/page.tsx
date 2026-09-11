@@ -24,6 +24,7 @@ import { RevealOnScroll } from '@/components/ui/RevealOnScroll';
 import { HeroBackgroundMotion } from '@/components/home/HeroBackgroundMotion';
 import { HeroTypographyMotion } from '@/components/home/HeroTypographyMotion';
 import { CapabilitiesMarquee } from '@/components/home/CapabilitiesMarquee';
+import { TeamSection } from '@/components/team/TeamSection';
 
 export default function LandingPage() {
   const channelCards = [
@@ -198,7 +199,10 @@ export default function LandingPage() {
         </section>
       </RevealOnScroll>
 
-      {/* 4. FREQUENTLY ASKED QUESTIONS WITH LIQUID GLASS PANELS */}
+      {/* 4. EDITORIAL TEAM MEMBERS SECTION */}
+      <TeamSection />
+
+      {/* 5. FREQUENTLY ASKED QUESTIONS WITH LIQUID GLASS PANELS */}
       <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         <RevealOnScroll variant="fade-up" durationMs={600}>
           <div className="text-center space-y-3">
