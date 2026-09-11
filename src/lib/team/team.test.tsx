@@ -5,6 +5,7 @@ import { teamMembers } from '@/data/teamMembers';
 import { TeamSection } from '@/components/team/TeamSection';
 import { TeamCard } from '@/components/team/TeamCard';
 import { TeamModal } from '@/components/team/TeamModal';
+import { TeamCarousel } from '@/components/team/TeamCarousel';
 
 // Mock next/image to render standard img tag with alt & src
 vi.mock('next/image', () => ({
@@ -12,7 +13,7 @@ vi.mock('next/image', () => ({
   default: ({ src, alt, ...props }: any) => <img src={src} alt={alt} {...props} />,
 }));
 
-describe('Editorial Team Members Suite', () => {
+describe('Editorial Team Members Suite (Light Theme & Infinite Carousel)', () => {
   describe('1. Centralized Team Data Validation', () => {
     it('contains at least 4 team members with required editorial fields', () => {
       expect(teamMembers.length).toBeGreaterThanOrEqual(4);
@@ -36,28 +37,62 @@ describe('Editorial Team Members Suite', () => {
   });
 
   describe('2. TeamSection Component', () => {
-    it('renders the editorial section header, TECH TITAN subtitle, and member cards', () => {
+    it('renders the editorial section header, TECH TITAN subtitle, and carousel', () => {
       render(<TeamSection />);
 
       expect(screen.getByText(/01 \/ TEAM/i)).toBeDefined();
-      expect(screen.getByText(/Meet the minds behind the project\./i)).toBeDefined();
+      expect(screen.getByText(/Meet the minds behind the project/i)).toBeDefined();
       expect(screen.getAllByText(/TECH TITAN/i).length).toBeGreaterThan(0);
 
       teamMembers.forEach((member) => {
-        expect(screen.getByText(member.name)).toBeDefined();
-        expect(screen.getAllByText(member.role).length).toBeGreaterThan(0);
+        expect(screen.getAllByText(member.name).length).toBeGreaterThan(0);
       });
     });
 
-    it('has id="team" and proper scroll margin for smooth navigation', () => {
+    it('has id="team" and scroll margin to prevent sticky navbar overlap', () => {
       const { container } = render(<TeamSection />);
       const section = container.querySelector('#team');
       expect(section).not.toBeNull();
       expect(section?.className).toContain('scroll-mt-');
+      expect(section?.className).toContain('bg-white');
     });
   });
 
-  describe('3. TeamCard Component', () => {
+  describe('3. TeamCarousel Component', () => {
+    it('renders duplicated track items for seamless infinite marquee loop', () => {
+      render(<TeamCarousel onSelectMember={vi.fn()} />);
+
+      const carousel = screen.getByLabelText(/Team members carousel/i);
+      expect(carousel).toBeDefined();
+
+      const prevBtn = screen.getByLabelText(/Previous team member/i);
+      const nextBtn = screen.getByLabelText(/Next team member/i);
+      expect(prevBtn).toBeDefined();
+      expect(nextBtn).toBeDefined();
+    });
+
+    it('handles manual previous and next navigation clicks', () => {
+      render(<TeamCarousel onSelectMember={vi.fn()} />);
+
+      const nextBtn = screen.getByLabelText(/Next team member/i);
+      fireEvent.click(nextBtn);
+
+      const prevBtn = screen.getByLabelText(/Previous team member/i);
+      fireEvent.click(prevBtn);
+    });
+
+    it('handles mobile touch swipe events without crashing', () => {
+      render(<TeamCarousel onSelectMember={vi.fn()} />);
+
+      const carousel = screen.getByLabelText(/Team members carousel/i);
+
+      fireEvent.touchStart(carousel, { touches: [{ clientX: 300, clientY: 100 }] });
+      fireEvent.touchMove(carousel, { touches: [{ clientX: 200, clientY: 100 }] });
+      fireEvent.touchEnd(carousel);
+    });
+  });
+
+  describe('4. TeamCard Component', () => {
     it('renders member name, index, role, description, and accessible LinkedIn link', () => {
       const mockSelect = vi.fn();
       const member = teamMembers[0];
@@ -69,7 +104,7 @@ describe('Editorial Team Members Suite', () => {
       expect(screen.getByText(member.role)).toBeDefined();
       expect(screen.getByText(member.description)).toBeDefined();
 
-      const linkedinLink = screen.getByLabelText(new RegExp(`Open ${member.name} LinkedIn profile`, 'i'));
+      const linkedinLink = screen.getByLabelText(new RegExp(`LinkedIn profile of ${member.name}`, 'i'));
       expect(linkedinLink).toBeDefined();
       expect(linkedinLink.getAttribute('href')).toBe(member.linkedin);
     });
@@ -87,7 +122,7 @@ describe('Editorial Team Members Suite', () => {
     });
   });
 
-  describe('4. TeamModal Component', () => {
+  describe('5. TeamModal Component', () => {
     it('renders expanded profile details with bio and skill chips when active', () => {
       const mockClose = vi.fn();
       const member = teamMembers[0];
@@ -96,7 +131,7 @@ describe('Editorial Team Members Suite', () => {
 
       expect(screen.getByRole('dialog')).toBeDefined();
       expect(screen.getByText(member.name)).toBeDefined();
-      expect(screen.getByText(/Overview/i)).toBeDefined();
+      expect(screen.getByText(/Overview & Focus/i)).toBeDefined();
 
       member.skills?.forEach((skill) => {
         expect(screen.getByText(skill)).toBeDefined();

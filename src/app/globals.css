@@ -413,3 +413,31 @@ body {
   min-height: 44px;
   min-width: 44px;
 }
+
+/* Continuous Team Infinite Carousel */
+@keyframes teamInfiniteTrack {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.animate-team-track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  animation: teamInfiniteTrack 24s linear infinite;
+}
+
+.animate-team-track:hover,
+.team-track-container:hover .animate-team-track {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-team-track {
+    animation: none !important;
+  }
+}
