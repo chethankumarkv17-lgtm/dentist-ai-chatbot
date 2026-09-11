@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import Image from 'next/image';
 import { ArrowUpRight, User, Mail } from 'lucide-react';
 import { TeamMember } from '@/data/teamMembers';
@@ -13,6 +13,25 @@ interface TeamCardProps {
 
 export function TeamCard({ member, onSelect, className = '' }: TeamCardProps) {
   const [imageState, setImageState] = useState<'loading' | 'loaded' | 'error'>('loading');
+  const cardRef = useRef<HTMLElement>(null);
+  const [reducedMotion, setReducedMotion] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.matchMedia) {
+      setReducedMotion(window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    }
+  }, []);
+
+  // Spotlight: set CSS custom properties on mouse move (no React re-render)
+  const handleMouseMove = useCallback(
+    (e: React.MouseEvent<HTMLElement>) => {
+      if (reducedMotion || !cardRef.current) return;
+      const rect = cardRef.current.getBoundingClientRect();
+      cardRef.current.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
+      cardRef.current.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
+    },
+    [reducedMotion]
+  );
 
   const initials = member.name
     .split(' ')
@@ -23,12 +42,31 @@ export function TeamCard({ member, onSelect, className = '' }: TeamCardProps) {
     .toUpperCase();
 
   return (
+    // Gradient border wrapper: 1px padding reveals gradient behind the white card on hover
+    <div
+      className={`rounded-xl p-[1px] bg-slate-200/80 transition-all duration-500 group/border hover:bg-gradient-to-br hover:from-blue-500 hover:via-indigo-500 hover:to-purple-500 ${
+        reducedMotion ? '' : 'motion-safe:hover:bg-[length:200%_200%] motion-safe:hover:animate-[gradient-shift_3s_ease_infinite]'
+      }`}
+    >
     <article
+      ref={cardRef}
       onClick={() => onSelect?.(member)}
-      className={`group relative flex flex-col justify-between bg-white border border-slate-200/80 hover:border-blue-400/80 rounded-xl overflow-hidden shadow-xs hover:shadow-md transition-all duration-300 hover:-translate-y-1 select-none ${
+      onMouseMove={handleMouseMove}
+      className={`group relative flex flex-col justify-between bg-white rounded-[11px] overflow-hidden shadow-xs hover:shadow-md transition-all duration-300 hover:-translate-y-1 select-none ${
         onSelect ? 'cursor-pointer' : ''
       } ${className}`}
     >
+      {/* Cursor Spotlight Overlay — radial glow follows pointer via CSS vars */}
+      {!reducedMotion && (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 z-30 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+          style={{
+            background:
+              'radial-gradient(280px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(59,130,246,0.06), transparent 70%)',
+          }}
+        />
+      )}
       {/* 1. Consistent 4:5 Aspect Ratio Grayscale Photo Area */}
       <div className="relative w-full aspect-[4/5] bg-slate-100 border-b border-slate-200/80 overflow-hidden">
         {/* Loading Skeleton — visible while image is loading, hidden once loaded or errored */}
@@ -160,5 +198,6 @@ export function TeamCard({ member, onSelect, className = '' }: TeamCardProps) {
         className="absolute bottom-0 left-0 h-[2.5px] bg-blue-600 w-[20%] group-hover:w-full transition-all duration-400 ease-out"
       />
     </article>
+    </div>
   );
 }
