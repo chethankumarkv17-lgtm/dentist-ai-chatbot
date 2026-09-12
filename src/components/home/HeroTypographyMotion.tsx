@@ -6,6 +6,7 @@ import { Sparkles, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { DynamicTextSlider } from '@/components/home/DynamicTextSlider';
 import { HeroProductPreview } from '@/components/home/HeroProductPreview';
 import { LiquidButton } from '@/components/ui/liquid-glass-button';
+import { GlowWrapper } from '@/components/ui/GlowWrapper';
 
 export function HeroTypographyMotion() {
   const [mounted, setMounted] = useState(false);
@@ -127,14 +128,16 @@ export function HeroTypographyMotion() {
         }`}
       >
         <Link href="/signup" className="w-full sm:w-auto inline-block">
-          <LiquidButton
-            variant="primary"
-            size="xl"
-            className="w-full sm:w-auto touch-target group"
-          >
-            <span>Start 14-Day Free Trial</span>
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
-          </LiquidButton>
+          <GlowWrapper variant="primary" roundedClassName="rounded-xl" className="w-full sm:w-auto">
+            <LiquidButton
+              variant="primary"
+              size="xl"
+              className="w-full sm:w-auto touch-target group"
+            >
+              <span>Start 14-Day Free Trial</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+            </LiquidButton>
+          </GlowWrapper>
         </Link>
         <Link href="/login" className="w-full sm:w-auto inline-block">
           <LiquidButton

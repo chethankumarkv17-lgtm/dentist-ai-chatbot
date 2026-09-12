@@ -445,6 +445,35 @@ body {
   }
 }
 
+/* Rotating Gradient Glow for CTA Aurora Halo */
+@property --glow-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes spin-glow {
+  0% {
+    transform: rotate(0deg);
+    --glow-angle: 0deg;
+  }
+  100% {
+    transform: rotate(360deg);
+    --glow-angle: 360deg;
+  }
+}
+
+.animate-spin-glow {
+  animation: spin-glow 3.5s linear infinite;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-spin-glow {
+    animation: none !important;
+  }
+}
+
 .animate-fade-in {
   animation: fadeIn 400ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
