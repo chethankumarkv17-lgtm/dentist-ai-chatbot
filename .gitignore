@@ -1,6 +1,6 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
+# ==============================================================================
+# Dependencies
+# ==============================================================================
 /node_modules
 /.pnp
 .pnp.*
@@ -10,42 +10,113 @@
 !.yarn/releases
 !.yarn/versions
 
-# testing
-/coverage
+# ==============================================================================
+# Environment & Secrets (NEVER commit secrets or real credentials)
+# ==============================================================================
+.env
+.env.*
+.env*.local
+*.pem
+*.key
+*.cert
+*.crt
+*.pfx
+*.p12
+*.pkcs12
+*.keystore
+id_rsa*
+id_ed25519*
+secrets/
+private/
 
-# next.js
+# Explicitly preserve the example environment template
+!.env.example
+
+# ==============================================================================
+# Build & Compilation Outputs
+# ==============================================================================
 /.next/
 /out/
-
-# production
 /build
+/dist
+*.tsbuildinfo
+next-env.d.ts
 
-# misc
-.DS_Store
-*.pem
-
-# debug
+# ==============================================================================
+# Logs & Diagnostic Dumps
+# ==============================================================================
+logs/
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-.pnpm-debug.log*
+pnpm-debug.log*
+lerna-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
-
-# vercel
-.vercel
-
-# typescript
-*.tsbuildinfo
-next-env.d.ts
- 
-!.env.example
-
-# Playwright
-node_modules/
+# ==============================================================================
+# Testing & Coverage
+# ==============================================================================
+/coverage
 /test-results/
 /playwright-report/
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+.vitest/
+
+# ==============================================================================
+# Temporary Files & Local Caches
+# ==============================================================================
+tmp/
+temp/
+.temp/
+*.tmp
+*.bak
+*.swp
+*.swo
+*~
+.cache/
+
+# ==============================================================================
+# Database & Sensitive Local Storage
+# ==============================================================================
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
+*.dump
+*.sql.bak
+supabase/.temp/
+supabase/.branches/
+
+# ==============================================================================
+# Operating System Files
+# ==============================================================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# ==============================================================================
+# IDE & Editor Configurations
+# ==============================================================================
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+*.sublime-project
+*.sublime-workspace
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# ==============================================================================
+# Deployment Platform Caches
+# ==============================================================================
+.vercel
