@@ -3,8 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Stethoscope, Menu, X, ArrowRight, Sparkles } from 'lucide-react';
-import { useTextScramble, ScrambleText } from '@/components/ui/ScrambleText';
+import { Stethoscope, Menu, X, ArrowRight } from 'lucide-react';
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -13,7 +12,7 @@ export function Navbar() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 15);
+      setScrolled(window.scrollY > 12);
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
@@ -28,103 +27,111 @@ export function Navbar() {
   ];
 
   return (
-    <header className="sticky top-0 z-40 w-full pt-3 pb-3 px-4 sm:px-6 lg:px-8 transition-all duration-300">
+    <header className="sticky top-0 z-40 w-full pt-3 pb-2 px-4 sm:px-6 lg:px-8 transition-all duration-200">
       <div
-        className={`max-w-7xl mx-auto rounded-2xl sm:rounded-3xl transition-all duration-300 ${
-          scrolled ? 'liquid-glass-strong' : 'liquid-glass'
-        } px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between`}
+        className={`max-w-7xl mx-auto rounded-2xl transition-all duration-300 ${
+          scrolled
+            ? 'bg-white/90 dark:bg-slate-900/90 shadow-[0_4px_20px_-4px_rgba(15,23,42,0.08)] border-slate-200/80'
+            : 'bg-white/75 dark:bg-slate-900/75 shadow-[0_2px_12px_-2px_rgba(15,23,42,0.04)] border-slate-200/60'
+        } backdrop-blur-xl border px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between`}
       >
         {/* Brand */}
-        <div className="flex items-center gap-8">
+        <div className="flex items-center gap-7">
           <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 via-indigo-600 to-blue-700 flex items-center justify-center text-white shadow-md shadow-blue-500/25 group-hover:scale-105 transition-transform duration-300">
-              <Stethoscope className="w-5 h-5" />
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-sm shadow-blue-500/20 group-hover:scale-105 transition-transform duration-200">
+              <Stethoscope className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
             </div>
-            <div>
-              <span className="font-black text-base sm:text-lg text-slate-900 tracking-tight block leading-tight">
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-sm sm:text-base text-slate-900 dark:text-white tracking-tight">
                 Radiant Nobel
               </span>
-              <span className="text-[10px] font-extrabold text-blue-600 uppercase tracking-wider block">
-                Dental AI Suite
+              <span className="hidden sm:inline-block text-[10px] font-semibold text-blue-600 bg-blue-50 dark:bg-blue-950/60 dark:text-blue-400 px-2 py-0.5 rounded-full border border-blue-100 dark:border-blue-900/60">
+                Dental AI
               </span>
             </div>
           </Link>
 
-          {/* Desktop Nav Links */}
+          {/* Desktop Nav Links — Minimal, Clean & Immediate */}
           <nav className="hidden md:flex items-center gap-1">
             {navLinks.map((link) => {
               const isActive = pathname === link.href;
               return (
-                <NavLinkItem
+                <Link
                   key={link.href}
-                  link={link}
-                  isActive={isActive}
-                />
+                  href={link.href}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-150 ${
+                    isActive
+                      ? 'text-blue-600 dark:text-blue-400 bg-blue-50/80 dark:bg-blue-950/50 font-semibold'
+                      : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/60 dark:hover:bg-slate-800/60'
+                  }`}
+                >
+                  {link.label}
+                </Link>
               );
             })}
           </nav>
         </div>
 
-        {/* Desktop CTA Buttons */}
-        <div className="hidden md:flex items-center gap-3">
+        {/* Desktop CTA Buttons — Minimal & Premium */}
+        <div className="hidden md:flex items-center gap-2.5">
           <Link
             href="/login"
-            className="px-4 py-2 rounded-xl text-sm font-bold text-slate-700 hover:text-slate-900 hover:bg-white/80 transition-all"
+            className="px-3.5 py-1.5 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/60 dark:hover:bg-slate-800/60 transition-colors"
           >
             Practice Sign In
           </Link>
           <Link
             href="/signup"
-            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-sm font-bold shadow-md shadow-blue-500/25 hover:shadow-lg hover:shadow-blue-500/35 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 group touch-target"
+            className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-full bg-slate-900 dark:bg-white dark:text-slate-950 hover:bg-slate-800 text-white text-xs sm:text-sm font-semibold shadow-xs hover:shadow-sm hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 group"
           >
             <span>Start Free Trial</span>
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform duration-300" />
+            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform duration-200" />
           </Link>
         </div>
 
         {/* Mobile Hamburger Button */}
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
-          className="md:hidden p-2.5 rounded-xl text-slate-700 hover:bg-white/80 transition-colors touch-target flex items-center justify-center cursor-pointer"
+          className="md:hidden p-2 rounded-xl text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center justify-center cursor-pointer"
           aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
           aria-expanded={mobileOpen}
         >
-          {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
       </div>
 
       {/* Mobile Slide-down Drawer */}
       {mobileOpen && (
-        <div className="md:hidden mt-2 max-w-7xl mx-auto liquid-glass-strong rounded-2xl p-4 space-y-4 animate-fade-in shadow-2xl">
+        <div className="md:hidden mt-2 max-w-7xl mx-auto bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-slate-200/80 dark:border-slate-800 rounded-2xl p-4 space-y-3 shadow-xl animate-fade-in">
           <nav className="space-y-1">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 onClick={() => setMobileOpen(false)}
-                className={`block px-4 py-3 rounded-xl text-base font-bold transition-colors ${
+                className={`block px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-colors ${
                   pathname === link.href
-                    ? 'text-blue-700 bg-blue-50/90'
-                    : 'text-slate-800 hover:bg-white/70'
+                    ? 'text-blue-600 bg-blue-50 dark:bg-blue-950/50'
+                    : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100/70 dark:hover:bg-slate-800/70'
                 }`}
               >
-                <ScrambleText text={link.label} durationMs={450} />
+                {link.label}
               </Link>
             ))}
           </nav>
 
-          <div className="pt-3 border-t border-slate-200/60 space-y-2">
+          <div className="pt-3 border-t border-slate-200/60 dark:border-slate-800 space-y-2">
             <Link
               href="/login"
               onClick={() => setMobileOpen(false)}
-              className="block w-full text-center px-4 py-3 rounded-xl text-sm font-bold text-slate-700 hover:bg-white/80 transition-colors"
+              className="block w-full text-center px-4 py-2.5 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
             >
               Practice Sign In
             </Link>
             <Link
               href="/signup"
               onClick={() => setMobileOpen(false)}
-              className="block w-full text-center px-4 py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-sm font-black shadow-md shadow-blue-500/25 transition-all"
+              className="block w-full text-center px-4 py-2.5 rounded-full bg-slate-900 dark:bg-white dark:text-slate-950 hover:bg-slate-800 text-white text-sm font-semibold shadow-xs transition-all"
             >
               Start Free Trial
             </Link>
@@ -132,37 +139,5 @@ export function Navbar() {
         </div>
       )}
     </header>
-  );
-}
-
-function NavLinkItem({
-  link,
-  isActive,
-}: {
-  link: { label: string; href: string };
-  isActive: boolean;
-}) {
-  const { displayText, hoverProps } = useTextScramble(link.label, {
-    durationMs: 480,
-    stepIntervalMs: 35,
-    onLeaveBehavior: 'finish',
-  });
-
-  return (
-    <Link
-      href={link.href}
-      {...hoverProps}
-      aria-label={link.label}
-      className={`px-3.5 py-1.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
-        isActive
-          ? 'text-blue-700 bg-blue-50/90 font-bold border border-blue-200/80 shadow-2xs'
-          : 'text-slate-700 hover:text-slate-900 hover:bg-white/60'
-      }`}
-    >
-      <span aria-hidden="true" className="inline-block tabular-nums">
-        {displayText}
-      </span>
-      <span className="sr-only">{link.label}</span>
-    </Link>
   );
 }
