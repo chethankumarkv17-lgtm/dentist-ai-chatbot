@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Stethoscope, Menu, X, ArrowRight, Sparkles } from 'lucide-react';
+import { useTextScramble, ScrambleText } from '@/components/ui/ScrambleText';
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -54,17 +55,11 @@ export function Navbar() {
             {navLinks.map((link) => {
               const isActive = pathname === link.href;
               return (
-                <Link
+                <NavLinkItem
                   key={link.href}
-                  href={link.href}
-                  className={`px-3.5 py-1.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
-                    isActive
-                      ? 'text-blue-700 bg-blue-50/90 font-bold border border-blue-200/80 shadow-2xs'
-                      : 'text-slate-700 hover:text-slate-900 hover:bg-white/60'
-                  }`}
-                >
-                  {link.label}
-                </Link>
+                  link={link}
+                  isActive={isActive}
+                />
               );
             })}
           </nav>
@@ -113,7 +108,7 @@ export function Navbar() {
                     : 'text-slate-800 hover:bg-white/70'
                 }`}
               >
-                {link.label}
+                <ScrambleText text={link.label} durationMs={450} />
               </Link>
             ))}
           </nav>
@@ -137,5 +132,37 @@ export function Navbar() {
         </div>
       )}
     </header>
+  );
+}
+
+function NavLinkItem({
+  link,
+  isActive,
+}: {
+  link: { label: string; href: string };
+  isActive: boolean;
+}) {
+  const { displayText, hoverProps } = useTextScramble(link.label, {
+    durationMs: 480,
+    stepIntervalMs: 35,
+    onLeaveBehavior: 'finish',
+  });
+
+  return (
+    <Link
+      href={link.href}
+      {...hoverProps}
+      aria-label={link.label}
+      className={`px-3.5 py-1.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
+        isActive
+          ? 'text-blue-700 bg-blue-50/90 font-bold border border-blue-200/80 shadow-2xs'
+          : 'text-slate-700 hover:text-slate-900 hover:bg-white/60'
+      }`}
+    >
+      <span aria-hidden="true" className="inline-block tabular-nums">
+        {displayText}
+      </span>
+      <span className="sr-only">{link.label}</span>
+    </Link>
   );
 }
