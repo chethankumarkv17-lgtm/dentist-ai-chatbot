@@ -373,6 +373,78 @@ body {
   }
 }
 
+/* Ambient Gradient Mesh Keyframes (15-20s slow ambient cycle) */
+@keyframes meshDrift1 {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  33% {
+    transform: translate3d(50px, -40px, 0) scale(1.12);
+  }
+  66% {
+    transform: translate3d(-40px, 35px, 0) scale(0.92);
+  }
+}
+
+@keyframes meshDrift2 {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  33% {
+    transform: translate3d(-60px, 35px, 0) scale(1.08);
+  }
+  66% {
+    transform: translate3d(40px, -50px, 0) scale(1.16);
+  }
+}
+
+@keyframes meshDrift3 {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(45px, -30px, 0) scale(1.14);
+  }
+}
+
+@keyframes meshDrift4 {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(-45px, -35px, 0) scale(0.92);
+  }
+}
+
+.animate-mesh-blob-1 {
+  animation: meshDrift1 18s ease-in-out infinite;
+  will-change: transform;
+}
+
+.animate-mesh-blob-2 {
+  animation: meshDrift2 16s ease-in-out infinite;
+  will-change: transform;
+}
+
+.animate-mesh-blob-3 {
+  animation: meshDrift3 20s ease-in-out infinite;
+  will-change: transform;
+}
+
+.animate-mesh-blob-4 {
+  animation: meshDrift4 17s ease-in-out infinite;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-mesh-blob-1,
+  .animate-mesh-blob-2,
+  .animate-mesh-blob-3,
+  .animate-mesh-blob-4 {
+    animation: none !important;
+  }
+}
+
 .animate-fade-in {
   animation: fadeIn 400ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
