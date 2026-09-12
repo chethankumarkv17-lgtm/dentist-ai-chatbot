@@ -21,46 +21,43 @@ export function RevealOnScroll({
   className = '',
   threshold = 0.1,
 }: RevealOnScrollProps) {
-  const [isVisible, setIsVisible] = useState(() => {
-    if (typeof window === 'undefined') return true;
-    if (typeof IntersectionObserver === 'undefined') return true;
-    if (typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      return true;
-    }
-    return false;
-  });
+  const [isVisible, setIsVisible] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (isVisible) return;
+    // Reveal immediately if user prefers reduced motion or IntersectionObserver is unsupported
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      typeof window.matchMedia === 'function' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (prefersReducedMotion || typeof IntersectionObserver === 'undefined') {
+      const rafId = requestAnimationFrame(() => setIsVisible(true));
+      return () => cancelAnimationFrame(rafId);
+    }
 
     const currentRef = ref.current;
     if (!currentRef) return;
 
-    try {
-      const observer = new IntersectionObserver(
-        ([entry]) => {
-          if (entry && entry.isIntersecting) {
-            setIsVisible(true);
-            observer.unobserve(entry.target);
-          }
-        },
-        {
-          threshold,
-          rootMargin: '0px 0px -30px 0px',
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry && entry.isIntersecting) {
+          setIsVisible(true);
+          observer.unobserve(entry.target);
         }
-      );
+      },
+      {
+        threshold,
+        rootMargin: '0px 0px -30px 0px',
+      }
+    );
 
-      observer.observe(currentRef);
+    observer.observe(currentRef);
 
-      return () => {
-        if (currentRef) observer.unobserve(currentRef);
-      };
-    } catch {
-      const rafId = requestAnimationFrame(() => setIsVisible(true));
-      return () => cancelAnimationFrame(rafId);
-    }
-  }, [threshold, isVisible]);
+    return () => {
+      observer.disconnect();
+    };
+  }, [threshold]);
 
   const variantStyles: Record<string, { initial: string; visible: string }> = {
     'fade-up': {

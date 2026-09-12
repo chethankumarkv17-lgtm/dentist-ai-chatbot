@@ -18,12 +18,7 @@ export function TeamCarousel({ onSelectMember }: TeamCarouselProps) {
     }
     return false;
   });
-  const [hasEnteredView, setHasEnteredView] = useState(() => {
-    if (typeof window !== 'undefined' && window.matchMedia) {
-      return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    }
-    return false;
-  });
+  const [hasEnteredView, setHasEnteredView] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const trackRef = useRef<HTMLDivElement>(null);
