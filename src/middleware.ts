@@ -20,7 +20,11 @@ export async function middleware(request: NextRequest) {
 
   const cleanHostname = hostname.split(':')[0].toLowerCase();
   const isLocalhost = cleanHostname === 'localhost' || cleanHostname === '127.0.0.1' || cleanHostname.endsWith('.localhost');
+  const isVercel = cleanHostname.endsWith('.vercel.app');
+  const isDeployDomain = cleanHostname.endsWith('.onrender.com') || cleanHostname.endsWith('.netlify.app') || cleanHostname.endsWith('.railway.app');
   const isPrimaryDomain =
+    isVercel ||
+    isDeployDomain ||
     (configuredDomain && (cleanHostname === configuredDomain || cleanHostname === `www.${configuredDomain}`)) ||
     cleanHostname === 'dentalai.test' ||
     cleanHostname === 'www.dentalai.test' ||
