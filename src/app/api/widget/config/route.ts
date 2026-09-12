@@ -8,17 +8,12 @@ const idSchema = z.string().regex(
 );
 
 export async function GET(req: NextRequest) {
-  const id = req.nextUrl.searchParams.get('id');
-
-  if (!id || !idSchema.safeParse(id).success) {
-    return NextResponse.json({ error: 'Invalid widget ID' }, { status: 400 });
-  }
+  const id = req.nextUrl.searchParams.get('id') || 'default';
 
   const cacheKey = `widget:config:${id}`;
   let widgetConfig = appCache.get<Record<string, unknown>>(cacheKey);
 
   if (!widgetConfig) {
-    // In production, fetch from Supabase. Cached in memory for 10 minutes (600s).
     widgetConfig = {
       clinicName: "Downtown Smile",
       themeColor: "#007BFF",
