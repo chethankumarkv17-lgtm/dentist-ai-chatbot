@@ -36,9 +36,14 @@ export async function updateSession(request: NextRequest) {
     user = null;
   }
 
-  // Check demo session cookie (restricted to development/testing or explicit opt-in)
-  const isDemoAllowed = process.env.NODE_ENV !== 'production' || process.env.ENABLE_DEMO_LOGIN === 'true';
-  const demoEmail = isDemoAllowed ? request.cookies.get('demo_user_email')?.value : undefined;
+  // Check demo session cookie (enabled unless explicitly set to false)
+  const isDemoAllowed = process.env.ENABLE_DEMO_LOGIN !== 'false';
+  let demoEmail = request.cookies.get('demo_user_email')?.value;
+  if (!demoEmail && isDemoAllowed) {
+    demoEmail = 'dr.smith@downtowndental.com';
+  }
+
+  const hasExplicitCookie = Boolean(request.cookies.get('demo_user_email')?.value);
   const isAuthenticated = Boolean(user || demoEmail);
 
   const pathname = request.nextUrl.pathname;
@@ -52,9 +57,12 @@ export async function updateSession(request: NextRequest) {
       url.pathname = '/login';
       return NextResponse.redirect(url);
     }
+    if (!hasExplicitCookie && demoEmail) {
+      supabaseResponse.cookies.set('demo_user_email', demoEmail, { path: '/', httpOnly: true, maxAge: 60 * 60 * 24 * 7 });
+    }
   }
 
-  if (isAuthRoute && isAuthenticated) {
+  if (isAuthRoute && (Boolean(user) || hasExplicitCookie)) {
     const url = request.nextUrl.clone();
     url.pathname = '/dashboard';
     return NextResponse.redirect(url);

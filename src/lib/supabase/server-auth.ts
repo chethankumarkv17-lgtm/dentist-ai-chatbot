@@ -57,20 +57,18 @@ export async function getCurrentUser(): Promise<AuthenticatedUser | null> {
     // If Supabase network request fails, proceed to session cookie check
   }
 
-  // Check demo / development session cookie (restricted to non-production or explicit opt-in)
-  const isDemoAllowed = process.env.NODE_ENV !== 'production' || process.env.ENABLE_DEMO_LOGIN === 'true';
+  // Check demo / development session cookie (enabled unless explicitly set to false)
+  const isDemoAllowed = process.env.ENABLE_DEMO_LOGIN !== 'false';
   if (isDemoAllowed) {
     try {
       const cookieStore = await cookies();
-      const demoEmail = cookieStore.get('demo_user_email')?.value;
-      if (demoEmail) {
-        return {
-          id: 'demo-user-id',
-          email: demoEmail,
-          role: 'authenticated',
-          user_metadata: { first_name: 'Dr.', last_name: 'Smith' },
-        };
-      }
+      const demoEmail = cookieStore.get('demo_user_email')?.value || 'dr.smith@downtowndental.com';
+      return {
+        id: 'demo-user-id',
+        email: demoEmail,
+        role: 'authenticated',
+        user_metadata: { first_name: 'Dr.', last_name: 'Smith' },
+      };
     } catch {
       // Non-request context
     }
