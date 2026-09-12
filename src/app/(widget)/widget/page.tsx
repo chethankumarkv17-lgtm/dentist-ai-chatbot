@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState, useEffect, useRef, Suspense } from 'react';
+import React, { useState, useEffect, useRef, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { MessageCircle, X, Send, RotateCcw, Calendar, Clock, Sparkles } from 'lucide-react';
+import { MessageCircle, X, Send, RotateCcw } from 'lucide-react';
 
 interface Message {
   id: string;
@@ -22,6 +22,7 @@ function WidgetContent() {
   const [error, setError] = useState<string | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messageCounterRef = useRef(0);
 
   const quickPrompts = [
     '📅 Book Teeth Cleaning',
@@ -72,10 +73,12 @@ function WidgetContent() {
     }
   }, [messages, clinicId]);
 
-  const sendQuery = async (text: string) => {
+  const handleSendQuery = useCallback(async (text: string) => {
     if (!text.trim() || isLoading) return;
 
-    const userMessage: Message = { id: Date.now().toString(), role: 'user', content: text.trim() };
+    messageCounterRef.current += 1;
+    const msgId = `msg-${messageCounterRef.current}-${Date.now()}`;
+    const userMessage: Message = { id: msgId, role: 'user', content: text.trim() };
     setMessages((prev) => [...prev, userMessage]);
     setInputValue('');
     setIsLoading(true);
@@ -95,20 +98,21 @@ function WidgetContent() {
       if (!res.ok) throw new Error('Network response was not ok');
       const data = await res.json();
 
+      messageCounterRef.current += 1;
       setMessages((prev) => [
         ...prev,
-        { id: Date.now().toString(), role: 'assistant', content: data.reply },
+        { id: `reply-${messageCounterRef.current}-${Date.now()}`, role: 'assistant', content: data.reply },
       ]);
     } catch {
       setError('Connection lost. Please try again.');
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [isLoading, clinicId, messages]);
 
   const handleSend = async (e?: React.FormEvent) => {
     e?.preventDefault();
-    await sendQuery(inputValue);
+    await handleSendQuery(inputValue);
   };
 
   const handleReset = () => {
@@ -208,7 +212,7 @@ function WidgetContent() {
         {quickPrompts.map((prompt) => (
           <button
             key={prompt}
-            onClick={() => sendQuery(prompt.replace(/^[^\s]+ /, ''))}
+            onClick={() => handleSendQuery(prompt.replace(/^[^\s]+ /, ''))}
             disabled={isLoading}
             className="px-3 py-1 rounded-full bg-slate-100/90 hover:bg-slate-200 text-[11px] font-bold text-slate-700 border border-slate-200/60 shadow-2xs transition-all shrink-0 disabled:opacity-50 cursor-pointer"
           >

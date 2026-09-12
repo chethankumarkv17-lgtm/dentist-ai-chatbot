@@ -13,10 +13,12 @@ export function HeroTypographyMotion() {
   const [reducedMotion, setReducedMotion] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
-    if (typeof window !== 'undefined' && window.matchMedia) {
-      setReducedMotion(window.matchMedia('(prefers-reduced-motion: reduce)').matches);
-    }
+    const isReduced = typeof window !== 'undefined' && window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)').matches : false;
+    const rafId = requestAnimationFrame(() => {
+      setMounted(true);
+      setReducedMotion(isReduced);
+    });
+    return () => cancelAnimationFrame(rafId);
   }, []);
 
   const line2Words = ['for', 'Modern', 'Dental', 'Practices'];

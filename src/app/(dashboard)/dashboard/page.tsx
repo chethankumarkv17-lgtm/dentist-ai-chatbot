@@ -21,6 +21,36 @@ import { MetricCard } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import Link from 'next/link';
 
+const DEFAULT_RECENT_APPOINTMENTS: Record<string, unknown>[] = [
+  {
+    id: 'apt-1',
+    patient_name: 'Ananya Deshmukh',
+    patient_phone: '+91 98112 23344',
+    service_name: 'Teeth Cleaning & Scaling',
+    start_time: '2026-09-12T11:00:00.000Z',
+    status: 'confirmed',
+    channel: 'whatsapp',
+  },
+  {
+    id: 'apt-2',
+    patient_name: 'Rajesh Kumar',
+    patient_phone: '+91 98450 12345',
+    service_name: 'Root Canal Consultation',
+    start_time: '2026-09-12T13:00:00.000Z',
+    status: 'confirmed',
+    channel: 'voice',
+  },
+  {
+    id: 'apt-3',
+    patient_name: 'Pooja Sharma',
+    patient_phone: '+91 99887 76655',
+    service_name: 'Composite Filling',
+    start_time: '2026-09-12T15:00:00.000Z',
+    status: 'pending',
+    channel: 'widget',
+  },
+];
+
 export default async function DashboardOverview() {
   const user = await getCurrentUser();
 
@@ -37,35 +67,7 @@ export default async function DashboardOverview() {
     voiceMinutesUsed: 42,
   };
 
-  let recentAppointments: Record<string, unknown>[] = [
-    {
-      id: 'apt-1',
-      patient_name: 'Ananya Deshmukh',
-      patient_phone: '+91 98112 23344',
-      service_name: 'Teeth Cleaning & Scaling',
-      start_time: new Date(Date.now() + 3600000).toISOString(),
-      status: 'confirmed',
-      channel: 'whatsapp',
-    },
-    {
-      id: 'apt-2',
-      patient_name: 'Rajesh Kumar',
-      patient_phone: '+91 98450 12345',
-      service_name: 'Root Canal Consultation',
-      start_time: new Date(Date.now() + 7200000).toISOString(),
-      status: 'confirmed',
-      channel: 'voice',
-    },
-    {
-      id: 'apt-3',
-      patient_name: 'Pooja Sharma',
-      patient_phone: '+91 99887 76655',
-      service_name: 'Composite Filling',
-      start_time: new Date(Date.now() + 14400000).toISOString(),
-      status: 'pending',
-      channel: 'widget',
-    },
-  ];
+  let recentAppointments: Record<string, unknown>[] = [...DEFAULT_RECENT_APPOINTMENTS];
 
   try {
     const { data: member } = await supabase

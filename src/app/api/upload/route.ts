@@ -4,8 +4,17 @@ import { uploadClinicAsset } from '@/lib/storage/service';
 import { AllowedAssetType } from '@/lib/storage/validator';
 
 export async function POST(request: NextRequest) {
+  let formData: FormData;
   try {
-    const formData = await request.formData();
+    formData = await request.formData();
+  } catch {
+    return NextResponse.json(
+      { success: false, error: 'Invalid or missing multipart form data.' },
+      { status: 400 }
+    );
+  }
+
+  try {
     const organizationId = formData.get('organizationId') as string;
     const assetType = (formData.get('assetType') as AllowedAssetType) || 'clinic_image';
     const file = formData.get('file') as File | null;
@@ -18,12 +27,27 @@ export async function POST(request: NextRequest) {
     }
 
     const supabase = createClient();
-    let userId = 'user-1';
+    let userId: string | null = null;
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) userId = user.id;
     } catch {
       // Fallback
+    }
+
+    if (!userId) {
+      const isDemoAllowed = process.env.NODE_ENV !== 'production' || process.env.ENABLE_DEMO_LOGIN === 'true';
+      const demoEmail = isDemoAllowed ? request.cookies.get('demo_user_email')?.value : undefined;
+      if (demoEmail) {
+        userId = 'demo-user-id';
+      }
+    }
+
+    if (!userId) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized. You must be authenticated to upload assets.' },
+        { status: 401 }
+      );
     }
 
     const arrayBuffer = await file.arrayBuffer();

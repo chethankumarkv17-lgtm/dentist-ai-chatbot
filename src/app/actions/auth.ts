@@ -59,6 +59,10 @@ export async function login(formData: FormData) {
 }
 
 export async function quickDemoLogin() {
+  const isDemoAllowed = process.env.NODE_ENV !== 'production' || process.env.ENABLE_DEMO_LOGIN === 'true';
+  if (!isDemoAllowed) {
+    redirect('/login?error=Demo mode is disabled in production');
+  }
   await safeSetCookie('demo_user_email', 'dr.smith@downtowndental.com');
   revalidatePath('/', 'layout');
   redirect('/dashboard');

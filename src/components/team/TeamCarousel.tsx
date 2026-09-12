@@ -12,8 +12,18 @@ interface TeamCarouselProps {
 export function TeamCarousel({ onSelectMember }: TeamCarouselProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
-  const [reducedMotion, setReducedMotion] = useState(false);
-  const [hasEnteredView, setHasEnteredView] = useState(false);
+  const [reducedMotion] = useState(() => {
+    if (typeof window !== 'undefined' && window.matchMedia) {
+      return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    }
+    return false;
+  });
+  const [hasEnteredView, setHasEnteredView] = useState(() => {
+    if (typeof window !== 'undefined' && window.matchMedia) {
+      return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    }
+    return false;
+  });
   const containerRef = useRef<HTMLDivElement>(null);
 
   const trackRef = useRef<HTMLDivElement>(null);
@@ -34,10 +44,6 @@ export function TeamCarousel({ onSelectMember }: TeamCarouselProps) {
 
   // Initialize offset to -singleSetWidth (Start of Set 2)
   useEffect(() => {
-    if (typeof window !== 'undefined' && window.matchMedia) {
-      setReducedMotion(window.matchMedia('(prefers-reduced-motion: reduce)').matches);
-    }
-
     const step = getStep();
     const singleSetWidth = step * teamMembers.length;
     offsetRef.current = -singleSetWidth;
@@ -49,14 +55,12 @@ export function TeamCarousel({ onSelectMember }: TeamCarouselProps) {
 
   // Staggered entrance: observe when carousel scrolls into view (once)
   useEffect(() => {
-    if (reducedMotion) {
-      setHasEnteredView(true);
-      return;
-    }
+    if (hasEnteredView) return;
+
     const el = containerRef.current;
     if (!el || typeof IntersectionObserver === 'undefined') {
-      setHasEnteredView(true);
-      return;
+      const rafId = requestAnimationFrame(() => setHasEnteredView(true));
+      return () => cancelAnimationFrame(rafId);
     }
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -69,7 +73,7 @@ export function TeamCarousel({ onSelectMember }: TeamCarouselProps) {
     );
     observer.observe(el);
     return () => observer.disconnect();
-  }, [reducedMotion]);
+  }, [hasEnteredView]);
 
   // Window resize handler to maintain alignment
   useEffect(() => {

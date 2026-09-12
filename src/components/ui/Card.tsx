@@ -18,14 +18,14 @@ export function Card({
   ...props
 }: CardProps) {
   const variantStyles: Record<CardVariant, string> = {
-    solid: 'bg-white border border-slate-200/80 shadow-xs',
+    solid: 'bg-white dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 shadow-xs text-slate-900 dark:text-slate-100',
     glass: 'liquid-glass-card',
-    elevated: 'bg-white border border-slate-200 shadow-md',
-    interactive: 'bg-white border border-slate-200/80 shadow-xs hover:border-blue-500/50 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 cursor-pointer',
+    elevated: 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-md text-slate-900 dark:text-slate-100',
+    interactive: 'bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs hover:border-blue-500/50 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 cursor-pointer text-slate-900 dark:text-slate-100',
   };
 
   const hoverStyle = hoverable && variant === 'solid'
-    ? 'hover:shadow-md hover:border-slate-300 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300'
+    ? 'hover:shadow-md hover:border-slate-300 dark:hover:border-slate-700 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300'
     : '';
 
   return (
@@ -71,14 +71,14 @@ export function MetricCard({
     rose: 'bg-rose-50/90 text-rose-600 border-rose-100',
   };
 
-  const baseContainer = variant === 'glass' ? 'liquid-glass-card' : 'bg-white border border-slate-200/80 shadow-xs';
+  const baseContainer = variant === 'glass' ? 'liquid-glass-card' : 'bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs';
 
   return (
     <div
-      className={`${baseContainer} p-5 rounded-2xl hover:shadow-md hover:border-slate-300 transition-all duration-300 flex flex-col justify-between ${className}`}
+      className={`${baseContainer} p-5 rounded-2xl hover:shadow-md hover:border-slate-300 dark:hover:border-slate-700 transition-all duration-300 flex flex-col justify-between ${className}`}
     >
       <div className="flex items-center justify-between mb-3">
-        <span className="text-xs font-semibold text-slate-500 tracking-wide">{title}</span>
+        <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 tracking-wide">{title}</span>
         <div className={`w-9 h-9 rounded-xl border flex items-center justify-center ${colorStyles[color]}`}>
           <Icon className="w-5 h-5" />
         </div>
@@ -86,7 +86,7 @@ export function MetricCard({
 
       <div>
         <div className="flex items-baseline gap-2">
-          <p className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">{value}</p>
+          <p className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">{value}</p>
           {trend && (
             <span
               className={`text-xs font-bold ${

@@ -116,10 +116,10 @@ export default function LandingPage() {
         <RevealOnScroll variant="fade-up" durationMs={650}>
           <div className="text-center max-w-3xl mx-auto space-y-4 mb-16">
             <Badge variant="pro" size="md">Unified Omnichannel AI</Badge>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 tracking-[-0.03em]">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-[-0.03em]">
               One Core Brain. Three Seamless Patient Channels.
             </h2>
-            <p className="text-slate-600 text-base sm:text-lg leading-relaxed">
+            <p className="text-slate-600 dark:text-slate-400 text-base sm:text-lg leading-relaxed">
               Patients connect from their preferred communication channel. The unified AI orchestrator handles scheduling with single-source database truth.
             </p>
           </div>
@@ -136,19 +136,19 @@ export default function LandingPage() {
                       <div className={`w-12 h-12 rounded-2xl border flex items-center justify-center shadow-2xs ${ch.color}`}>
                         <Icon className="w-6 h-6" />
                       </div>
-                      <span className="text-[11px] font-bold px-3 py-1 rounded-full bg-slate-100/80 text-slate-700 border border-slate-200/60 shadow-2xs">
+                      <span className="text-[11px] font-bold px-3 py-1 rounded-full bg-slate-100/80 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 border border-slate-200/60 dark:border-slate-700 shadow-2xs">
                         {ch.tag}
                       </span>
                     </div>
 
-                    <h3 className="text-xl font-bold text-slate-900 mb-2 tracking-tight">{ch.title}</h3>
-                    <p className="text-slate-600 text-sm leading-relaxed mb-6">{ch.description}</p>
+                    <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2 tracking-tight">{ch.title}</h3>
+                    <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-6">{ch.description}</p>
                   </div>
 
-                  <div className="space-y-2.5 pt-5 border-t border-slate-200/60">
+                  <div className="space-y-2.5 pt-5 border-t border-slate-200/60 dark:border-slate-800">
                     {ch.highlights.map((item) => (
-                      <div key={item} className="flex items-center gap-2 text-xs font-semibold text-slate-700">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                      <div key={item} className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
                         <span>{item}</span>
                       </div>
                     ))}
@@ -207,7 +207,7 @@ export default function LandingPage() {
         <RevealOnScroll variant="fade-up" durationMs={600}>
           <div className="text-center space-y-3">
             <Badge variant="neutral">Clear Answers</Badge>
-            <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-[-0.03em]">Frequently Asked Questions</h2>
+            <h2 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-[-0.03em]">Frequently Asked Questions</h2>
           </div>
         </RevealOnScroll>
 
@@ -215,8 +215,8 @@ export default function LandingPage() {
           {faqs.map((faq, idx) => (
             <RevealOnScroll key={faq.q} variant="fade-up" delayMs={idx * 80} durationMs={600}>
               <Card variant="glass" className="p-6">
-                <h3 className="font-bold text-base text-slate-900 mb-2">{faq.q}</h3>
-                <p className="text-slate-600 text-sm leading-relaxed">{faq.a}</p>
+                <h3 className="font-bold text-base text-slate-900 dark:text-white mb-2">{faq.q}</h3>
+                <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed">{faq.a}</p>
               </Card>
             </RevealOnScroll>
           ))}

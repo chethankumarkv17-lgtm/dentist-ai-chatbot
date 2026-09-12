@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import { ArrowUpRight, User, Mail } from 'lucide-react';
 import { TeamMember } from '@/data/teamMembers';
@@ -14,13 +14,12 @@ interface TeamCardProps {
 export function TeamCard({ member, onSelect, className = '' }: TeamCardProps) {
   const [imageState, setImageState] = useState<'loading' | 'loaded' | 'error'>('loading');
   const cardRef = useRef<HTMLElement>(null);
-  const [reducedMotion, setReducedMotion] = useState(false);
-
-  useEffect(() => {
+  const [reducedMotion] = useState(() => {
     if (typeof window !== 'undefined' && window.matchMedia) {
-      setReducedMotion(window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+      return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     }
-  }, []);
+    return false;
+  });
 
   // Spotlight: set CSS custom properties on mouse move (no React re-render)
   const handleMouseMove = useCallback(
@@ -42,9 +41,9 @@ export function TeamCard({ member, onSelect, className = '' }: TeamCardProps) {
     .toUpperCase();
 
   return (
-    // Gradient border wrapper: 1px padding reveals gradient behind the white card on hover
+    // Gradient border wrapper: 1px padding reveals gradient behind the card on hover
     <div
-      className={`rounded-xl p-[1px] bg-slate-200/80 transition-all duration-500 group/border hover:bg-gradient-to-br hover:from-blue-500 hover:via-indigo-500 hover:to-purple-500 ${
+      className={`rounded-xl p-[1px] bg-slate-200/80 dark:bg-slate-800 transition-all duration-500 group/border hover:bg-gradient-to-br hover:from-blue-500 hover:via-indigo-500 hover:to-purple-500 ${
         reducedMotion ? '' : 'motion-safe:hover:bg-[length:200%_200%] motion-safe:hover:animate-[gradient-shift_3s_ease_infinite]'
       }`}
     >
@@ -52,7 +51,7 @@ export function TeamCard({ member, onSelect, className = '' }: TeamCardProps) {
       ref={cardRef}
       onClick={() => onSelect?.(member)}
       onMouseMove={handleMouseMove}
-      className={`group relative flex flex-col justify-between bg-white rounded-[11px] overflow-hidden shadow-xs hover:shadow-md transition-all duration-300 hover:-translate-y-1 select-none ${
+      className={`group relative flex flex-col justify-between bg-white dark:bg-slate-900 rounded-[11px] overflow-hidden shadow-xs hover:shadow-md transition-all duration-300 hover:-translate-y-1 select-none ${
         onSelect ? 'cursor-pointer' : ''
       } ${className}`}
     >
@@ -140,12 +139,12 @@ export function TeamCard({ member, onSelect, className = '' }: TeamCardProps) {
           </div>
 
           {/* Member Name */}
-          <h3 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight group-hover:text-blue-600 transition-colors">
+          <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white tracking-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
             {member.name}
           </h3>
 
           {/* Role */}
-          <p className="text-xs font-mono uppercase font-bold tracking-wider text-blue-600">
+          <p className="text-xs font-mono uppercase font-bold tracking-wider text-blue-600 dark:text-blue-400">
             {member.role}
           </p>
 
@@ -156,16 +155,16 @@ export function TeamCard({ member, onSelect, className = '' }: TeamCardProps) {
                 href={`mailto:${member.email}`}
                 onClick={(e) => e.stopPropagation()}
                 aria-label={`Send email to ${member.name} at ${member.email}`}
-                className="inline-flex items-center gap-1.5 text-xs font-mono text-slate-600 hover:text-blue-600 bg-slate-50 hover:bg-blue-50/80 border border-slate-200/90 hover:border-blue-200 px-2.5 py-1 rounded-md transition-colors w-fit max-w-full truncate group/email"
+                className="inline-flex items-center gap-1.5 text-xs font-mono text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 bg-slate-50 dark:bg-slate-800/80 hover:bg-blue-50/80 dark:hover:bg-slate-700/80 border border-slate-200/90 dark:border-slate-700 hover:border-blue-200 dark:hover:border-blue-500/50 px-2.5 py-1 rounded-md transition-colors w-fit max-w-full truncate group/email"
               >
-                <Mail className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                <Mail className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
                 <span className="truncate">{member.email}</span>
               </a>
             </div>
           )}
 
           {/* Description */}
-          <p className="text-xs sm:text-sm text-slate-600 font-normal leading-relaxed line-clamp-3 pt-1">
+          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-normal leading-relaxed line-clamp-3 pt-1">
             {member.description}
           </p>
 
@@ -175,7 +174,7 @@ export function TeamCard({ member, onSelect, className = '' }: TeamCardProps) {
               {member.techStack.map((tech) => (
                 <span
                   key={tech}
-                  className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full bg-blue-50/80 text-blue-700/90 border border-blue-100"
+                  className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full bg-blue-50/80 dark:bg-blue-950/60 text-blue-700/90 dark:text-blue-300 border border-blue-100 dark:border-blue-900/60"
                 >
                   {tech}
                 </span>
@@ -185,21 +184,21 @@ export function TeamCard({ member, onSelect, className = '' }: TeamCardProps) {
         </div>
 
         {/* 3. Footer with LinkedIn & Details Quick Actions */}
-        <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
+        <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
           <a
             href={member.linkedin}
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}
             aria-label={`LinkedIn profile of ${member.name}`}
-            className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-slate-700 hover:text-blue-600 transition-colors group/link uppercase tracking-wider touch-target"
+            className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors group/link uppercase tracking-wider touch-target"
           >
             <span>LinkedIn</span>
             <ArrowUpRight className="w-3.5 h-3.5 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform duration-200" />
           </a>
 
           {onSelect && (
-            <span className="text-[11px] font-mono text-slate-400 group-hover:text-blue-600 transition-colors">
+            <span className="text-[11px] font-mono text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
               Details →
             </span>
           )}

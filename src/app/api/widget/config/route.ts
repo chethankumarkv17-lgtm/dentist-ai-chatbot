@@ -2,7 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { appCache, getOptimalCacheHeaders } from '@/lib/performance/cache';
 
-const idSchema = z.string().uuid();
+const idSchema = z.string().regex(
+  /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/,
+  'Invalid widget ID'
+);
 
 export async function GET(req: NextRequest) {
   const id = req.nextUrl.searchParams.get('id');

@@ -10,7 +10,9 @@ import { TeamCarousel } from '@/components/team/TeamCarousel';
 // Mock next/image to render standard img tag with alt & src
 vi.mock('next/image', () => ({
   __esModule: true,
-  default: ({ src, alt, ...props }: any) => <img src={src} alt={alt} {...props} />,
+  default: ({ src, alt, ...props }: React.ImgHTMLAttributes<HTMLImageElement>) => (
+    <img src={src} alt={alt} {...props} />
+  ),
 }));
 
 describe('Editorial Team Members Suite (Light Theme & Infinite Carousel)', () => {

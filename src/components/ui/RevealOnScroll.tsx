@@ -21,29 +21,18 @@ export function RevealOnScroll({
   className = '',
   threshold = 0.1,
 }: RevealOnScrollProps) {
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(() => {
+    if (typeof window === 'undefined') return true;
+    if (typeof IntersectionObserver === 'undefined') return true;
+    if (typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      return true;
+    }
+    return false;
+  });
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (typeof window === 'undefined') {
-      setIsVisible(true);
-      return;
-    }
-
-    if (typeof IntersectionObserver === 'undefined') {
-      setIsVisible(true);
-      return;
-    }
-
-    // Check if user prefers reduced motion
-    const prefersReducedMotion =
-      typeof window.matchMedia === 'function' &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    if (prefersReducedMotion) {
-      setIsVisible(true);
-      return;
-    }
+    if (isVisible) return;
 
     const currentRef = ref.current;
     if (!currentRef) return;
@@ -68,9 +57,10 @@ export function RevealOnScroll({
         if (currentRef) observer.unobserve(currentRef);
       };
     } catch {
-      setIsVisible(true);
+      const rafId = requestAnimationFrame(() => setIsVisible(true));
+      return () => cancelAnimationFrame(rafId);
     }
-  }, [threshold]);
+  }, [threshold, isVisible]);
 
   const variantStyles: Record<string, { initial: string; visible: string }> = {
     'fade-up': {

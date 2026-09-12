@@ -36,8 +36,9 @@ export async function updateSession(request: NextRequest) {
     user = null;
   }
 
-  // Check demo session cookie
-  const demoEmail = request.cookies.get('demo_user_email')?.value;
+  // Check demo session cookie (restricted to development/testing or explicit opt-in)
+  const isDemoAllowed = process.env.NODE_ENV !== 'production' || process.env.ENABLE_DEMO_LOGIN === 'true';
+  const demoEmail = isDemoAllowed ? request.cookies.get('demo_user_email')?.value : undefined;
   const isAuthenticated = Boolean(user || demoEmail);
 
   const pathname = request.nextUrl.pathname;

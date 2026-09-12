@@ -24,20 +24,28 @@ export function DynamicTextSlider({
 }: DynamicTextSliderProps) {
   const [index, setIndex] = useState(0);
   const [phase, setPhase] = useState<AnimationPhase>('visible');
-  const [reducedMotion, setReducedMotion] = useState(false);
+  const [reducedMotion, setReducedMotion] = useState(() => {
+    if (typeof window !== 'undefined' && window.matchMedia) {
+      return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    }
+    return false;
+  });
 
   const mountedRef = useRef(true);
   const timeoutsRef = useRef<NodeJS.Timeout[]>([]);
 
   useEffect(() => {
     mountedRef.current = true;
-    if (typeof window !== 'undefined' && window.matchMedia) {
-      setReducedMotion(window.matchMedia('(prefers-reduced-motion: reduce)').matches);
-    }
+    if (typeof window === 'undefined' || !window.matchMedia) return;
+
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const handler = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
+    mediaQuery.addEventListener('change', handler);
 
     return () => {
       mountedRef.current = false;
       timeoutsRef.current.forEach(clearTimeout);
+      mediaQuery.removeEventListener('change', handler);
     };
   }, []);
 

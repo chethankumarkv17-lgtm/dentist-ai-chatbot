@@ -16,7 +16,10 @@ export async function GET(req: NextRequest) {
   const verifyToken = env.WHATSAPP_VERIFY_TOKEN || 'placeholder_verify';
 
   if (mode && token) {
-    if (mode === 'subscribe' && (token === verifyToken || token === 'mock_verify_token')) {
+    const isMockAllowed = process.env.NODE_ENV !== 'production';
+    const isTokenValid = token === verifyToken || (isMockAllowed && token === 'mock_verify_token');
+
+    if (mode === 'subscribe' && isTokenValid) {
       return new NextResponse(challenge, { status: 200 });
     } else {
       return NextResponse.json({ success: false, error: 'Verification token mismatch' }, { status: 403 });

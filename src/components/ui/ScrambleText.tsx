@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 
@@ -27,33 +27,37 @@ export function useTextScramble(
   } = options;
 
   const [displayText, setDisplayText] = useState(text);
+  const [prevText, setPrevText] = useState(text);
   const [isScrambling, setIsScrambling] = useState(false);
-  const [reducedMotion, setReducedMotion] = useState(false);
+  const [reducedMotion, setReducedMotion] = useState(() => {
+    if (typeof window !== 'undefined' && window.matchMedia) {
+      return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    }
+    return false;
+  });
+
+  if (text !== prevText) {
+    setPrevText(text);
+    setDisplayText(text);
+  }
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const startTimeRef = useRef<number>(0);
 
   // Check for prefers-reduced-motion
   useEffect(() => {
-    if (typeof window !== 'undefined' && window.matchMedia) {
-      const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-      setReducedMotion(mediaQuery.matches);
+    if (typeof window === 'undefined' || !window.matchMedia) return;
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-      const handleChange = (e: MediaQueryListEvent) => {
-        setReducedMotion(e.matches);
-      };
+    const handleChange = (e: MediaQueryListEvent) => {
+      setReducedMotion(e.matches);
+    };
 
-      if (mediaQuery.addEventListener) {
-        mediaQuery.addEventListener('change', handleChange);
-        return () => mediaQuery.removeEventListener('change', handleChange);
-      }
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', handleChange);
+      return () => mediaQuery.removeEventListener('change', handleChange);
     }
   }, []);
-
-  // Synchronize when the target text changes
-  useEffect(() => {
-    setDisplayText(text);
-  }, [text]);
 
   // Clean up timer on unmount
   useEffect(() => {

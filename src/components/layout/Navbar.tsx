@@ -8,15 +8,54 @@ import { Stethoscope, Menu, X, ArrowRight } from 'lucide-react';
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [currentHash, setCurrentHash] = useState('');
   const pathname = usePathname();
 
   useEffect(() => {
+    const syncHash = () => {
+      setCurrentHash(window.location.hash);
+    };
+    syncHash();
+
     const handleScroll = () => {
       setScrolled(window.scrollY > 12);
+      if (pathname === '/' && window.scrollY < 180) {
+        setCurrentHash('');
+      }
     };
+
     window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    window.addEventListener('hashchange', syncHash);
+    window.addEventListener('popstate', syncHash);
+
+    // IntersectionObserver to detect when #team is in viewport on homepage
+    let observer: IntersectionObserver | null = null;
+    if (pathname === '/' && typeof IntersectionObserver !== 'undefined') {
+      const teamSection = document.getElementById('team');
+      if (teamSection) {
+        observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                setCurrentHash('#team');
+              }
+            });
+          },
+          { rootMargin: '-20% 0px -40% 0px' }
+        );
+        observer.observe(teamSection);
+      }
+    }
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('hashchange', syncHash);
+      window.removeEventListener('popstate', syncHash);
+      if (observer) {
+        observer.disconnect();
+      }
+    };
+  }, [pathname]);
 
   const navLinks = [
     { label: 'Features', href: '/features' },
@@ -25,6 +64,32 @@ export function Navbar() {
     { label: 'Pricing', href: '/pricing' },
     { label: 'Help', href: '/help' },
   ];
+
+  const isLinkActive = (href: string) => {
+    if (href.includes('#')) {
+      const hash = '#' + href.split('#')[1];
+      return pathname === '/' && currentHash === hash;
+    }
+    return pathname === href;
+  };
+
+  const handleNavClick = (href: string, e?: React.MouseEvent) => {
+    if (href.includes('#')) {
+      const hash = '#' + href.split('#')[1];
+      setCurrentHash(hash);
+      if (pathname === '/') {
+        const targetId = href.split('#')[1];
+        const element = document.getElementById(targetId);
+        if (element) {
+          e?.preventDefault();
+          element.scrollIntoView({ behavior: 'smooth' });
+          window.history.pushState(null, '', href);
+        }
+      }
+    } else {
+      setCurrentHash('');
+    }
+  };
 
   return (
     <header className="sticky top-0 z-40 w-full pt-3 pb-2 px-4 sm:px-6 lg:px-8 transition-all duration-200">
@@ -37,7 +102,16 @@ export function Navbar() {
       >
         {/* Brand */}
         <div className="flex items-center gap-7">
-          <Link href="/" className="flex items-center gap-2.5 group">
+          <Link
+            href="/"
+            onClick={() => {
+              setCurrentHash('');
+              if (pathname === '/') {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }
+            }}
+            className="flex items-center gap-2.5 group"
+          >
             <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-sm shadow-blue-500/20 group-hover:scale-105 transition-transform duration-200">
               <Stethoscope className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
             </div>
@@ -54,11 +128,12 @@ export function Navbar() {
           {/* Desktop Nav Links — Minimal, Clean & Immediate */}
           <nav className="hidden md:flex items-center gap-1">
             {navLinks.map((link) => {
-              const isActive = pathname === link.href;
+              const isActive = isLinkActive(link.href);
               return (
                 <Link
                   key={link.href}
                   href={link.href}
+                  onClick={(e) => handleNavClick(link.href, e)}
                   className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-150 ${
                     isActive
                       ? 'text-blue-600 dark:text-blue-400 bg-blue-50/80 dark:bg-blue-950/50 font-semibold'
@@ -104,20 +179,26 @@ export function Navbar() {
       {mobileOpen && (
         <div className="md:hidden mt-2 max-w-7xl mx-auto bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-slate-200/80 dark:border-slate-800 rounded-2xl p-4 space-y-3 shadow-xl animate-fade-in">
           <nav className="space-y-1">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setMobileOpen(false)}
-                className={`block px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-colors ${
-                  pathname === link.href
-                    ? 'text-blue-600 bg-blue-50 dark:bg-blue-950/50'
-                    : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100/70 dark:hover:bg-slate-800/70'
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
+            {navLinks.map((link) => {
+              const isActive = isLinkActive(link.href);
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={(e) => {
+                    handleNavClick(link.href, e);
+                    setMobileOpen(false);
+                  }}
+                  className={`block px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-colors ${
+                    isActive
+                      ? 'text-blue-600 bg-blue-50 dark:bg-blue-950/50'
+                      : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100/70 dark:hover:bg-slate-800/70'
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
           </nav>
 
           <div className="pt-3 border-t border-slate-200/60 dark:border-slate-800 space-y-2">
