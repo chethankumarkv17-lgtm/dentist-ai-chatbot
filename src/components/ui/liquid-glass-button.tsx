@@ -59,27 +59,30 @@ Button.displayName = "Button"
 export { Button, buttonVariants, liquidbuttonVariants, LiquidButton }
 
 const liquidbuttonVariants = cva(
-  "inline-flex items-center transition-colors justify-center cursor-pointer gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-[color,box-shadow] disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
+  "group relative inline-flex items-center justify-center cursor-pointer gap-2.5 whitespace-nowrap rounded-xl text-sm font-semibold transition-all duration-300 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 select-none overflow-hidden",
   {
     variants: {
       variant: {
-        default: "bg-transparent hover:scale-105 duration-300 transition text-primary",
+        default:
+          "bg-white/85 hover:bg-white text-slate-800 border border-slate-200/90 hover:border-slate-300/90 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.9),0_2px_8px_-2px_rgba(15,23,42,0.06)] hover:shadow-[inset_0_1px_1px_0_rgba(255,255,255,1),0_8px_20px_-4px_rgba(15,23,42,0.1)] hover:-translate-y-0.5 active:translate-y-0 backdrop-blur-md",
+        primary:
+          "bg-gradient-to-r from-blue-600 via-blue-600 to-indigo-600 hover:from-blue-700 hover:via-blue-700 hover:to-indigo-700 text-white border border-blue-400/30 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.35),0_4px_14px_0_rgba(37,99,235,0.25)] hover:shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.45),0_8px_24px_0_rgba(37,99,235,0.35)] hover:-translate-y-0.5 active:translate-y-0",
         destructive:
-          "bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40",
+          "bg-red-600 text-white hover:bg-red-700 border border-red-400/30 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.35),0_4px_14px_0_rgba(239,68,68,0.25)]",
         outline:
-          "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+          "bg-transparent hover:bg-slate-50/80 text-slate-700 border border-slate-200/90 hover:border-slate-300 backdrop-blur-xs",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
+          "bg-slate-100/90 hover:bg-slate-200/80 text-slate-800 border border-slate-200/60 backdrop-blur-sm",
+        ghost: "hover:bg-slate-100/80 text-slate-700",
+        link: "text-blue-600 underline-offset-4 hover:underline",
       },
       size: {
-        default: "h-9 px-4 py-2 has-[>svg]:px-3",
-        sm: "h-8 text-xs gap-1.5 px-4 has-[>svg]:px-4",
-        lg: "h-10 rounded-md px-6 has-[>svg]:px-4",
-        xl: "h-12 rounded-md px-8 has-[>svg]:px-6",
-        xxl: "h-14 rounded-md px-10 has-[>svg]:px-8",
-        icon: "size-9",
+        default: "h-10 px-5 py-2",
+        sm: "h-8 text-xs gap-1.5 px-3.5",
+        lg: "h-11 px-7 text-sm",
+        xl: "h-12 sm:h-13 px-8 text-sm sm:text-base font-bold",
+        xxl: "h-14 px-10 text-base font-bold",
+        icon: "size-10",
       },
     },
     defaultVariants: {
@@ -107,23 +110,25 @@ function LiquidButton({
       <Comp
         data-slot="button"
         className={cn(
-          "relative",
           liquidbuttonVariants({ variant, size, className })
         )}
         {...props}
       >
-        <div className="absolute top-0 left-0 z-0 h-full w-full rounded-full 
-            shadow-[0_0_6px_rgba(0,0,0,0.03),0_2px_6px_rgba(0,0,0,0.08),inset_3px_3px_0.5px_-3px_rgba(0,0,0,0.9),inset_-3px_-3px_0.5px_-3px_rgba(0,0,0,0.85),inset_1px_1px_1px_-0.5px_rgba(0,0,0,0.6),inset_-1px_-1px_1px_-0.5px_rgba(0,0,0,0.6),inset_0_0_6px_6px_rgba(0,0,0,0.12),inset_0_0_2px_2px_rgba(0,0,0,0.06),0_0_12px_rgba(255,255,255,0.15)] 
-        transition-all 
-        dark:shadow-[0_0_8px_rgba(0,0,0,0.03),0_2px_6px_rgba(0,0,0,0.08),inset_3px_3px_0.5px_-3.5px_rgba(255,255,255,0.09),inset_-3px_-3px_0.5px_-3.5px_rgba(255,255,255,0.85),inset_1px_1px_1px_-0.5px_rgba(255,255,255,0.6),inset_-1px_-1px_1px_-0.5px_rgba(255,255,255,0.6),inset_0_0_6px_6px_rgba(255,255,255,0.12),inset_0_0_2px_2px_rgba(255,255,255,0.06),0_0_12px_rgba(0,0,0,0.15)]" />
+        {/* Subtle Specular Top Reflection (Liquid Glass Sheen) */}
         <div
-          className="absolute top-0 left-0 isolate -z-10 h-full w-full overflow-hidden rounded-md"
-          style={{ backdropFilter: 'url("#container-glass")' }}
+          aria-hidden="true"
+          className="absolute inset-x-0 top-0 h-1/2 rounded-[inherit] bg-gradient-to-b from-white/25 via-white/5 to-transparent pointer-events-none opacity-80 group-hover:opacity-100 transition-opacity duration-300"
         />
 
-        <div className="pointer-events-none z-10 ">
+        {/* Ambient Subtle Edge Highlight */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 rounded-[inherit] border border-white/20 pointer-events-none"
+        />
+
+        <span className="relative z-10 inline-flex items-center justify-center gap-2">
           {children}
-        </div>
+        </span>
         <GlassFilter />
       </Comp>
     </>

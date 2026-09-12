@@ -128,20 +128,19 @@ export function HeroTypographyMotion() {
       >
         <Link href="/signup" className="w-full sm:w-auto inline-block">
           <LiquidButton
+            variant="primary"
             size="xl"
-            className="w-full sm:w-auto font-black text-sm sm:text-base px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/35 rounded-xl touch-target group"
+            className="w-full sm:w-auto touch-target group"
           >
-            <span className="inline-flex items-center gap-2.5">
-              <span>Start 14-Day Free Trial</span>
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
-            </span>
+            <span>Start 14-Day Free Trial</span>
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
           </LiquidButton>
         </Link>
         <Link href="/login" className="w-full sm:w-auto inline-block">
           <LiquidButton
-            size="xl"
             variant="default"
-            className="w-full sm:w-auto font-bold text-sm sm:text-base px-8 py-4 text-slate-800 rounded-xl liquid-glass hover:liquid-glass-strong border border-slate-200/80 shadow-2xs hover:border-slate-300 touch-target"
+            size="xl"
+            className="w-full sm:w-auto touch-target"
           >
             <span>Enter Interactive Demo</span>
           </LiquidButton>
