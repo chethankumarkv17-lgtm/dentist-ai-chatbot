@@ -14,6 +14,7 @@
 # Environment & Secrets (NEVER commit secrets or real credentials)
 # ==============================================================================
 .env
+.env.local
 .env.*
 .env*.local
 *.pem
