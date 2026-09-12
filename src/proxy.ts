@@ -1,7 +1,7 @@
 import { updateSession } from '@/lib/supabase/middleware';
 import { type NextRequest, NextResponse } from 'next/server';
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const url = request.nextUrl;
   
   // Platform Subdomain / Custom Domain Routing
